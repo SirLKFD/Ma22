@@ -28,73 +28,58 @@
 
             <!-- Welcome text and Register heading -->
             <p class="welcome-back">Create your account!</p>
-            <h2 class="login-heading">Sign up</h2>
+            <h2 class="login-heading">Register</h2>
 
             <form method="post" action="/Account/Register" id="registerForm">
-                <div class="form-content">
-                    <div class="form-group">
-                        <label for="userId">UserId</label>
-                        <input type="text" id="userId" class="form-input" asp-for="UserId" placeholder="Enter userid" />
-                        <span asp-validation-for="UserId" class="validation-error"></span>
-                    </div>
+                <div class="form-group">
+                    <label for="userId">UserId</label>
+                    <input type="text" id="userId" class="form-input" asp-for="UserId" placeholder="Enter userid" />
+                    <span asp-validation-for="UserId" class="validation-error"></span>
+                </div>
 
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" id="name" class="form-input" asp-for="Name" placeholder="Enter your full name" />
-                        <span asp-validation-for="Name" class="validation-error"></span>
-                    </div>
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" class="form-input" asp-for="Name" placeholder="Enter your full name" />
+                    <span asp-validation-for="Name" class="validation-error"></span>
+                </div>
 
-                    <div class="form-group password-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" class="form-input" asp-for="Password" placeholder="Enter password" />
-                        <span asp-validation-for="Password" class="validation-error"></span>
-                    </div>
+                <div class="form-group password-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-input" asp-for="Password" placeholder="Enter password" />
+                    <span asp-validation-for="Password" class="validation-error"></span>
+                </div>
 
-                    <div class="form-group password-group">
-                        <label for="confirmpassword">Confirm Password</label>
-                        <input type="password" id="confirmpassword" class="form-input" asp-for="ConfirmPassword" placeholder="Confirm your password" />
-                        <span asp-validation-for="ConfirmPassword" class="validation-error"></span>
-                    </div>
+                <div class="form-group password-group">
+                    <label for="confirmpassword">Confirm Password</label>
+                    <input type="password" id="confirmpassword" class="form-input" asp-for="ConfirmPassword" placeholder="Confirm your password" />
+                    <span asp-validation-for="ConfirmPassword" class="validation-error"></span>
+                </div>
 
-                    <div class="button-section">
-                        <button class="login-button" type="submit">
-                            Sign up
-                        </button>
-                    </div>
+                <div class="button-section">
+                    <button class="login-button" type="submit">
+                        Sign up
+                    </button>
+                </div>
 
-                    <div class="signup-group">
-                        <p>Already have an account?</p>
-                        <a asp-controller="Account" asp-action="Login" class="signup-button">
-                            Login
-                        </a>
-                    </div>
+                <div class="signup-group">
+                    <p>Already have an account?</p>
+                    <a asp-controller="Account" asp-action="Login" class="signup-button">
+                        Login
+                    </a>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
 
 @section scripts {
-                <script>
-                    // Check for error message and display Toastr notification
-                    var errorMessage = '@TempData["ErrorMessage"]';
-                    if (errorMessage) {
-                        toastr.error(errorMessage);
-                    }
+    <script>
+        // Check for error message and display Toastr notification
+        var errorMessage = '@TempData["ErrorMessage"]';
+        if (errorMessage) {
+            toastr.error(errorMessage);
+        }
 
-                    // Animation for form content transitions
-                    $(document).ready(function() {
-                        // Apply fade-in on page load
-                        $('.form-content').addClass('fade-in');
-
-                        // Handle login link click
-                        $('.signup-button').on('click', function(e) {
-                            e.preventDefault();
-                            var href = $(this).attr('href');
-
-                            // Apply fade out to form content only
-                            $('.form-content').removeClass('fade-in').addClass('fade-out');
-                            setTimeout(function() {
-                                window.location.href = href;
-                            }, 450);
-                        });
-                    });
-                </script>
+        });
+    </script>
 }
