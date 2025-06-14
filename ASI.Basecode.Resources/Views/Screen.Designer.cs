@@ -61,7 +61,7 @@ namespace ASI.Basecode.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ©2023 Alliance Software Inc. All rights reserved..
+        ///   Looks up a localized string similar to ©2025 Alliance Software Inc. All rights reserved..
         /// </summary>
         public static string Copyright {
             get {
@@ -70,7 +70,7 @@ namespace ASI.Basecode.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create new.
+        ///   Looks up a localized string similar to Sign up here.
         /// </summary>
         public static string CreateNew {
             get {
@@ -79,7 +79,7 @@ namespace ASI.Basecode.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Don&apos;t have an account?.
+        ///   Looks up a localized string similar to No Account?.
         /// </summary>
         public static string DontHaveAcc {
             get {
@@ -115,7 +115,7 @@ namespace ASI.Basecode.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UserId.
+        ///   Looks up a localized string similar to userId.
         /// </summary>
         public static string UserId {
             get {

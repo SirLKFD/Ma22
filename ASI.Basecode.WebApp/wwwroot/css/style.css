@@ -21,10 +21,16 @@
     --two-use-color: #5500cb;
 }
 
+html {
+    position: relative;
+    min-height: 100%;
+}
+
 body {
-    background-color: var(--background-color4);
+    background-color: #FFE9C6;
     max-width: 100%;
     overflow-x: hidden;
+    margin-bottom: 80px; /* Increased from 60px to 80px */
 }
 
 header {
@@ -39,8 +45,22 @@ header {
     align-items: center;
 }
 
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px; /* Set the fixed height of the footer here */
+    line-height: 60px; /* Vertically center the text there */
+    padding-top: 10px; /* Added padding to push content down */
+    margin-top: 20px; /* Added margin to create more space */
+}
+
+footer .container {
+    padding: 0 20px; /* Add some horizontal padding to the container */
+}
+
 .logo {
-    font-size: 27px;
+    font-size: 100px;
     font-weight: 600;
     color: rgb(47, 141, 70);
 }
