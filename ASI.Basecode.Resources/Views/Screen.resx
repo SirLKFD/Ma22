@@ -118,13 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Copyright" xml:space="preserve">
-    <value>©2023 Alliance Software Inc. All rights reserved.</value>
+    <value>©2025 Alliance Software Inc. All rights reserved.</value>
   </data>
   <data name="CreateNew" xml:space="preserve">
-    <value>Create new</value>
+    <value>Sign up here</value>
   </data>
   <data name="DontHaveAcc" xml:space="preserve">
-    <value>Don't have an account?</value>
+    <value>No Account?</value>
   </data>
   <data name="ForgotPass" xml:space="preserve">
     <value>Forgot password?</value>
@@ -136,6 +136,6 @@
     <value>Password</value>
   </data>
   <data name="UserId" xml:space="preserve">
-    <value>UserId</value>
+    <value>userId</value>
   </data>
 </root>
