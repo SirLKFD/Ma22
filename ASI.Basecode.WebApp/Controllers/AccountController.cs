@@ -90,7 +90,7 @@ namespace ASI.Basecode.WebApp.Controllers
             await this._signInManager.SignInAsync(user);
             this._session.SetString("UserName", model.UserId);
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("UserMaster", "Admin");
 
             /*var loginResult = _userService.AuthenticateUser(model.UserId, model.Password, ref user);
             if (loginResult == LoginResult.Success)
@@ -98,7 +98,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 // 認証OK
                 await this._signInManager.SignInAsync(user);
                 this._session.SetString("UserName", user.Name);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("UserMaster", "Home");
             }
             else
             {
@@ -149,7 +149,7 @@ namespace ASI.Basecode.WebApp.Controllers
 
 
         //Forgot Password TEMPORARY MOCKUP
-
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult ForgotPassword(string email = "")
         {
@@ -165,7 +165,7 @@ namespace ASI.Basecode.WebApp.Controllers
 
             return View(model);
         }
-
+        [AllowAnonymous]
         [HttpPost]
         public IActionResult ForgotPassword(LoginViewModel model)
         {
@@ -182,6 +182,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         // Reset Password TEMPORARY MOCKUP
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult ResetPassword()
         {
