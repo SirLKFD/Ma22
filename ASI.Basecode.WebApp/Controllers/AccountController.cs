@@ -146,5 +146,48 @@ namespace ASI.Basecode.WebApp.Controllers
             await this._signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }
+
+
+        //Forgot Password TEMPORARY MOCKUP
+
+        [HttpGet]
+        public IActionResult ForgotPassword(string email = "")
+        {
+            var model = new LoginViewModel();
+
+            // If email is provided from login page, pre-fill it
+            if (!string.IsNullOrEmpty(email))
+            {
+                model.UserId = email;
+                // Show success message if email was provided
+                TempData["SuccessMessage"] = "No worries, we sent you a reset link in your email.";
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult ForgotPassword(LoginViewModel model)
+        {
+            // Use the existing Required validation from LoginViewModel
+            if (ModelState.IsValid)
+            {
+                // For mockup - just show success message
+                TempData["SuccessMessage"] = "No worries, we sent you a reset link in your email.";
+                return View(model);
+            }
+
+            // ModelState will automatically handle the Required validation error from LoginViewModel
+            return View(model);
+        }
+
+        // Reset Password TEMPORARY MOCKUP
+        [HttpGet]
+        public IActionResult ResetPassword()
+        {
+            return View();
+        }
+
+
     }
 }
