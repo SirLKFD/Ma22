@@ -13,7 +13,20 @@
     left: 0;
     width: 60%;
     height: 100%;
+    transition: top 0.8s ease-in-out, left 0.8s ease-in-out, width 0.8s ease-in-out, height 0.8s ease-in-out;
 }
+
+    /* Animation styles for moving image to center */
+    .login-image-container.move-center {
+        top: 20% !important;
+        left: 38% !important;
+        width: 800px !important;
+        height: 700px !important;
+        margin-top: -100px !important;
+        margin-left: -120px !important;
+        z-index: 1000;
+        display: block !important;
+    }
 
 .login-image {
     width: 100%;
@@ -23,7 +36,104 @@
     top: 0;
     left: 0;
     z-index: 0;
+    transition: object-fit 0.8s ease-in-out;
 }
+
+/* Image styling when moved to center */
+.login-image-container.move-center .login-image {
+    object-fit: contain !important;
+}
+
+/* Animation for fading out elements */
+.reset-success .login-card {
+    animation: fadeOut 0.8s ease forwards;
+}
+
+.reset-success .login-content {
+    animation: fadeOut 0.8s ease forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: scale(0.9);
+        pointer-events: none;
+    }
+}
+
+/* Back to login button animation */
+.back-to-login {
+    display: none;
+    position: fixed;
+    top: 75%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1001;
+    margin-top: 30px;
+    text-align: center;
+    animation: fadeInUp 0.5s ease-in-out 0.8s both;
+}
+
+    .back-to-login .login-button {
+        background-color: #640A16;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        font-family: 'Poppins', sans-serif;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        display: inline-block;
+    }
+
+        .back-to-login .login-button:hover {
+            background: #4a0810;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(100, 10, 22, 0.3);
+        }
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.success-message {
+    display: none;
+    position: fixed;
+    top: calc(50% - 380px); /* Position it above the centered image */
+    left: 50%;
+    width: 100%;
+    transform: translateX(-50%);
+    z-index: 1001;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #4a0810;
+    text-align: center;
+    margin: 0;
+    animation: fadeInUp 0.5s ease-in-out 0.8s both;
+    font-family: 'Poppins', sans-serif;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
 
 /* Right content section */
 .login-content {
@@ -51,14 +161,14 @@
     margin: 20px 0; /* Add some vertical margin */
 }
 
-/* Form container to ensure proper scrolling if needed */
-.login-card form {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow-y: auto; /* Add scrolling if content exceeds container */
-}
+    /* Form container to ensure proper scrolling if needed */
+    .login-card form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        overflow-y: auto; /* Add scrolling if content exceeds container */
+    }
 
 /* Logo positioning - top right corner */
 .logo-container {
@@ -245,6 +355,7 @@
         padding-left: 100px;
     }
 }
+
 @media (max-width: 768px) {
     .login-content {
         padding: 1rem;
@@ -281,5 +392,3 @@
         text-align: center;
     }
 }
-
-
