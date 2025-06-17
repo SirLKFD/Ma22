@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -32,6 +34,8 @@ namespace ASI.Basecode.WebApp.Controllers
         /// Returns Home View.
         /// </summary>
         /// <returns> Home View </returns>
+
+        [Authorize(Roles = "0")]
         public IActionResult UserMaster()
         {
             return View();

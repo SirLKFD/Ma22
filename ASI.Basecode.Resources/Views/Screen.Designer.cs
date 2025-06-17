@@ -115,7 +115,7 @@ namespace ASI.Basecode.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to userId.
+        ///   Looks up a localized string similar to Email.
         /// </summary>
         public static string UserId {
             get {
