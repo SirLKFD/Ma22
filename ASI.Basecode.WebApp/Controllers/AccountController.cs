@@ -2,6 +2,7 @@
 using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.Manager;
 using ASI.Basecode.Services.ServiceModels;
+using ASI.Basecode.Services.Services;
 using ASI.Basecode.WebApp.Authentication;
 using ASI.Basecode.WebApp.Models;
 using ASI.Basecode.WebApp.Mvc;
@@ -63,13 +64,34 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <returns>Created response view</returns>
         [HttpGet]
         [AllowAnonymous]
+        [ServiceFilter(typeof(RoleBasedFilterService))]
         public ActionResult Login()
         {
+            // Check if user is already authenticated
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+
+                // Redirect based on role
+                switch (role)
+                {
+                    case "0": // Admin role
+                        return RedirectToAction("UserMaster", "Admin");
+
+                    case "1": // User role
+                        return RedirectToAction("UserDashboard", "User");
+
+                    default:
+                        return RedirectToAction("Login", "Account");
+                }
+            }
+
             TempData["returnUrl"] = System.Net.WebUtility.UrlDecode(HttpContext.Request.Query["ReturnUrl"]);
             this._sessionManager.Clear();
             this._session.SetString("SessionId", System.Guid.NewGuid().ToString());
             return this.View();
         }
+
 
         /// <summary>
         /// Authenticate user and signs the user in when successful.
@@ -83,34 +105,51 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             this._session.SetString("HasSession", "Exist");
 
-            //User user = null;
-
-            User user = new() { Id = 0, UserId = "0", Name = "Name", Password = "Password" };
-            
-            await this._signInManager.SignInAsync(user);
-            this._session.SetString("UserName", model.UserId);
-
-            return RedirectToAction("UserMaster", "Admin");
-
-            /*var loginResult = _userService.AuthenticateUser(model.UserId, model.Password, ref user);
-            if (loginResult == LoginResult.Success)
+            if (!ModelState.IsValid)
             {
-                // 認証OK
-                await this._signInManager.SignInAsync(user);
-                this._session.SetString("UserName", user.Name);
-                return RedirectToAction("UserMaster", "Home");
+                return View(model);
+            }
+
+            Account account = null;
+
+            // Authenticate user
+            var loginResult = _userService.AuthenticateUser(model.EmailId, model.Password, ref account);
+
+            if (loginResult == LoginResult.Success && account != null)
+            {
+                // Sign in
+                await _signInManager.SignInAsync(account);
+
+                // Set session values
+                _session.SetString("UserName", $"{account.FirstName} {account.LastName}");
+                _session.SetString("UserEmail", account.EmailId);
+
+                // Redirect based on role
+                switch ((RoleType)account.Role)
+                {
+                    case RoleType.Admin:
+                        return RedirectToAction("UserMaster", "Admin");
+
+                    case RoleType.User:
+                        return RedirectToAction("UserDashboard", "User"); // Replace with actual User landing view
+
+                    default:
+                        TempData["ErrorMessage"] = "Incorrect account role.";
+                        return View(model);
+                }
             }
             else
             {
-                // 認証NG
-                TempData["ErrorMessage"] = "Incorrect UserId or Password";
-                return View();
+                TempData["ErrorMessage"] = "Incorrect Email or Password.";
+                return View(model);
             }
-            return View();*/
         }
+
+
 
         [HttpGet]
         [AllowAnonymous]
+        [ServiceFilter(typeof(RoleBasedFilterService))]
         public IActionResult Register()
         {
             return View();
@@ -127,9 +166,9 @@ namespace ASI.Basecode.WebApp.Controllers
             }
             catch(InvalidDataException ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = ex.InnerException?.Message ?? ex.Message;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
             }
@@ -149,8 +188,9 @@ namespace ASI.Basecode.WebApp.Controllers
 
 
         //Forgot Password TEMPORARY MOCKUP
-        [AllowAnonymous]
         [HttpGet]
+        [AllowAnonymous]
+        [ServiceFilter(typeof(RoleBasedFilterService))]
         public IActionResult ForgotPassword(string email = "")
         {
             var model = new LoginViewModel();
@@ -158,7 +198,7 @@ namespace ASI.Basecode.WebApp.Controllers
             // If email is provided from login page, pre-fill it
             if (!string.IsNullOrEmpty(email))
             {
-                model.UserId = email;
+                model.EmailId = email;
                 // Show success message if email was provided
                 TempData["SuccessMessage"] = "No worries, we sent you a reset link in your email.";
             }
@@ -182,8 +222,9 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         // Reset Password TEMPORARY MOCKUP
-        [AllowAnonymous]
         [HttpGet]
+        [AllowAnonymous]
+        [ServiceFilter(typeof(RoleBasedFilterService))]
         public IActionResult ResetPassword()
         {
             return View();

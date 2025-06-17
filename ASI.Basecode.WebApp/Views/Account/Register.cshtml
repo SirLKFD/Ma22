@@ -32,15 +32,27 @@
 
             <form method="post" action="/Account/Register" id="registerForm">
                 <div class="form-group">
-                    <label for="userId">UserId</label>
-                    <input type="text" id="userId" class="form-input" asp-for="UserId" placeholder="Enter userid" />
-                    <span asp-validation-for="UserId" class="validation-error"></span>
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-input" asp-for="EmailId" placeholder="Enter your email" />
+                    <span asp-validation-for="EmailId" class="validation-error"></span>
                 </div>
 
                 <div class="form-group">
-                    <label for="name">Name</label>
-                    <input type="text" id="name" class="form-input" asp-for="Name" placeholder="Enter your full name" />
-                    <span asp-validation-for="Name" class="validation-error"></span>
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" class="form-input" asp-for="FirstName" placeholder="Enter your first name" />
+                    <span asp-validation-for="FirstName" class="validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" class="form-input" asp-for="LastName" placeholder="Enter your last name" />
+                    <span asp-validation-for="LastName" class="validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="contact">Contact Number</label>
+                    <input type="text" id="contact" class="form-input" asp-for="Contact" placeholder="09XXXXXXXXX" />
+                    <span asp-validation-for="Contact" class="validation-error"></span>
                 </div>
 
                 <div class="form-group password-group">
@@ -74,7 +86,6 @@
 
 @section scripts {
     <script>
-        // Check for error message and display Toastr notification
         var errorMessage = '@TempData["ErrorMessage"]';
         if (errorMessage) {
             toastr.error(errorMessage);

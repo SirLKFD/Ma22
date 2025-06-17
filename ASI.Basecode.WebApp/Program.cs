@@ -1,11 +1,14 @@
-﻿using System.IO;
-using ASI.Basecode.Data;
+﻿using ASI.Basecode.Data;
+using ASI.Basecode.Services.Services;
 using ASI.Basecode.WebApp;
 using ASI.Basecode.WebApp.Extensions.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.IO;
+using System.Security.Claims;
 
 var appBuilder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
@@ -18,10 +21,15 @@ appBuilder.Configuration.AddJsonFile("appsettings.json",
 
 appBuilder.WebHost.UseIISIntegration();
 
+
+
 appBuilder.Logging
     .AddConfiguration(appBuilder.Configuration.GetLoggingSection())
     .AddConsole()
     .AddDebug();
+
+// Role-based filter service
+appBuilder.Services.AddScoped<RoleBasedFilterService>();
 
 var configurer = new StartupConfigurer(appBuilder.Configuration);
 configurer.ConfigureServices(appBuilder.Services);
