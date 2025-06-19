@@ -18,6 +18,6 @@ namespace ASI.Basecode.Data.Models
         public DateTime CreatedTime { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime UpdatedTime { get; set; }
-        public int Role { get; set; } = 0; // Default to Admin Role for now
+        public int Role { get; set; } = 0; 
     }
 }
