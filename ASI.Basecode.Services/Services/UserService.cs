@@ -51,5 +51,25 @@ namespace ASI.Basecode.Services.Services
                 throw new InvalidDataException(Resources.Messages.Errors.UserExists);
             }
         }
+
+         public void AddUser(AdminCreateUserViewModel model)
+        {
+            var user = new Account();
+            if (!_repository.UserExists(model.EmailId))
+            {
+                _mapper.Map(model, user);
+                user.Password = PasswordManager.EncryptPassword(model.Password);
+                user.CreatedTime = DateTime.Now;
+                user.UpdatedTime = DateTime.Now;
+                user.CreatedBy = System.Environment.UserName;
+                user.UpdatedBy = System.Environment.UserName;
+
+                _repository.AddUser(user);
+            }
+            else
+            {
+                throw new InvalidDataException(Resources.Messages.Errors.UserExists);
+            }
+        }
     }
 }

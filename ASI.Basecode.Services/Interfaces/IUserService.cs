@@ -8,5 +8,6 @@ namespace ASI.Basecode.Services.Interfaces
     {
         LoginResult AuthenticateUser(string emailid, string password, ref Account user);
         void AddUser(UserViewModel model);
+        void AddUser(AdminCreateUserViewModel model);
     }
 }
