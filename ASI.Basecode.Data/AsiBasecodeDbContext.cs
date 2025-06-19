@@ -18,6 +18,7 @@ namespace ASI.Basecode.Data
         }
 
         public virtual DbSet<Account> Accounts { get; set; }
+        public virtual DbSet<TrainingCategory> TrainingCategories { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Account>(entity =>
@@ -78,8 +79,43 @@ namespace ASI.Basecode.Data
                 // Do not specify HasMaxLength here; it's an int, not a string
             });
 
-            OnModelCreatingPartial(modelBuilder);
+         
+
+            modelBuilder.Entity<TrainingCategory>(entity =>
+            {
+                entity.ToTable("TrainingCategories");
+                entity.HasKey(e => e.Id).HasName("PK__Training__3214EC0770533F47");
+
+                entity.Property(e => e.CategoryName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.CoverPicture)
+                    .HasMaxLength(2083)
+                    .IsUnicode(false);
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.CreatedTime).HasColumnType("datetime");
+                entity.Property(e => e.Description)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+                entity.Property(e => e.UpdatedBy)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account).WithMany(p => p.TrainingCategories)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Training Category Owner");
+            });
+
+           OnModelCreatingPartial(modelBuilder);
         }
+
 
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
