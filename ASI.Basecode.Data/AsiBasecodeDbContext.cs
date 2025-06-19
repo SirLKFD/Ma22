@@ -54,7 +54,8 @@ namespace ASI.Basecode.Data
                     .IsUnicode(false);
 
                 entity.Property(e => e.ProfilePicture)
-                    .HasColumnType("varbinary(max)"); // Or use image type depending on your SQL setup
+                     .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.CreatedBy)
                     .IsRequired()

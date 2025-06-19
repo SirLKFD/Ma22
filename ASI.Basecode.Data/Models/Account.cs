@@ -13,7 +13,7 @@ namespace ASI.Basecode.Data.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Contact { get; set; }
-        public byte[] ProfilePicture { get; set; }
+        public string ProfilePicture { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedTime { get; set; }
         public string UpdatedBy { get; set; }

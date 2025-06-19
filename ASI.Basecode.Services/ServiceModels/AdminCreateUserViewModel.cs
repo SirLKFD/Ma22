@@ -18,7 +18,7 @@ namespace ASI.Basecode.Services.ServiceModels
 
         // Optional Contact (no [Required] attribute)
         [RegularExpression(@"^09\d{9}$", ErrorMessage = "Contact must start with 09 and be 11 digits.")]
-        public string? Contact { get; set; }
+        public string Contact { get; set; }
 
         [Required(ErrorMessage = "Password is required.")]
         public string Password { get; set; }
@@ -26,6 +26,6 @@ namespace ASI.Basecode.Services.ServiceModels
         [Required(ErrorMessage = "Role is required.")]
         public int Role { get; set; }
 
-        public byte[]? ProfilePicture { get; set; }
+        public string ProfilePicture { get; set; }
     }
 }

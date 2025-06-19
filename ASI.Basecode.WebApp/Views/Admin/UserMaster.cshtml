@@ -11,7 +11,7 @@
     </button>
 </div>
 
-@* @if (ViewBag.NewUser != null) again pangdisplay rani sa new user para makita nako if nigana ba iuncomment lang if u want
+ @if (ViewBag.NewUser != null) 
 {
     var user = ViewBag.NewUser;
     <div class="alert alert-success mt-3">
@@ -24,7 +24,7 @@
             <img src="@ViewBag.NewUserProfilePicture" alt="Profile Picture" style="max-width:100px;max-height:100px;" />
         }
     </div>
-} *@
+} 
 
 <!-- Temporary modal para matest if adding a user works -->
 <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
