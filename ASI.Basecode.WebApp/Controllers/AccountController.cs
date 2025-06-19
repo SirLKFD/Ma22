@@ -123,6 +123,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 // Set session values
                 _session.SetString("UserName", $"{account.FirstName} {account.LastName}");
                 _session.SetString("UserEmail", account.EmailId);
+                _session.SetInt32("AccountId", account.Id);
 
                 // Redirect based on role
                 switch ((RoleType)account.Role)
