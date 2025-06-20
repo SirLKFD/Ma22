@@ -19,9 +19,9 @@
     @RenderSection("Styles", required: false)  
 </head>  
 <body >  
-    @* <partial name="_Header" />   *@
-    <partial name="_Sidebar" />
-    <div class="container" style="margin-left: 16rem;padding: 1rem;">  
+     @* <partial name="_Header" />    *@
+    @* <partial name="_Sidebar" /> *@
+    <div class="container">
         <main role="main">  
             @RenderBody()  
         </main>  
@@ -31,7 +31,7 @@
         <div class="container">  
             @Copyright  
         </div>  
-    </footer>  
+    </footer>   
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>

@@ -1,40 +1,70 @@
-﻿<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet" />
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
 
+<div class="flex flex-row">
 
-
-<aside class="flex flex-col w-32 h-screen text-white" style="background-color: #640A16">
-    <div class="p-4 d-flex justify-center">
-        <img src = "~/img/Logo.png" alt=" =MA22 Logo" class="w-20 h-20"/>
+<aside class="group flex flex-col w-24 hover:w-64 h-screen text-white transition-all duration-300 bg-[#640A16]">
+    <!-- Logo -->
+    <div class="p-4 flex justify-center">
+        <img src="~/img/Logo.png" alt="MA22 Logo" class="w-15 h-15" />
     </div>
-    <ul class="ml-2 flex-grow space-y-8">
+
+    <!-- Navigation -->
+    <ul class="flex-grow space-y-4 px-2 ">
         <li>
-            <a href="/Dashboard" class="flex justify-center p-2 hover:bg-yellow-400 hover:no-underline">
-                <span class="material-symbols-outlined">
-                    groups_3
-                </span>
-                
+            <a href="/Dashboard" class="flex justify-center group-hover:justify-start space-x-4 p-3 rounded-md transition duration-200 hover:bg-yellow-400 hover:text-black hover:no-underline">
+                <span class="material-symbols-outlined text-[25px]">groups_3</span>
+                <span class="hidden group-hover:inline text-sm">Profiles</span>
             </a>
         </li>
         <li>
-            <a href="/Users" class="flex justify-center hover:bg-yellow-400 hover:no-underline">
-                <span class="material-symbols-outlined ">
-                    category
-                </span>
-                
+            <a href="/Users" class="flex justify-center group-hover:justify-start space-x-4 p-3 rounded-md transition duration-200 hover:bg-yellow-400 hover:text-black hover:no-underline">
+                <span class="material-symbols-outlined text-[25px]">category</span>
+                <span class="hidden group-hover:inline text-sm">Training Categories</span>
             </a>
         </li>
         <li>
-            <a href="/Users" class="flex justify-center p-2 hover:bg-yellow-400 hover:no-underline">
-                <span class="material-symbols-outlined ">
-                    book
-                </span> 
+            <a href="/Users" class="flex justify-center group-hover:justify-start space-x-4 p-3 rounded-md transition duration-200 hover:bg-yellow-400 hover:text-black hover:no-underline">
+                <span class="material-symbols-outlined text-[25px]">book</span>
+                <span class="hidden group-hover:inline text-sm">Trainings</span>
             </a>
         </li>
     </ul>
-    <div class="flex justify-center mb-10">
-        <span class="material-symbols-outlined mr-3">
-            person
-        </span>
+
+    <!-- Bottom Section -->
+    <div class="px-2 mb-10">
+            <a href="javascript:void(0)" onclick="toggleDropDown()" class="flex justify-center group-hover:justify-start space-x-4 p-3 rounded-md transition duration-200 hover:bg-yellow-400 hover:text-black hover:no-underline">
+            <span class="material-symbols-outlined text-[25px]">person</span>
+            <span class="hidden group-hover:inline text-sm">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</span>
+
+        </a>
     </div>
+
 </aside>
+
+
+<div id="dropdownMenu" class="flex items-end mb-8 ml-10 transition duration-200">
+    <ul class="items-end space-y-4">
+            <li class="outline px-2 py-1 outline-[#640A16]">
+                <i class="fa-solid fa-gear"></i>
+                <a href="#">Settings</a>
+            </li>
+            <li class="outline px-2 py-1 outline-[#640A16]">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <a href="/Account/SignOutUser">Logout</a>
+            </li>
+
+    </ul>
+</div>
+
+
+</div>
+
+
+<script>
+    function toggleDropDown(){
+        const menu = document.getElementById("dropdownMenu")
+        menu.classList.toggle("hidden");
+    }
+</script>
