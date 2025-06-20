@@ -45,7 +45,7 @@ namespace ASI.Basecode.WebApp.Controllers
         /// 
         
         [Authorize(Roles = "0")]
-        public IActionResult TrainingCategory()
+        public IActionResult AdminTrainingCategory()
         {
             return View("~/Views/Admin/AdminTrainingCategory.cshtml");
         }
@@ -71,7 +71,7 @@ namespace ASI.Basecode.WebApp.Controllers
                     var uploadParams = new ImageUploadParams
                     {
                         File = new FileDescription(CoverPicture.FileName, stream),
-                        Folder = "user_profiles"
+                        Folder = "training_category"
                     };
 
                     var uploadResult = cloudinary.Upload(uploadParams);
