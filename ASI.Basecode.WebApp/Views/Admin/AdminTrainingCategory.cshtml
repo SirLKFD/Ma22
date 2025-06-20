@@ -1,7 +1,44 @@
-﻿
+﻿@model ASI.Basecode.Services.ServiceModels.TrainingCategoryViewModel
 @{
-    ViewData["Title"] = "AdminTrainingCategory";
+    ViewData["Title"] = "Admin Training Category";
+    var categories = ViewBag.TrainingCategories as IEnumerable<ASI.Basecode.Services.ServiceModels.TrainingCategoryViewModel>;
 }
 
-<h1>AdminTrainingCategory</h1>
+<h1>Add Training Category</h1>
+
+<form asp-action="AddTrainingCategory" asp-controller="AdminTrainingCategory" method="post" enctype="multipart/form-data">
+    <div>
+        <label asp-for="CategoryName">Category Name</label>
+        <input asp-for="CategoryName" />
+        <span asp-validation-for="CategoryName"></span>
+    </div>
+    <div>
+        <label asp-for="Description">Description</label>
+        <input asp-for="Description" />
+        <span asp-validation-for="Description"></span>
+    </div>
+    <div>
+        <label for="CoverPicture">Cover Picture</label>
+        <input type="file" name="CoverPicture" />
+    </div>
+    <button type="submit">Add Training Category</button>
+</form>
+
+@if (ViewBag.NewCategory != null)
+{
+    var cat = ViewBag.NewCategory;
+    <div class="alert alert-success mt-3">
+        <strong>New Training Category Added:</strong><br />
+        Name: @cat.CategoryName <br />
+        Description: @cat.Description <br />
+        @if (!string.IsNullOrEmpty(cat.CoverPicture))
+        {
+            <img src="@cat.CoverPicture" alt="Cover Picture" style="max-width:100px;max-height:100px;" />
+        }
+    </div>
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
 
