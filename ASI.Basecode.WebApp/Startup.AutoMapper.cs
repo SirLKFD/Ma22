@@ -26,6 +26,8 @@ namespace ASI.Basecode.WebApp
             public AutoMapperProfileConfiguration()
             {
                 CreateMap<UserViewModel, Account>();
+                CreateMap<AdminCreateUserViewModel, Account>();
+                CreateMap<TrainingCategoryViewModel, TrainingCategory>();
             }
         }
     }
