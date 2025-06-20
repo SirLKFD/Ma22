@@ -2,87 +2,10 @@
 @{
     ViewData["Title"] = "UserMaster Page";
 }
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
 
-<div class="text-center">
-    <h1 class="display-4">ADMIN MASTER SCREEN</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addUserModal">
-        Add User
-    </button>
-</div>
 
- @if (ViewBag.NewUser != null) 
-{
-    var user = ViewBag.NewUser;
-    <div class="alert alert-success mt-3">
-        <strong>New User Added:</strong><br />
-        Email: @user.EmailId <br />
-        Name: @user.FirstName @user.LastName <br />
-        Role: @(user.Role == 0 ? "Admin" : "Guest")<br />
-        @if (ViewBag.NewUserProfilePicture != null)
-        {
-            <img src="@ViewBag.NewUserProfilePicture" alt="Profile Picture" style="max-width:100px;max-height:100px;" />
-        }
-    </div>
-} 
 
-<!-- Temporary modal para matest if adding a user works -->
-<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addUserModalLabel">Create User</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form asp-action="CreateUser" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="EmailId">Email</label>
-                <input name="EmailId" class="form-control" />
-                <span asp-validation-for="EmailId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label for="FirstName">First Name</label>
-                <input name="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label for="LastName">Last Name</label>
-                <input name="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label for="Contact">Contact</label>
-                <input name="Contact" class="form-control" />
-                <span asp-validation-for="Contact" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label for="Password">Password</label>
-                <input name="Password" class="form-control" type="password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label for="Role">Role</label>
-                <select name="Role" class="form-control">
-                    <option value="0">Admin</option>
-                    <option value="1">Guest</option>
-                </select>
-                <span asp-validation-for="Role" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label for="ProfilePicture">Profile Picture</label>
-                <input name="ProfilePicture" type="file" class="form-control" accept="image/*" />
-                <span asp-validation-for="ProfilePicture" class="text-danger"></span>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Create User</button>
-            </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
 
