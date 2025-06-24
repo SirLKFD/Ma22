@@ -5,6 +5,7 @@ using ASI.Basecode.Services.Manager;
 using ASI.Basecode.Services.ServiceModels;
 using AutoMapper;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using static ASI.Basecode.Resources.Constants.Enums;
@@ -55,6 +56,16 @@ namespace ASI.Basecode.Services.Services
                 Console.WriteLine($"[Service] ❌ Error: Category '{model.CategoryName}' already exists.");
                 throw new InvalidDataException(Resources.Messages.Errors.TrainingCategoryExists);
             }
+        }
+
+        public List<TrainingCategory> GetAllTrainingCategories()
+        {
+            return _repository.GetTrainingCategories().ToList();
+        }
+
+        public TrainingCategory GetTrainingCategoryById(int id)
+        {
+            return _repository.GetTrainingCategories().FirstOrDefault(c => c.Id == id);
         }
     }
 }

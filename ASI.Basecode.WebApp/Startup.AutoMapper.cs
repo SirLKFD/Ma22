@@ -28,6 +28,7 @@ namespace ASI.Basecode.WebApp
                 CreateMap<UserViewModel, Account>();
                 CreateMap<AdminCreateUserViewModel, Account>();
                 CreateMap<TrainingCategoryViewModel, TrainingCategory>();
+                CreateMap<TrainingViewModel, Training>();
             }
         }
     }

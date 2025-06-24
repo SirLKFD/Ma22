@@ -126,4 +126,7 @@
   <data name="TrainingCategoryExists" xml:space="preserve">
     <value>Training Category already exists!</value>
   </data>
+  <data name="TrainingExists" xml:space="preserve">
+    <value>Training already exists!</value>
+  </data>
 </root>

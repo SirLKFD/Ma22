@@ -17,7 +17,17 @@ namespace ASI.Basecode.Data
         {
         }
 
+       
         public virtual DbSet<Account> Accounts { get; set; }
+
+        public virtual DbSet<Duration> Durations { get; set; }
+
+        public virtual DbSet<Role> Roles { get; set; }
+
+        public virtual DbSet<SkillLevel> SkillLevels { get; set; }
+
+        public virtual DbSet<Training> Trainings { get; set; }
+
         public virtual DbSet<TrainingCategory> TrainingCategories { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -74,12 +84,89 @@ namespace ASI.Basecode.Data
                 entity.Property(e => e.UpdatedTime)
                     .HasColumnType("datetime");
 
-                entity.Property(e => e.Role)
-                    .IsRequired();
-                // Do not specify HasMaxLength here; it's an int, not a string
+               entity.HasOne(d => d.RoleNavigation).WithMany(p => p.Accounts)
+                .HasForeignKey(d => d.Role)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Accounts_Roles");
             });
 
-         
+             modelBuilder.Entity<Duration>(entity =>
+            {
+                entity.ToTable("Duration");
+
+                entity.Property(e => e.Duration1)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Duration");
+            });
+
+            modelBuilder.Entity<Role>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Type)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+             modelBuilder.Entity<SkillLevel>(entity =>
+            {
+                entity.ToTable("SkillLevel");
+
+                entity.Property(e => e.SkillLevel1)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("SkillLevel");
+            });
+
+             modelBuilder.Entity<Training>(entity =>
+            {
+                entity.Property(e => e.CourseCode)
+                    .IsRequired()
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+                entity.Property(e => e.CoverPicture)
+                    .HasMaxLength(2083)
+                    .IsUnicode(false);
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.CreatedTime).HasColumnType("datetime");
+                entity.Property(e => e.Description)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+                entity.Property(e => e.TrainingName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.UpdatedBy)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account).WithMany(p => p.Training)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Trainings_Accounts");
+
+                entity.HasOne(d => d.DurationNavigation).WithMany(p => p.Training)
+                    .HasForeignKey(d => d.Duration)
+                    .HasConstraintName("FK_Trainings_Duration");
+
+                entity.HasOne(d => d.SkillLevelNavigation).WithMany(p => p.Training)
+                    .HasForeignKey(d => d.SkillLevel)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Trainings_SkillLevel");
+
+                entity.HasOne(d => d.TrainingCategory).WithMany(p => p.Training)
+                    .HasForeignKey(d => d.TrainingCategoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Trainings_TrainingCategories");
+            });
+
 
             modelBuilder.Entity<TrainingCategory>(entity =>
             {

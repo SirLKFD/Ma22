@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace ASI.Basecode.Data.Models;
 
 public partial class Account
 {
-    [Key]
     public int Id { get; set; }
 
     public string EmailId { get; set; }
@@ -30,6 +28,10 @@ public partial class Account
     public DateTime UpdatedTime { get; set; }
 
     public int Role { get; set; }
+
+    public virtual Role RoleNavigation { get; set; }
+
+    public virtual ICollection<Training> Training { get; set; } = new List<Training>();
 
     public virtual ICollection<TrainingCategory> TrainingCategories { get; set; } = new List<TrainingCategory>();
 }
