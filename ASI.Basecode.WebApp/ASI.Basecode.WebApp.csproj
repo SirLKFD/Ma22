@@ -44,4 +44,6 @@
   <ItemGroup>
     <Folder Include="wwwroot\img\" />
   </ItemGroup>
+	
+
 </Project>

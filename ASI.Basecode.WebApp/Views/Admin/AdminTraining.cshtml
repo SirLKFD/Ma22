@@ -1,0 +1,106 @@
+@model ASI.Basecode.Services.ServiceModels.TrainingViewModel
+@{
+    ViewData["Title"] = "AdminTraining";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="text-center">
+    <h1 class="display-4">ADMIN TRAINING SCREEN</h1>
+    <p>Manage training courses and materials.</p>
+</div>
+
+@if (ViewBag.NewTraining != null)
+{
+    var training = ViewBag.NewTraining;
+    <div class="alert alert-success mt-3">
+        <strong>New Training Added:</strong><br />
+        Name: @training.TrainingName <br />
+        Course Code: @training.CourseCode <br />
+        Description: @training.Description <br />
+        Training Category: @ViewBag.TrainingCategoryText <br />
+        Skill Level: @ViewBag.SkillLevelText <br />
+        Duration: @ViewBag.DurationText <br />
+        @if (training.CoverPicture != null)
+        {
+            <img src="@training.CoverPicture" alt="Cover Picture" style="max-width:200px;max-height:200px;" />
+        }
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h5>Add New Training</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="AddTraining" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="TrainingName">Training Name</label>
+                        <input name="TrainingName" class="form-control" required />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="CourseCode">Course Code</label>
+                        <input name="CourseCode" class="form-control" required />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="Description">Description</label>
+                        <textarea name="Description" class="form-control" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="TrainingCategoryId">Training Category</label>
+                        <select name="TrainingCategoryId" class="form-control" required>
+                            <option value="">Select a category</option>
+                            @if (ViewBag.TrainingCategories != null)
+                            {
+                                foreach (var category in ViewBag.TrainingCategories)
+                                {
+                                    <option value="@category.Id">@category.CategoryName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="SkillLevel">Skill Level</label>
+                        <select name="SkillLevel" class="form-control" required>
+                            <option value="1">Beginner</option>
+                            <option value="2">Intermediate</option>
+                            <option value="3">Advanced</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="Duration">Duration</label>
+                        <select name="Duration" class="form-control" required>
+                            <option value="1">1 week</option>
+                            <option value="2">2 weeks</option>
+                            <option value="3">3 weeks</option>
+                            <option value="4">1 month</option>
+                            <option value="5">2 months</option>
+                            <option value="6">3 months</option>
+                            <option value="7">4–6 months</option>
+                            <option value="8">6–9 months</option>
+                            <option value="9">9–12 months</option>
+                            <option value="10">1 year</option>
+                            <option value="11">More than 1 year</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="CoverPicture">Cover Picture</label>
+                        <input name="CoverPicture" type="file" class="form-control" accept="image/*" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Add Training</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

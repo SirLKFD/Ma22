@@ -1,0 +1,70 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+
+<div class="flex flex-row">
+
+<aside class="group flex h-screen w-24 flex-col bg-[#640A16] text-white transition-all duration-300 hover:w-64">
+    <!-- Logo -->
+    <div class="flex justify-center p-4">
+        <img src="~/img/Logo.png" alt="MA22 Logo" class="w-15 h-15" />
+    </div>
+
+    <!-- Navigation -->
+    <ul class="flex-grow space-y-4 px-2">
+        <li>
+            <a href="/Dashboard" class="flex justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline">
+                <span class="material-symbols-outlined text-[25px]">groups_3</span>
+                <span class="hidden text-sm group-hover:inline">Profiles</span>
+            </a>
+        </li>
+        <li>
+            <a href="/Users" class="flex justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline">
+                <span class="material-symbols-outlined text-[25px]">category</span>
+                <span class="hidden text-sm group-hover:inline">Training Categories</span>
+            </a>
+        </li>
+        <li>
+            <a href="/Users" class="flex justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline">
+                <span class="material-symbols-outlined text-[25px]">book</span>
+                <span class="hidden text-sm group-hover:inline">Trainings</span>
+            </a>
+        </li>
+    </ul>
+
+    <!-- Bottom Section -->
+    <div class="mb-10 px-2">
+            <a href="javascript:void(0)" onclick="toggleDropDown()" class="flex justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline">
+            <span class="material-symbols-outlined text-[25px]">person</span>
+            <span class="hidden text-sm group-hover:inline">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</span>
+
+        </a>
+    </div>
+
+</aside>
+
+
+<div id="dropdownMenu" class="mb-8 ml-10 flex items-end transition duration-200">
+    <ul class="items-end space-y-4">
+            <li class="px-2 py-1 outline outline-[#640A16]">
+                <i class="fa-solid fa-gear"></i>
+                <a href="#">Settings</a>
+            </li>
+            <li class="px-2 py-1 outline outline-[#640A16]">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <a href="/Account/SignOutUser">Logout</a>
+            </li>
+
+    </ul>
+</div>
+
+
+</div>
+
+
+<script>
+    function toggleDropDown(){
+        const menu = document.getElementById("dropdownMenu")
+        menu.classList.toggle("hidden");
+    }
+</script>
