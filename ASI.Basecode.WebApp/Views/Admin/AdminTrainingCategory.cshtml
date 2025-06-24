@@ -1,6 +1,7 @@
 ﻿@model ASI.Basecode.Services.ServiceModels.TrainingCategoryViewModel
 @{
     ViewData["Title"] = "Admin Training Category";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var categories = ViewBag.TrainingCategories as IEnumerable<ASI.Basecode.Services.ServiceModels.TrainingCategoryViewModel>;
 }
 
