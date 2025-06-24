@@ -79,11 +79,11 @@
                 </td>
                 <td class="px-6 py-4">
                     <div class="flex justify-center gap-5">
-                        <a href="#">
+                        <a onclick="editDetails()" class="hover-pointer">
                             <span class="material-symbols-outlined text-[25px]">Edit</span>
 
                         </a>
-                        <a href="#">
+                        <a onclick="viewDetails()" class="hover-pointer">
                             <span class="material-symbols-outlined text-[25px]">Visibility</span>
 
                         </a>
@@ -103,11 +103,11 @@
                 </td>
                 <td class="px-6 py-4">
                     <div class="flex justify-center gap-5">
-                        <a href="#">
+                        <a onclick="editDetails()" class="hover-pointer">
                             <span class="material-symbols-outlined text-[25px]">Edit</span>
 
                         </a>
-                        <a href="#">
+                        <a onclick="viewDetails()" class="hover-pointer">
                             <span class="material-symbols-outlined text-[25px]">Visibility</span>
 
                         </a>
@@ -127,11 +127,11 @@
                 </td>
                 <td class="px-6 py-4">
                     <div class="flex justify-center gap-5">
-                        <a href="#">
+                        <a onclick="editDetails()" class="hover-pointer">
                             <span class="material-symbols-outlined text-[25px]">Edit</span>
 
                         </a>
-                        <a href="#">
+                        <a onclick="viewDetails()" class="hover-pointer">
                             <span class="material-symbols-outlined text-[25px]">Visibility</span>
 
                         </a>
@@ -191,6 +191,7 @@
 
 @await Html.PartialAsync("_UserAddModal") 
 @await Html.PartialAsync("_UserEditModal")
+@await Html.PartialAsync("_UserViewModal")
 <script>
     function openModal(){
         document.getElementById('addUserModal').classList.remove('hidden');
@@ -211,10 +212,20 @@
     }
 
     function editDetails(){
-       
+       document.getElementById('editUserModal').classList.remove('hidden');
+    }
+    function closeEditDetails(){
+        const modal = document.getElementById('editUserModal');
+        modal.classList.add('hidden');
     }
 
-
+    function viewDetails(){
+        document.getElementById('viewUserModal').classList.remove('hidden');
+    }
+    function closeViewDetails(){
+        const modal = document.getElementById('viewUserModal');
+        modal.classList.add('hidden');
+    }
 </script>
 
 
