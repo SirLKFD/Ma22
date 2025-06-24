@@ -7,102 +7,57 @@
 
 <div id="viewUserModal" class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center hidden z-50">
 
-    <div class="flex flex-row bg-white rounded-xl w-full max-w-6xl max-h-[700px] shadow-lg relative">
+    <div class="flex flex-row bg-white rounded-xl w-full max-w-6xl h-[700px] shadow-lg relative">
         <div class="w-[450px] flex flex-col items-center justify-center bg-[#640A16] rounded-l-xl">
             <div class="absolute top-5 left-5">
                 <a onclick="closeViewDetails()" class="hover-pointer">
                     <span class="material-symbols-outlined text-[50px] text-white">arrow_circle_left</span>
                 </a>
             </div>
-            <input id="profilePictureInput"
-                   name="ProfilePicture"
-                   type="file"
-                   accept="image/*"
-                   class="hidden" />
-
-            <label for="profilePictureInput" class="cursor-pointer block w-[250px] h-[250px] mt-[-50px] mb-5">
-                <div class="flex items-center justify-center bg-[#FFE9C6] w-full h-full rounded-full">
-                    <h1 class="text-5xl">+</h1>
-                </div>
-            </label>
+            
+            <div class="flex items-center justify-center bg-[#FFE9C6] w-[250px] h-[250px] rounded-full mb-5">
+            </div>
+            
             <div class="flex flex-col items-center gap-1">
                 <h1 class="uppercase text-2xl text-white">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</h1>
                 <h2 class="text-sm text-white">ID: **********</h2>
                 <h2 class="text-sm text-white">@HttpContextAccessor.HttpContext.Session.GetString("UserEmail")</h2>
             </div>
         </div>
-        @* Form--> *@
+        @* Details *@
         <div class="p-5 flex-1">
-
             <h2 class="inline-block p-2 text-2xl font-bold mb-4 bg-[#EAC231] uppercase rounded-lg">Profile Details</h2>
 
-            <form id="createuserform" asp-action="CreateUser" method="post" enctype="multipart/form-data" class="space-y-4">
+           
+            <div class="flex items-center gap-4 mb-4">
+                <h2 class="inline-block p-2 text-sm text-white font-bold bg-[#640A16] uppercase rounded-lg ">First Name</h2>
+                <div class="flex justify-center">
+                    <h2 class="flex justify-center items-center text-base font-medium text-black">Gabriel</h2>
 
-                <div class="flex flex-row items-center">
-                    <div class="">
-                        <label class="text-white w-30 bg-[#640A16] inline-block p-2 rounded-lg">First Name</label>
-                        <h2>Gabriel</h2>
-                    </div>
-                    <span asp-validation-for="FirstName" class="text-[#EAC231] text-sm block"></span>
                 </div>
+            </div>
 
-                <div>
-                    <div class="flex items-center justify-between">
-                        <label class="text-white w-32 bg-[#640A16] inline-block p-2 rounded-lg">Last Name</label>
-                        <h2>Gabriel</h2>
-                    </div>
-                    <span asp-validation-for="LastName" class="text-[#EAC231] text-sm block"></span>
-                </div>
+            
+            <div class="flex items-center gap-4 mb-4">
+                <h2 class="inline-block p-2 text-sm text-white font-bold bg-[#640A16] uppercase rounded-lg ">Last Name</h2>
+                <h2 class="flex justify-center text-base font-medium text-black">Gabriel</h2>
+            </div>
 
-                <div>
-                    <div class="flex items-center justify-between">
-                        <label class="text-white w-32 bg-[#640A16] inline-block p-2 rounded-lg">Birthdate</label>
-                        <input type="date" name="Birthdate" class="w-[400px] border rounded-xl p-2" />
-                    </div>
-                    @* <span asp-validation-for="Birthdate" class="text-red-500 text-sm ml-32 block"></span>  *@
-                </div>
+            
+            <div class="flex items-center gap-4 mb-4">
+                <h2 class="inline-block p-2 text-sm text-white font-bold bg-[#640A16] uppercase rounded-lg">Date of Birth</h2>
+                <h2 class="flex justify-center text-base font-medium text-black">Gabriel</h2>
+            </div>
 
-                <div>
-                    <div class="flex items-center justify-between">
-                        <label class="text-white w-32 bg-[#640A16] inline-block p-2 rounded-lg">Contact No.</label>
-                        <input name="Contact" class="w-[400px] border rounded-xl p-2" />
-                    </div>
-                    <span asp-validation-for="Contact" class="text-[#EAC231] text-sm block"></span>
-                </div>
-
-                <div>
-                    <div class="flex items-center justify-between">
-                        <label class="text-white w-32 bg-[#640A16] inline-block p-2 rounded-lg">Email</label>
-                        <input name="EmailId" class="w-[400px] border rounded-xl p-2" />
-                    </div>
-                    <span asp-validation-for="EmailId" class="text-[#EAC231] text-sm block"></span>
-                </div>
-
-                <div>
-                    <div class="flex items-center justify-between">
-                        <label class="text-white w-32 bg-[#640A16] inline-block p-2 rounded-lg">Password</label>
-                        <input name="Password" type="password" class="w-[400px] border rounded-xl p-2" />
-                    </div>
-                    <span asp-validation-for="Password" class="text-[#EAC231] text-sm block"></span>
-                </div>
-
-                <div>
-                    <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Role</label>
-                        <select name="Role" class="w-[400px] border rounded-xl p-2 bg-[#EAC231] text-black font-semibold">
-                            <option value="0">Admin</option>
-                            <option value="1">Guest</option>
-                        </select>
-                    </div>
-                    <span asp-validation-for="Role" class="text-[#EAC231] text-sm ml-32 block"></span>
-                </div>
-
-                <div class="flex justify-center pt-4">
-                    <button type="submit" class="bg-[#FFE9C6] w-[400px] text-black font-bold px-6 py-2 rounded">Save Changes</button>
-                </div>
-
-            </form>
-
+            <div class="flex items-center gap-4 mb-4">
+                <h2 class="inline-block p-2 text-sm text-white font-bold bg-[#640A16] uppercase rounded-lg ">Contact Number</h2>
+                <h2 class="flex justify-center text-base font-medium text-black">Gabriel</h2>
+            </div>
+            <div class="flex items-center gap-4 mb-4">
+                <h2 class="inline-block p-2 text-sm text-white font-bold bg-[#640A16] uppercase rounded-lg">Account Created Date</h2>
+                <h2 class="flex justify-center text-base font-medium text-black">Gabriel</h2>
+            </div>
         </div>
+
     </div>
 </div>
