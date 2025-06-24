@@ -2,9 +2,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
 
-<div class="flex flex-row">
+<div class="absolute flex flex-row">
 
-<aside class="group flex h-screen w-24 flex-col bg-[#640A16] text-white transition-all duration-300 hover:w-64">
+<aside id="sidebar" class="group flex h-screen w-24 flex-col bg-[#640A16] text-white transition-all duration-300 hover:w-64">
     <!-- Logo -->
     <div class="flex justify-center p-4">
         <img src="~/img/Logo.png" alt="MA22 Logo" class="w-15 h-15" />
@@ -44,13 +44,13 @@
 </aside>
 
 
-<div id="dropdownMenu" class="mb-8 ml-10 flex items-end transition duration-200">
+<div id="dropdownMenu" class="hidden mb-8 ml-10 flex items-end transition duration-200">
     <ul class="items-end space-y-4">
-            <li class="px-2 py-1 outline outline-[#640A16]">
+            <li class="px-2 py-1 bg-[#640A16]">
                 <i class="fa-solid fa-gear"></i>
                 <a href="#">Settings</a>
             </li>
-            <li class="px-2 py-1 outline outline-[#640A16]">
+            <li class="px-2 py-1 bg-[#640A16]">
                 <i class="fa-solid fa-right-from-bracket"></i>
                 <a href="/Account/SignOutUser">Logout</a>
             </li>
@@ -67,4 +67,11 @@
         const menu = document.getElementById("dropdownMenu")
         menu.classList.toggle("hidden");
     }
+
+    // const element = document.getElementById('sidebar');
+
+    // element.addEventListener('mouseleave', () => {
+    //   toggleDropDown()
+    // });
+
 </script>

@@ -1,88 +1,221 @@
-﻿@model ASI.Basecode.Services.ServiceModels.AdminCreateUserViewModel
+﻿<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+
+@model ASI.Basecode.Services.ServiceModels.AdminCreateUserViewModel
 @{
     ViewData["Title"] = "UserMaster Page";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="text-center">
-    <h1 class="display-4">ADMIN MASTER SCREEN</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addUserModal">
-        Add User
-    </button>
-</div>
+ <div class="flex justify-between items-center mx-20 mt-10 mb-2">
+    <h1 class="text-4xl font-weight-bold uppercase">
+        User Panel
+    </h1>
 
-@if (ViewBag.NewUser != null)
-{
-    var user = ViewBag.NewUser;
-    <div class="alert alert-success mt-3">
-        <strong>New User Added:</strong><br />
-        Email: @user.EmailId <br />
-        Name: @user.FirstName @user.LastName <br />
-        Role: @(user.Role == 0 ? "Admin" : "Guest")<br />
-        @if (ViewBag.NewUserProfilePicture != null)
-        {
-            <img src="@ViewBag.NewUserProfilePicture" alt="Profile Picture" style="max-width:100px;max-height:100px;" />
-        }
-    </div>
-}
 
-<!-- Modal for adding a new user -->
-<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addUserModalLabel">Create User</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+    <form class="max-w-md">
+        <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+        <div class="relative">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                </svg>
             </div>
-            <div class="modal-body">
-                <form asp-action="CreateUser" method="post" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="EmailId">Email</label>
-                        <input name="EmailId" class="form-control" />
-                        <span asp-validation-for="EmailId" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="FirstName">First Name</label>
-                        <input name="FirstName" class="form-control" />
-                        <span asp-validation-for="FirstName" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="LastName">Last Name</label>
-                        <input name="LastName" class="form-control" />
-                        <span asp-validation-for="LastName" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="Contact">Contact</label>
-                        <input name="Contact" class="form-control" />
-                        <span asp-validation-for="Contact" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="Password">Password</label>
-                        <input name="Password" class="form-control" type="password" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="Role">Role</label>
-                        <select name="Role" class="form-control">
-                            <option value="0">Admin</option>
-                            <option value="1">Guest</option>
-                        </select>
-                        <span asp-validation-for="Role" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="ProfilePicture">Profile Picture</label>
-                        <input name="ProfilePicture" type="file" class="form-control" accept="image/*" />
-                        <span asp-validation-for="ProfilePicture" class="text-danger"></span>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Create User</button>
-                    </div>
-                </form>
-            </div>
+            <input type="search" id="default-search" class="block w-[380px] h-[50px] px-5 text-sm text-gray-900 border border-gray-300 rounded-xl bg-[#fff] dark:placeholder-gray-400 " placeholder="Search Users..." required />
+            <button type="submit" class="text-black absolute end-2.5 bottom-1.5 bg-[#EAC231] font-medium rounded-lg text-sm px-3 py-2 hover:bg-[#cfa221] ">Search</button>
         </div>
-    </div>
+    </form>
+
+
 </div>
+
+<hr class="border-t-2 border-[#640A16] mx-20 my-4" />
+<div class="flex flex-row justify-between items-center mx-20 mb-4 p-2 rounded-xl">
+
+    <div class=" text-xl px-3 py-2 rounded-lg flex flex-row gap-20">
+        <a href="#">
+            All(3)
+        </a>
+        <a href="#">
+            Admin(2)
+        </a>
+        <a href="#">
+            Guest(1)
+        </a>
+    
+
+    </div>
+
+    <div>
+        <button onclick="openModal()" class="bg-[#EAC231] hover:bg-[#cfa221] rounded-lg text-s p-2 font-medium">
+            Add User +
+        </button>
+    </div>
+
+</div> 
+@* Table *@
+ <div class="overflow-x-auto mx-20 rounded-xl">
+    <table class="w-full text-sm text-left text-black ">
+        <thead class="text-xl text-white text-center  bg-[#640A16] ">
+            <tr>
+                <th scope="col" class="text-left px-6 py-3">
+                    User
+                </th>
+                <th scope="col" class="text-left px-6 py-3">
+                    Position
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                <th scope="row" class="px-6 py-4 font-medium text-black whitespace-nowrap ">
+                    Gabriel Magdugo
+                </th>
+                <td class="px-6 py-4">
+                    Admin
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex justify-center gap-5">
+                        <a href="#">
+                            <span class="material-symbols-outlined text-[25px]">Edit</span>
+
+                        </a>
+                        <a href="#">
+                            <span class="material-symbols-outlined text-[25px]">Visibility</span>
+
+                        </a>
+                        <a href="#">
+                            <span class="material-symbols-outlined text-[25px]">Delete</span>
+                        </a>
+                    </div>
+                </td>
+                
+            </tr>
+            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                <th scope="row" class="px-6 py-4 font-medium text-black whitespace-nowrap">
+                    John Doe
+                </th>
+                <td class="px-6 py-4">
+                    Admin
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex justify-center gap-5">
+                        <a href="#">
+                            <span class="material-symbols-outlined text-[25px]">Edit</span>
+
+                        </a>
+                        <a href="#">
+                            <span class="material-symbols-outlined text-[25px]">Visibility</span>
+
+                        </a>
+                        <a href="#">
+                            <span class="material-symbols-outlined text-[25px]">Delete</span>
+                        </a>
+                    </div>
+                </td>
+                
+            </tr>
+            <tr class="bg-white dark:bg-gray-800">
+                <th scope="row" class="px-6 py-4 font-medium text-black whitespace-nowrap">
+                    Donald trump
+                </th>
+                <td class="px-6 py-4">
+                    Guest
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex justify-center gap-5">
+                        <a href="#">
+                            <span class="material-symbols-outlined text-[25px]">Edit</span>
+
+                        </a>
+                        <a href="#">
+                            <span class="material-symbols-outlined text-[25px]">Visibility</span>
+
+                        </a>
+                        <a href="#">
+                            <span class="material-symbols-outlined text-[25px]">Delete</span>
+                        </a>
+                    </div>
+                </td>
+               
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+
+<div class="flex justify-end my-10 mx-20">
+
+    <nav aria-label="Page navigation example">
+        <ul class="flex items-center -space-x-px h-8 text-sm">
+            <li>
+                <a href="#" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                    <span class="sr-only">Previous</span>
+                    <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4" />
+                    </svg>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
+            </li>
+            <li>
+                <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
+            </li>
+            <li>
+                <a href="#" aria-current="page" class="z-10 flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
+            </li>
+            <li>
+                <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">4</a>
+            </li>
+            <li>
+                <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">5</a>
+            </li>
+            <li>
+                <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                    <span class="sr-only">Next</span>
+                    <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+</div> 
+
+
+@await Html.PartialAsync("_UserAddModal") 
+@await Html.PartialAsync("_UserEditModal")
+<script>
+    function openModal(){
+        document.getElementById('addUserModal').classList.remove('hidden');
+    }
+    function closeModal() {
+        const modal = document.getElementById('addUserModal');
+        modal.classList.add('hidden');
+
+        const form = document.getElementById("createuserform");
+        if (form) {
+            form.reset();
+
+            // Reset validation messages and state
+            const validator = $(form).validate();
+            validator.resetForm(); // Clears error messages
+            $(form).find(".input-validation-error").removeClass("input-validation-error"); // Removes error styling
+        }
+    }
+
+    function editDetails(){
+       
+    }
+
+
+</script>
+
+
+

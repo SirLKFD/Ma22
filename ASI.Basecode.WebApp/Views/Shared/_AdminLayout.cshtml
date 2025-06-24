@@ -14,29 +14,33 @@
     <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 
     @RenderSection("Styles", required: false)
 </head>
-<body>
+<body class="min-h-screen bg-gray-100">
     <!-- Optional Header -->
 
 
-    <!-- Main layout using Bootstrap grid -->
-    <div class="container-fluid">
-        <div class="row">
+
+
+    <div class="flex flex-row bg-[#FFE9C6] min-h-screen">
             <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 bg-light min-vh-100 p-0">
+            <div class="w-24 hover:w-64 transition-all duration-300 bg-[#640A16] text-white">
                 <partial name="_Sidebar" />
             </div>
 
-            <!-- Main content -->
-            <div class="col-md-9 col-lg-10 p-4">
-                <main role="main">
+            <!-- Main Content -->
+            <div class="flex-1 p-6">
+                <main>
                     @RenderBody()
                 </main>
             </div>
         </div>
-    </div>
+    
+
 
     <!-- Optional footer -->
     @* <footer class="footer text-muted mt-5">
