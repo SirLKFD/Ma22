@@ -46,7 +46,8 @@ namespace ASI.Basecode.Services.Services
                     Contact = u.Contact,
                     Birthdate = u.Birthdate,
                     Role = u.Role,
-                    ProfilePicture = u.ProfilePicture
+                    ProfilePicture = u.ProfilePicture,
+                    CreatedTime = u.CreatedTime
                 }).ToList();
 
             return users;
