@@ -64,6 +64,9 @@ namespace ASI.Basecode.Data
                     .HasMaxLength(20) // You can adjust the max length
                     .IsUnicode(false);
 
+                entity.Property(e => e.Birthdate)
+                 .HasColumnType("date"); 
+
                 entity.Property(e => e.ProfilePicture)
                      .HasMaxLength(50)
                     .IsUnicode(false);

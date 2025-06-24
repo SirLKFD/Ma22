@@ -1,6 +1,7 @@
 ﻿<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
 @model ASI.Basecode.Services.ServiceModels.AdminCreateUserViewModel
+
 @{
     ViewData["Title"] = "Add User Modal Page";
 }
@@ -20,109 +21,122 @@
     </div>
 }
 
-<div id="addUserModal" class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center hidden z-50">
-    
-    <div class="flex flex-row bg-[#640A16] rounded-xl w-full max-w-6xl max-h-[700px] shadow-lg relative">
-        <div class="w-[450px] flex flex-col items-center justify-center bg-white rounded-l-xl">
-            <div class="absolute top-5 left-5">
+<div id="addUserModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+    <div class="relative flex max-h-[700px] w-full max-w-6xl flex-row rounded-xl bg-[#640A16] shadow-lg">
+
+        <!-- Left: Profile Upload UI -->
+        <div class="flex w-[450px] flex-col items-center justify-center rounded-l-xl bg-white">
+            <div class="absolute left-5 top-5">
                 <a onclick="closeModal()" class="hover-pointer">
                     <span class="material-symbols-outlined text-[50px]">arrow_circle_left</span>
                 </a>
             </div>
-            <input 
-                id="profilePictureInput" 
-                name="ProfilePicture" 
-                type="file" 
-                accept="image/*" 
-                class="hidden" 
-             />
 
-            <label for="profilePictureInput" class="cursor-pointer block w-[300px] h-[300px] mb-10">
-                <div class="flex items-center justify-center bg-[#FFE9C6] w-full h-full rounded-3xl">
-                    <h1 class="text-5xl">+</h1>
+            <!-- Clickable Label for Upload -->
+            <label for="profilePictureInput" class="mb-10 block h-[300px] w-[300px] cursor-pointer">
+                <div class="flex h-full w-full items-center justify-center overflow-hidden rounded-3xl bg-[#FFE9C6]">
+                    <img id="profilePreview" src="" alt="Preview" class="hidden h-full w-full rounded-3xl object-cover" />
+                    <h1 id="plusSign" class="text-5xl">+</h1>
                 </div>
             </label>
+
             <div class="flex flex-col items-center gap-5">
-                <h1 class="uppercase text-2xl">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</h1>
+                <h1 class="text-2xl uppercase">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</h1>
                 <h2>ID: **********</h2>
-                <h2>Account Created: </h2>
+                <h2>Account Created:</h2>
             </div>
         </div>
-         @* Form--> *@
-        <div class="p-5 flex-1">
 
-            <h2 class="text-2xl font-bold mb-4 text-white uppercase">Create User</h2>
+        <!-- Right: Form -->
+        <div class="flex-1 p-5">
+            <h2 class="mb-4 text-2xl font-bold uppercase text-white">Create User</h2>
 
-            <form id="createuserform" asp-action="CreateUser" method="post" enctype="multipart/form-data" class="space-y-4">
+            <form id="createuserform" asp-action="CreateUser" asp-controller="Admin" method="post" enctype="multipart/form-data" class="space-y-4">
+                <!-- File input must be inside the form -->
+                <input id="profilePictureInput" name="ProfilePicture" type="file" accept="image/*" class="hidden" />
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">First Name</label>
-                        <input name="FirstName" class="w-[400px] border rounded-xl p-2" />
+                        <label class="w-32 text-white">First Name</label>
+                        <input name="FirstName" class="w-[400px] rounded-xl border p-2" />
                     </div>
-                    <span asp-validation-for="FirstName" class="text-[#EAC231] text-sm block"></span>
+                    <span asp-validation-for="FirstName" class="block text-sm text-[#EAC231]"></span>
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Last Name</label>
-                        <input name="LastName" class="w-[400px] border rounded-xl p-2" />
+                        <label class="w-32 text-white">Last Name</label>
+                        <input name="LastName" class="w-[400px] rounded-xl border p-2" />
                     </div>
-                    <span asp-validation-for="LastName" class="text-[#EAC231] text-sm block"></span>
+                    <span asp-validation-for="LastName" class="block text-sm text-[#EAC231]"></span>
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Birthdate</label>
-                        <input type="date" name="Birthdate" class="w-[400px] border rounded-xl p-2" />
+                        <label class="w-32 text-white">Birthdate</label>
+                        <input type="date" name="Birthdate" class="w-[400px] rounded-xl border p-2" />
                     </div>
-                     @* <span asp-validation-for="Birthdate" class="text-red-500 text-sm ml-32 block"></span>  *@
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Contact No.</label>
-                        <input name="Contact" class="w-[400px] border rounded-xl p-2" />
+                        <label class="w-32 text-white">Contact No.</label>
+                        <input name="Contact" class="w-[400px] rounded-xl border p-2" />
                     </div>
-                    <span asp-validation-for="Contact" class="text-[#EAC231] text-sm block"></span>
+                    <span asp-validation-for="Contact" class="block text-sm text-[#EAC231]"></span>
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Email</label>
-                        <input name="EmailId" class="w-[400px] border rounded-xl p-2" />
+                        <label class="w-32 text-white">Email</label>
+                        <input name="EmailId" class="w-[400px] rounded-xl border p-2" />
                     </div>
-                    <span asp-validation-for="EmailId" class="text-[#EAC231] text-sm block"></span>
+                    <span asp-validation-for="EmailId" class="block text-sm text-[#EAC231]"></span>
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Password</label>
-                        <input name="Password" type="password" class="w-[400px] border rounded-xl p-2" />
+                        <label class="w-32 text-white">Password</label>
+                        <input name="Password" type="password" class="w-[400px] rounded-xl border p-2" />
                     </div>
-                    <span asp-validation-for="Password" class="text-[#EAC231] text-sm block"></span>
+                    <span asp-validation-for="Password" class="block text-sm text-[#EAC231]"></span>
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Role</label>
-                        <select name="Role" class="w-[400px] border rounded-xl p-2 bg-[#EAC231] text-black font-semibold">
+                        <label class="w-32 text-white">Role</label>
+                        <select name="Role" class="w-[400px] rounded-xl border bg-[#EAC231] p-2 font-semibold text-black">
                             <option value="0">Admin</option>
                             <option value="1">Guest</option>
                         </select>
                     </div>
-                    <span asp-validation-for="Role" class="text-[#EAC231] text-sm ml-32 block"></span>
+                    <span asp-validation-for="Role" class="ml-32 block text-sm text-[#EAC231]"></span>
                 </div>
 
                 <div class="flex justify-center pt-4">
-                    <button type="submit" class="bg-[#FFE9C6] w-[400px] text-black font-bold px-6 py-2 rounded">Add User</button>
+                    <button type="submit" class="w-[400px] rounded bg-[#FFE9C6] px-6 py-2 font-bold text-black">Add User</button>
                 </div>
-
             </form>
-
         </div>
     </div>
 </div>
 
+<!-- ✅ JS Preview Script -->
+<script>
+    const input = document.getElementById('profilePictureInput');
+    const preview = document.getElementById('profilePreview');
+    const plus = document.getElementById('plusSign');
 
- 
+    input.addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                plus.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>

@@ -16,6 +16,7 @@ public partial class Account
     public string LastName { get; set; }
 
     public string Contact { get; set; }
+    public DateTime? Birthdate { get; set; }
 
     public string ProfilePicture { get; set; }
 

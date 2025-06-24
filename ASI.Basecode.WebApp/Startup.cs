@@ -7,6 +7,7 @@ using ASI.Basecode.WebApp.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -102,7 +103,6 @@ namespace ASI.Basecode.WebApp
                 options.Cookie.Name = Const.Issuer;
             });
 
-            // DI Services AutoMapper(Add Profile)
             this.ConfigureAutoMapper();
 
             // DI Services
@@ -110,6 +110,7 @@ namespace ASI.Basecode.WebApp
 
             // Authorization (Add Policy)
             this.ConfigureAuthorization();
+
 
             services.Configure<FormOptions>(options =>
             {
