@@ -1,63 +1,72 @@
-﻿<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+﻿@model ASI.Basecode.Services.ServiceModels.UserListViewModel
 
-@model ASI.Basecode.Services.ServiceModels.AdminCreateUserViewModel
-@{
-    ViewData["Title"] = "View User Modal Page";
-}
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-<div id="viewUserModal" class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center hidden z-50">
+<div id="viewUserModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+    <div class="relative flex h-[700px] w-full max-w-6xl flex-row rounded-xl bg-white shadow-lg">
 
-    <div class="flex flex-row bg-white rounded-xl w-full max-w-6xl h-[700px] shadow-lg relative">
-        <div class="w-[450px] flex flex-col items-center justify-center bg-[#640A16] rounded-l-xl">
-            <div class="absolute top-5 left-5">
-                <a onclick="closeViewDetails()" class="hover-pointer">
+        <!-- Left Panel -->
+        <div class="flex w-[450px] flex-col items-center justify-center rounded-l-xl bg-[#640A16]">
+
+            <!-- Back Button Only -->
+            <div class="absolute left-5 top-5">
+                <a href="javascript:void(0);" onclick="closeViewDetails()" class="hover-pointer">
                     <span class="material-symbols-outlined text-[50px] text-white">arrow_circle_left</span>
                 </a>
             </div>
-            
-            <div class="flex items-center justify-center bg-[#FFE9C6] w-[250px] h-[250px] rounded-full mb-5">
+
+            <div class="mb-5 flex h-[250px] w-[250px] items-center justify-center rounded-full bg-[#FFE9C6]">
+                @if (!string.IsNullOrEmpty(Model.ProfilePicture))
+                {
+                    <img src="@Model.ProfilePicture" alt="Profile" class="h-[250px] w-[250px] rounded-full object-cover" />
+                }
+                else
+                {
+                    <span class="text-6xl font-bold">👤</span>
+                }
             </div>
-            
+
             <div class="flex flex-col items-center gap-1">
-                <h1 class="uppercase text-2xl text-white">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</h1>
-                <h2 class="text-sm text-white">ID: **********</h2>
-                <h2 class="text-sm text-white">@HttpContextAccessor.HttpContext.Session.GetString("UserEmail")</h2>
-            </div>
-        </div>
-        @* Details *@
-        <div class="p-5 flex-1">
-            <h2 class="inline-block p-2 text-2xl font-bold mb-4 bg-[#EAC231] uppercase rounded-lg">Profile Details</h2>
-
-           
-            <div class="flex items-center gap-4 mb-4">
-                <h2 class="inline-block p-2 text-sm text-white font-bold bg-[#640A16] uppercase rounded-lg ">First Name</h2>
-                <div class="flex justify-center">
-                    <h2 class="flex justify-center items-center text-base font-medium text-black">Gabriel</h2>
-
-                </div>
-            </div>
-
-            
-            <div class="flex items-center gap-4 mb-4">
-                <h2 class="inline-block p-2 text-sm text-white font-bold bg-[#640A16] uppercase rounded-lg ">Last Name</h2>
-                <h2 class="flex justify-center text-base font-medium text-black">Gabriel</h2>
-            </div>
-
-            
-            <div class="flex items-center gap-4 mb-4">
-                <h2 class="inline-block p-2 text-sm text-white font-bold bg-[#640A16] uppercase rounded-lg">Date of Birth</h2>
-                <h2 class="flex justify-center text-base font-medium text-black">Gabriel</h2>
-            </div>
-
-            <div class="flex items-center gap-4 mb-4">
-                <h2 class="inline-block p-2 text-sm text-white font-bold bg-[#640A16] uppercase rounded-lg ">Contact Number</h2>
-                <h2 class="flex justify-center text-base font-medium text-black">Gabriel</h2>
-            </div>
-            <div class="flex items-center gap-4 mb-4">
-                <h2 class="inline-block p-2 text-sm text-white font-bold bg-[#640A16] uppercase rounded-lg">Account Created Date</h2>
-                <h2 class="flex justify-center text-base font-medium text-black">Gabriel</h2>
+                <h1 class="text-2xl uppercase text-white">@Model.FullName</h1>
+                <h2 class="text-sm text-white">Email: @Model.EmailId</h2>
+                <h2 class="text-sm text-white">Role: @(Model.Role == 0 ? "Admin" : "Guest")</h2>
             </div>
         </div>
 
+        <!-- Right Panel -->
+        <div class="flex-1 p-5">
+            <h2 class="mb-4 inline-block rounded-lg bg-[#EAC231] p-2 text-2xl font-bold uppercase">Profile Details</h2>
+
+            <div class="mb-4 flex items-center gap-4">
+                <h2 class="rounded-lg bg-[#640A16] p-2 text-sm font-bold uppercase text-white">First Name</h2>
+                <h2 class="text-base font-medium text-black">@Model.FirstName</h2>
+            </div>
+
+            <div class="mb-4 flex items-center gap-4">
+                <h2 class="rounded-lg bg-[#640A16] p-2 text-sm font-bold uppercase text-white">Last Name</h2>
+                <h2 class="text-base font-medium text-black">@Model.LastName</h2>
+            </div>
+
+            <div class="mb-4 flex items-center gap-4">
+                <h2 class="rounded-lg bg-[#640A16] p-2 text-sm font-bold uppercase text-white">Birthdate</h2>
+                <h2 class="text-base font-medium text-black">
+                    @(Model.Birthdate.HasValue? Model.Birthdate.Value.ToString("MMMM dd, yyyy") : "Data not set")
+                </h2>
+            </div>
+
+            <div class="mb-4 flex items-center gap-4">
+                <h2 class="rounded-lg bg-[#640A16] p-2 text-sm font-bold uppercase text-white">Contact</h2>
+                <h2 class="text-base font-medium text-black">
+                    @(string.IsNullOrEmpty(Model.Contact) ? "Data not set" : Model.Contact)
+                </h2>
+            </div>
+
+            <div class="mb-4 flex items-center gap-4">
+                <h2 class="rounded-lg bg-[#640A16] p-2 text-sm font-bold uppercase text-white">Account Created</h2>
+                <h2 class="text-base font-medium text-black">
+                    @(Model.CreatedTime == DateTime.MinValue ? "Data not set" : Model.CreatedTime.ToString("MMMM dd, yyyy"))
+                </h2>
+            </div>
+        </div>
     </div>
 </div>

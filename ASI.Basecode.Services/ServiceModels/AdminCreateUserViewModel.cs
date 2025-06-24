@@ -7,7 +7,10 @@ namespace ASI.Basecode.Services.ServiceModels
 {
     public class AdminCreateUserViewModel
     {
-        public List<UserListViewModel> Users { get; set; } = new();
+        public List<UserListViewModel> Users { get; set; } = new(); // View users in table
+
+        public UserListViewModel ViewUser { get; set; } // View user details in modal
+
 
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email format.")]

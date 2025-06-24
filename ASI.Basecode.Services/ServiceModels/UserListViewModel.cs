@@ -10,6 +10,7 @@ namespace ASI.Basecode.Services.ServiceModels
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Contact { get; set; }
+        public DateTime CreatedTime { get; set; }
         public string ProfilePicture { get; set; }
         public DateTime? Birthdate { get; set; }
         public int Role { get; set; } // 0 = Admin, 1 = Guest

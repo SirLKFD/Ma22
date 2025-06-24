@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -69,9 +70,15 @@ namespace ASI.Basecode.WebApp.Controllers
             {
                 Users = paginated.Items.Select(u => new UserListViewModel
                 {
+                    Id = u.Id,
                     FirstName = u.FirstName,
                     LastName = u.LastName,
-                    Role = u.Role
+                    Role = u.Role,
+                    ProfilePicture = u.ProfilePicture, 
+                    EmailId = u.EmailId,
+                    Contact = u.Contact,
+                    Birthdate = u.Birthdate,
+                    CreatedTime = u.CreatedTime
                 }).ToList(),
 
                 CurrentPage = paginated.CurrentPage,
@@ -85,6 +92,34 @@ namespace ASI.Basecode.WebApp.Controllers
 
             return View(viewModel);
         }
+
+
+        public IActionResult ViewUserDetails(int userId)
+        {
+            var user = _userService.GetAllUsers().FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            var userModel = new UserListViewModel
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                FullName = user.FirstName + " " + user.LastName,
+                EmailId = user.EmailId,
+                Role = user.Role,
+                Contact = user.Contact,
+                Birthdate = user.Birthdate,
+                CreatedTime = user.CreatedTime,
+                ProfilePicture = user.ProfilePicture
+            };
+
+            return PartialView("_UserViewModal", userModel); // return partial view instead of full view
+        }
+
+
         [HttpPost]
         [Authorize(Roles = "0")]
         public IActionResult CreateUser(AdminCreateUserViewModel model, IFormFile ProfilePicture, [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
