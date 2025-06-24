@@ -1,10 +1,12 @@
 ﻿using ASI.Basecode.Data.Interfaces;
 using ASI.Basecode.Data.Models;
+using ASI.Basecode.Data.Repositories;
 using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.Manager;
 using ASI.Basecode.Services.ServiceModels;
 using AutoMapper;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using static ASI.Basecode.Resources.Constants.Enums;
@@ -30,6 +32,24 @@ namespace ASI.Basecode.Services.Services
                                                      x.Password == passwordKey).FirstOrDefault();
 
             return user != null ? LoginResult.Success : LoginResult.Failed;
+        }
+
+        public List<UserListViewModel> GetAllUsers()
+        {
+            var users = _repository.GetUsers()
+                .Select(u => new UserListViewModel
+                {
+                    Id = u.Id,
+                    EmailId = u.EmailId,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Contact = u.Contact,
+                    Birthdate = u.Birthdate,
+                    Role = u.Role,
+                    ProfilePicture = u.ProfilePicture
+                }).ToList();
+
+            return users;
         }
 
         public void AddUser(UserViewModel model)

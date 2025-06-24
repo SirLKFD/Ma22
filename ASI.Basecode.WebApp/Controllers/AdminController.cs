@@ -1,16 +1,20 @@
 ﻿using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.ServiceModels;
+using ASI.Basecode.Services.Services;
 using ASI.Basecode.WebApp.Mvc;
 using AutoMapper;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Linq;
+
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -20,6 +24,7 @@ namespace ASI.Basecode.WebApp.Controllers
     public class AdminController : ControllerBase<AdminController>
     {
         private readonly IUserService _userService;
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -42,11 +47,44 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <returns> Home View </returns>
 
         [Authorize(Roles = "0")]
-        public IActionResult UserMaster()
-        {
-            return View();
-        }
 
+        public IActionResult UserMaster(int page = 1, string filter = "all")
+        {
+            const int PageSize = 8;
+
+            var allUsers = _userService.GetAllUsers().ToList();
+
+            // Get filtered users based on query
+            var filteredUsers = filter switch
+            {
+                "admin" => allUsers.Where(u => u.Role == 0).ToList(),
+                "guest" => allUsers.Where(u => u.Role == 1).ToList(),
+                _ => allUsers
+            };
+
+            // Paginate
+            var paginated = PaginationIndexService.Paginate(filteredUsers, page, PageSize);
+
+            var viewModel = new AdminCreateUserViewModel
+            {
+                Users = paginated.Items.Select(u => new UserListViewModel
+                {
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Role = u.Role
+                }).ToList(),
+
+                CurrentPage = paginated.CurrentPage,
+                TotalPages = paginated.TotalPages,
+
+                // ✅ Count all, not just paginated
+                TotalUsers = allUsers.Count,
+                TotalAdmins = allUsers.Count(u => u.Role == 0),
+                TotalGuests = allUsers.Count(u => u.Role == 1)
+            };
+
+            return View(viewModel);
+        }
         [HttpPost]
         [Authorize(Roles = "0")]
         public IActionResult CreateUser(AdminCreateUserViewModel model, IFormFile ProfilePicture, [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
@@ -58,7 +96,6 @@ namespace ASI.Basecode.WebApp.Controllers
                     if (ProfilePicture != null && ProfilePicture.Length > 0)
                     {
                         using var stream = ProfilePicture.OpenReadStream();
-
                         var uploadParams = new ImageUploadParams
                         {
                             File = new FileDescription(ProfilePicture.FileName, stream),
@@ -67,35 +104,30 @@ namespace ASI.Basecode.WebApp.Controllers
 
                         var uploadResult = cloudinary.Upload(uploadParams);
 
-                        // 🔍 Log or debug the result
                         if (uploadResult.Error != null)
                         {
-                            Console.WriteLine("❌ Upload failed: " + uploadResult.Error.Message);
                             throw new Exception("Cloudinary upload failed: " + uploadResult.Error.Message);
                         }
-                        else
-                        {
-                            Console.WriteLine("✅ Upload succeeded");
-                            Console.WriteLine("Secure URL: " + uploadResult.SecureUrl);
 
-                            model.ProfilePicture = uploadResult.SecureUrl?.ToString(); // safe assignment
-                        }
-
+                        model.ProfilePicture = uploadResult.SecureUrl?.ToString();
                     }
 
-                    _userService.AddUser(model);
+                    _userService.AddUser(model); // Insert to DB
 
-                    ViewBag.NewUser = model;
-                    ViewBag.NewUserProfilePicture = model.ProfilePicture;
-                    return View("UserMaster", model);
+                    TempData["Success"] = "User added successfully!";
+                    return RedirectToAction("UserMaster"); // ✅ Redirect after success
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", ex.Message);
+                    TempData["FormError"] = "Error: " + ex.Message;
+                    return RedirectToAction("UserMaster");
                 }
             }
 
-            return View("UserMaster", model);
+            // If model is invalid, redirect with error
+            TempData["FormError"] = "Validation failed. Please check your inputs.";
+            return RedirectToAction("UserMaster");
         }
+
     }
 }
