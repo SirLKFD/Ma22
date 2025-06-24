@@ -2,16 +2,16 @@
 
 @model ASI.Basecode.Services.ServiceModels.AdminCreateUserViewModel
 @{
-    ViewData["Title"] = "Edit User Modal Page";
+    ViewData["Title"] = "View User Modal Page";
 }
 
-<div id="editUserModal" class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center hidden z-50">
+<div id="viewUserModal" class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center hidden z-50">
 
-    <div class="flex flex-row bg-[#640A16] rounded-xl w-full max-w-6xl max-h-[700px] shadow-lg relative">
-        <div class="w-[450px] flex flex-col items-center justify-center bg-white rounded-l-xl">
+    <div class="flex flex-row bg-white rounded-xl w-full max-w-6xl max-h-[700px] shadow-lg relative">
+        <div class="w-[450px] flex flex-col items-center justify-center bg-[#640A16] rounded-l-xl">
             <div class="absolute top-5 left-5">
-                <a onclick="closeEditDetails()" class="hover-pointer">
-                    <span class="material-symbols-outlined text-[50px]">arrow_circle_left</span>
+                <a onclick="closeViewDetails()" class="hover-pointer">
+                    <span class="material-symbols-outlined text-[50px] text-white">arrow_circle_left</span>
                 </a>
             </div>
             <input id="profilePictureInput"
@@ -20,44 +20,43 @@
                    accept="image/*"
                    class="hidden" />
 
-            <label for="profilePictureInput" class="cursor-pointer block w-[250px] h-[250px] mt-[-50px] mb-3">
+            <label for="profilePictureInput" class="cursor-pointer block w-[250px] h-[250px] mt-[-50px] mb-5">
                 <div class="flex items-center justify-center bg-[#FFE9C6] w-full h-full rounded-full">
                     <h1 class="text-5xl">+</h1>
                 </div>
             </label>
             <div class="flex flex-col items-center gap-1">
-                <h1 class="uppercase text-2xl">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</h1>
-                <h2 class="text-sm">ID: **********</h2>
-                <h2 class="text-sm">Account Created: </h2>
-                <h2 class="text-sm">@HttpContextAccessor.HttpContext.Session.GetString("UserEmail")</h2>
+                <h1 class="uppercase text-2xl text-white">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</h1>
+                <h2 class="text-sm text-white">ID: **********</h2>
+                <h2 class="text-sm text-white">@HttpContextAccessor.HttpContext.Session.GetString("UserEmail")</h2>
             </div>
         </div>
         @* Form--> *@
         <div class="p-5 flex-1">
 
-            <h2 class="text-2xl font-bold mb-4 text-white uppercase">Profile Details</h2>
+            <h2 class="inline-block p-2 text-2xl font-bold mb-4 bg-[#EAC231] uppercase rounded-lg">Profile Details</h2>
 
             <form id="createuserform" asp-action="CreateUser" method="post" enctype="multipart/form-data" class="space-y-4">
 
-                <div>
-                    <div class="flex items-center justify-between">
-                        <label class="text-white w-32">First Name</label>
-                        <input name="FirstName" class="w-[400px] border rounded-xl p-2" />
+                <div class="flex flex-row items-center">
+                    <div class="">
+                        <label class="text-white w-30 bg-[#640A16] inline-block p-2 rounded-lg">First Name</label>
+                        <h2>Gabriel</h2>
                     </div>
                     <span asp-validation-for="FirstName" class="text-[#EAC231] text-sm block"></span>
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Last Name</label>
-                        <input name="LastName" class="w-[400px] border rounded-xl p-2" />
+                        <label class="text-white w-32 bg-[#640A16] inline-block p-2 rounded-lg">Last Name</label>
+                        <h2>Gabriel</h2>
                     </div>
                     <span asp-validation-for="LastName" class="text-[#EAC231] text-sm block"></span>
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Birthdate</label>
+                        <label class="text-white w-32 bg-[#640A16] inline-block p-2 rounded-lg">Birthdate</label>
                         <input type="date" name="Birthdate" class="w-[400px] border rounded-xl p-2" />
                     </div>
                     @* <span asp-validation-for="Birthdate" class="text-red-500 text-sm ml-32 block"></span>  *@
@@ -65,7 +64,7 @@
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Contact No.</label>
+                        <label class="text-white w-32 bg-[#640A16] inline-block p-2 rounded-lg">Contact No.</label>
                         <input name="Contact" class="w-[400px] border rounded-xl p-2" />
                     </div>
                     <span asp-validation-for="Contact" class="text-[#EAC231] text-sm block"></span>
@@ -73,7 +72,7 @@
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Email</label>
+                        <label class="text-white w-32 bg-[#640A16] inline-block p-2 rounded-lg">Email</label>
                         <input name="EmailId" class="w-[400px] border rounded-xl p-2" />
                     </div>
                     <span asp-validation-for="EmailId" class="text-[#EAC231] text-sm block"></span>
@@ -81,7 +80,7 @@
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Password</label>
+                        <label class="text-white w-32 bg-[#640A16] inline-block p-2 rounded-lg">Password</label>
                         <input name="Password" type="password" class="w-[400px] border rounded-xl p-2" />
                     </div>
                     <span asp-validation-for="Password" class="text-[#EAC231] text-sm block"></span>
