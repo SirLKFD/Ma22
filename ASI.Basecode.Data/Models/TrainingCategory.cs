@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace ASI.Basecode.Data.Models;
 
 public partial class TrainingCategory
 {
-    [Key]
-    public int Id { get; set; }
-
     public string CategoryName { get; set; }
 
     public int AccountId { get; set; }
@@ -25,5 +21,9 @@ public partial class TrainingCategory
 
     public DateTime UpdatedTime { get; set; }
 
+    public int Id { get; set; }
+
     public virtual Account Account { get; set; }
+
+    public virtual ICollection<Training> Training { get; set; } = new List<Training>();
 }
