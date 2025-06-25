@@ -1,4 +1,5 @@
 @model ASI.Basecode.Services.ServiceModels.AdminCreateUserViewModel
+
 @{
     ViewData["Title"] = "UserMaster Page";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -29,7 +30,7 @@
         <div class="relative">
             <input type="search" name="search" id="default-search"
                    class="block h-[50px] w-[380px] rounded-xl border border-gray-300 bg-[#fff] px-5 text-sm text-gray-900"
-                   placeholder="Search Users..." />
+                   placeholder="Search Users..." value="@Context.Request.Query["search"]" />
             <button type="submit"
                     class="absolute bottom-1.5 end-2.5 rounded-lg bg-[#EAC231] px-3 py-2 text-sm font-medium text-black hover:bg-[#cfa221]">
                 Search
@@ -90,7 +91,8 @@
                                 <a href="javascript:void(0);" onclick="viewDetails(@user.Id)">
                                     <span class="material-symbols-outlined text-[25px]">Visibility</span>
                                 </a>
-                                <a onclick="deleteProfile()" class="hover-pointer">
+
+                                <a onclick="deleteProfile(@user.Id, '@user.FirstName @user.LastName', '@(user.ProfilePicture ?? "")')" class="hover-pointer">
                                     <span class="material-symbols-outlined text-[25px]">Delete</span>
                                 </a>
                             </div>
@@ -271,10 +273,62 @@
                 alert(error.message);
             });
     }
-    function deleteProfile(){
+
+    function deleteProfile(userId, userName, profilePicUrl) {
+        // Show modal
         document.getElementById('deleteUserModal').classList.remove('hidden');
+        // Set user info in modal
+        document.getElementById('deleteUserName').textContent = userName;
+        document.getElementById('deleteUserId').textContent = `ID: ${userId}`;
+        // Set profile picture or emoji
+        const profileImg = document.getElementById('deleteUserProfilePic');
+        const profileEmoji = document.getElementById('deleteUserProfileEmoji');
+        const profileContainer = profileImg.parentElement;
+        if (profilePicUrl && profilePicUrl.trim() !== "") {
+            profileImg.src = profilePicUrl;
+            profileImg.classList.remove('hidden');
+            profileEmoji.classList.add('hidden');
+            profileContainer.style.background = 'transparent';
+        } else {
+            profileImg.src = "";
+            profileImg.classList.add('hidden');
+            profileEmoji.classList.remove('hidden');
+            profileContainer.style.background = '#FFE9C6';
+        }
+        // Remove previous event listeners
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+        const newBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+        // Add new event listener
+        newBtn.addEventListener('click', function () {
+            handleDeleteUser(userId);
+        });
     }
+
     function closeDeleteProfile() {
         document.getElementById('deleteUserModal').classList.add('hidden');
+    }
+
+    function handleDeleteUser(userId) {
+        fetch(`/Admin/DeleteUser`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+            },
+            body: `id=${userId}`
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else if (response.ok) {
+                window.location.reload();
+            } else {
+                alert('Failed to delete user.');
+            }
+        })
+        .catch(() => {
+            alert('Failed to delete user.');
+        });
     }
 </script>

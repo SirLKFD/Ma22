@@ -49,13 +49,23 @@ namespace ASI.Basecode.WebApp.Controllers
 
         [Authorize(Roles = "0")]
 
-        public IActionResult UserMaster(int page = 1, string filter = "all")
+        public IActionResult UserMaster(int page = 1, string filter = "all", string search = "")
         {
             const int PageSize = 8;
 
             var allUsers = _userService.GetAllUsers().ToList();
 
-            // Get filtered users based on query
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+                allUsers = allUsers.Where(u =>
+                    (!string.IsNullOrEmpty(u.FirstName) && u.FirstName.Contains(search, StringComparison.OrdinalIgnoreCase)) ||
+                    (!string.IsNullOrEmpty(u.LastName) && u.LastName.Contains(search, StringComparison.OrdinalIgnoreCase)) ||
+                    (!string.IsNullOrEmpty(u.EmailId) && u.EmailId.Contains(search, StringComparison.OrdinalIgnoreCase)) ||
+                    ($"{u.FirstName} {u.LastName}").Contains(search, StringComparison.OrdinalIgnoreCase)
+                ).ToList();
+            }
+
             var filteredUsers = filter switch
             {
                 "admin" => allUsers.Where(u => u.Role == 0).ToList(),
@@ -63,35 +73,24 @@ namespace ASI.Basecode.WebApp.Controllers
                 _ => allUsers
             };
 
-            // Paginate
-            var paginated = PaginationIndexService.Paginate(filteredUsers, page, PageSize);
+            var paginatedUsers = filteredUsers
+                .Skip((page - 1) * PageSize)
+                .Take(PageSize)
+                .ToList();
 
             var viewModel = new AdminCreateUserViewModel
             {
-                Users = paginated.Items.Select(u => new UserListViewModel
-                {
-                    Id = u.Id,
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                    Role = u.Role,
-                    ProfilePicture = u.ProfilePicture, 
-                    EmailId = u.EmailId,
-                    Contact = u.Contact,
-                    Birthdate = u.Birthdate,
-                    CreatedTime = u.CreatedTime
-                }).ToList(),
-
-                CurrentPage = paginated.CurrentPage,
-                TotalPages = paginated.TotalPages,
-
-                // ✅ Count all, not just paginated
+                Users = paginatedUsers,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling((double)filteredUsers.Count / PageSize),
                 TotalUsers = allUsers.Count,
                 TotalAdmins = allUsers.Count(u => u.Role == 0),
-                TotalGuests = allUsers.Count(u => u.Role == 1)
+                TotalGuests = allUsers.Count(u => u.Role == 1),
             };
 
             return View(viewModel);
         }
+
 
         [HttpGet]
         public IActionResult GetFilteredUsers(string filter = "all", int page = 1, string search = "")
@@ -299,6 +298,13 @@ namespace ASI.Basecode.WebApp.Controllers
 
             // If model is invalid, redirect with error
             TempData["FormError"] = "Validation failed. Please check your inputs.";
+            return RedirectToAction("UserMaster");
+        }
+
+        [HttpPost]
+        public IActionResult DeleteUser(int id)
+        {
+            _userService.DeleteUser(id);
             return RedirectToAction("UserMaster");
         }
 

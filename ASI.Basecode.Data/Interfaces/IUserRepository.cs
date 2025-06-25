@@ -15,5 +15,6 @@ namespace ASI.Basecode.Data.Interfaces
         bool UserExists(string emailId, int excludeId);
         void AddUser(Account user);
         void UpdateUser(Account user);
+        void DeleteUser(Account user);
     }
 }

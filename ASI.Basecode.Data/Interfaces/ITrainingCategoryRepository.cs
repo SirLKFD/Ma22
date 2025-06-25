@@ -10,7 +10,7 @@ namespace ASI.Basecode.Data.Interfaces
     public interface ITrainingCategoryRepository
     {
         IQueryable<TrainingCategory> GetTrainingCategories();
-        bool TrainingCategoryExists(string name);
-        void AddTrainingCategory(TrainingCategory trainingCategory);
+        void AddTrainingCategory(TrainingCategory category);
+        bool TrainingCategoryExists(string categoryName);
     }
 }

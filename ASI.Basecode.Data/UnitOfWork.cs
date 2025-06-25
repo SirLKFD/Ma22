@@ -1,6 +1,7 @@
 ﻿using System;
 using ASI.Basecode.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using ASI.Basecode.Data.Repositories;
 
 namespace ASI.Basecode.Data
 {
@@ -39,5 +40,7 @@ namespace ASI.Basecode.Data
         {
             Database.Dispose();
         }
+
+        public PasswordResetTokenRepository PasswordResetTokenRepository => new PasswordResetTokenRepository((IUnitOfWork)this);
     }
 }

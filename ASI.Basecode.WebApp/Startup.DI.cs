@@ -54,6 +54,11 @@ namespace ASI.Basecode.WebApp
             // Role-based filter service
             this._services.AddScoped<RoleBasedFilterService>();
             this._services.AddScoped<SessionRestorationFilter>();
+
+            // New services
+            this._services.AddScoped<IPasswordResetService, PasswordResetService>();
+            this._services.AddScoped<IEmailService, EmailService>();
+            this._services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
         }
     }
 }

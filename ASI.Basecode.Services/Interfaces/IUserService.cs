@@ -14,5 +14,7 @@ namespace ASI.Basecode.Services.Interfaces
         UserEditViewModel GetUserById(int id);
         void UpdateUser(UserEditViewModel model);
         Account GetUserByEmail(string emailId);
+        void DeleteUser(int userId);
+
     }
 }
