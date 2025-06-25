@@ -34,6 +34,11 @@ namespace ASI.Basecode.Services.Services
             return user != null ? LoginResult.Success : LoginResult.Failed;
         }
 
+        public Account GetUserByEmail(string emailId)
+        {
+            return _repository.GetUsers().FirstOrDefault(x => x.EmailId == emailId);
+        }
+
         public List<UserListViewModel> GetAllUsers()
         {
             var users = _repository.GetUsers()
@@ -51,6 +56,27 @@ namespace ASI.Basecode.Services.Services
                 }).ToList();
 
             return users;
+        }
+
+        public UserEditViewModel GetUserById(int id)
+        {
+            var user = _repository.GetUserById(id);
+            if (user == null)
+                return null;
+
+            return new UserEditViewModel
+            {
+                Id = user.Id,
+                EmailId = user.EmailId,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Contact = user.Contact,
+                Birthdate = user.Birthdate,
+                Role = user.Role,
+                ProfilePicture = user.ProfilePicture,
+                CreatedTime = user.CreatedTime,
+                CreatedBy = user.CreatedBy
+            };
         }
 
         public void AddUser(UserViewModel model)
@@ -91,6 +117,27 @@ namespace ASI.Basecode.Services.Services
             {
                 throw new InvalidDataException(Resources.Messages.Errors.UserExists);
             }
+        }
+
+        public void UpdateUser(UserEditViewModel model)
+        {
+            var user = new Account();
+            
+            // Check if email exists for other users (excluding current user)
+            if (_repository.UserExists(model.EmailId, model.Id))
+            {
+                throw new InvalidDataException(Resources.Messages.Errors.UserExists);
+            }
+
+            _mapper.Map(model, user);
+            
+            // Only encrypt password if provided
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                user.Password = PasswordManager.EncryptPassword(model.Password);
+            }
+
+            _repository.UpdateUser(user);
         }
     }
 }
