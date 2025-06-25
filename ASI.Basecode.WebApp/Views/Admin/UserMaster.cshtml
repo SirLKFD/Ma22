@@ -129,6 +129,7 @@
 @await Html.PartialAsync("_UserAddModal")
 @await Html.PartialAsync("_UserEditModal")
 @await Html.PartialAsync("_UserViewModal")
+@await Html.PartialAsync("_UserDeleteModal")
 
 <script>
     function openModal() {
@@ -160,6 +161,14 @@
     }
     function closeViewDetails(){
         const modal = document.getElementById('viewUserModal');
+        modal.classList.add('hidden');
+    }
+
+    function deleteUserProfile(){
+        document.getElementById('deleteUserModal').classList.remove('hidden');
+    }
+    function closedeleteUserProfile(){
+        const modal = document.getElementById('deleteUserModal');
         modal.classList.add('hidden');
     }
 
