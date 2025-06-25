@@ -22,7 +22,7 @@ namespace ASI.Basecode.Services.ServiceModels
 
         [DataType(DataType.Date)]
         [Display(Name = "Birthdate")]
-        public DateTime? Birthdate { get; set; }
+        public DateOnly? Birthdate { get; set; }
 
         public string Password { get; set; } // Optional for edit
 

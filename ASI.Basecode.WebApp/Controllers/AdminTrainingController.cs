@@ -23,6 +23,7 @@ namespace ASI.Basecode.WebApp.Controllers
     {
         private readonly ITrainingService _trainingService;
         private readonly ITrainingCategoryService _trainingCategoryService;
+        private readonly ITopicService _topicService;
 
         /// <summary>
         /// Constructor
@@ -37,10 +38,12 @@ namespace ASI.Basecode.WebApp.Controllers
                               IConfiguration configuration,
                               IMapper mapper = null,
                               ITrainingService trainingService = null,
-                              ITrainingCategoryService trainingCategoryService = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
+                              ITrainingCategoryService trainingCategoryService = null,
+                              ITopicService topicService = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             _trainingService = trainingService;
             _trainingCategoryService = trainingCategoryService;
+            _topicService = topicService;
         }
 
         /// <summary>
@@ -51,6 +54,11 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             var trainingCategories = _trainingCategoryService.GetAllTrainingCategories();
             ViewBag.TrainingCategories = trainingCategories;
+
+            // Fetch all trainings
+            var trainings = _trainingService.GetAllTrainings();
+            ViewBag.Trainings = trainings;
+
             return View("~/Views/Admin/AdminTraining.cshtml");
         }
 
@@ -157,6 +165,16 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             var trainingCategory = _trainingCategoryService.GetTrainingCategoryById(trainingCategoryId);
             return trainingCategory?.CategoryName ?? "Unknown";
+        }
+        [HttpGet]
+        public IActionResult AdminTrainingTopics(int trainingId)
+        {
+            
+            var training = _trainingService.GetTrainingById(trainingId); 
+            var topics = _topicService.GetAllTopicsByTrainingId(trainingId);
+            ViewBag.Training = training;
+            ViewBag.Topics = topics;
+            return View("~/Views/Admin/AdminTrainingTopics.cshtml");
         }
     }
 }
