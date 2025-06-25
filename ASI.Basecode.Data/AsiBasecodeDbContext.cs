@@ -26,6 +26,10 @@ namespace ASI.Basecode.Data
 
         public virtual DbSet<SkillLevel> SkillLevels { get; set; }
 
+        public virtual DbSet<Topic> Topics { get; set; }
+
+        public virtual DbSet<TopicMedium> TopicMedia { get; set; }
+
         public virtual DbSet<Training> Trainings { get; set; }
 
         public virtual DbSet<TrainingCategory> TrainingCategories { get; set; }
@@ -89,7 +93,7 @@ namespace ASI.Basecode.Data
 
                entity.HasOne(d => d.RoleNavigation).WithMany(p => p.Accounts)
                 .HasForeignKey(d => d.Role)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Accounts_Roles");
             });
 
@@ -123,6 +127,7 @@ namespace ASI.Basecode.Data
                     .HasColumnName("SkillLevel");
             });
 
+
              modelBuilder.Entity<Training>(entity =>
             {
                 entity.Property(e => e.CourseCode)
@@ -152,7 +157,7 @@ namespace ASI.Basecode.Data
 
                 entity.HasOne(d => d.Account).WithMany(p => p.Training)
                     .HasForeignKey(d => d.AccountId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Trainings_Accounts");
 
                 entity.HasOne(d => d.DurationNavigation).WithMany(p => p.Training)
@@ -161,12 +166,12 @@ namespace ASI.Basecode.Data
 
                 entity.HasOne(d => d.SkillLevelNavigation).WithMany(p => p.Training)
                     .HasForeignKey(d => d.SkillLevel)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Trainings_SkillLevel");
 
                 entity.HasOne(d => d.TrainingCategory).WithMany(p => p.Training)
                     .HasForeignKey(d => d.TrainingCategoryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Trainings_TrainingCategories");
             });
 
@@ -199,9 +204,78 @@ namespace ASI.Basecode.Data
 
                 entity.HasOne(d => d.Account).WithMany(p => p.TrainingCategories)
                     .HasForeignKey(d => d.AccountId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Training Category Owner");
             });
+
+             modelBuilder.Entity<Topic>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("PK_Table_1");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.CreatedTime).HasColumnType("datetime");
+                entity.Property(e => e.Description)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+                entity.Property(e => e.TopicName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.UpdatedBy)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account).WithMany(p => p.Topics)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_Table_1_Accounts");
+
+                entity.HasOne(d => d.Training).WithMany(p => p.Topics)
+                    .HasForeignKey(d => d.TrainingId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_Table_1_Trainings");
+            });
+
+            modelBuilder.Entity<TopicMedium>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("PK_Table_2");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.CreatedTime).HasColumnType("datetime");
+                entity.Property(e => e.MediaType)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.MediaUrl)
+                    .HasMaxLength(2083)
+                    .IsUnicode(false);
+                entity.Property(e => e.UpdatedBy)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account).WithMany(p => p.TopicMedia)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Table_2_Accounts");
+
+                entity.HasOne(d => d.Topic).WithMany(p => p.TopicMedia)
+                    .HasForeignKey(d => d.TopicId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_Table_2_Table_1");
+            });
+
 
            OnModelCreatingPartial(modelBuilder);
         }

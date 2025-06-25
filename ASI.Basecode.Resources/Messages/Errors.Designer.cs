@@ -89,5 +89,11 @@ namespace ASI.Basecode.Resources.Messages {
                 return ResourceManager.GetString("TrainingExists", resourceCulture);
             }
         }
+
+        public static string TopicExists {
+            get {
+                return ResourceManager.GetString("TopicExists", resourceCulture);
+            }
+        }
     }
 }

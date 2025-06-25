@@ -39,5 +39,7 @@ public partial class Training
 
     public virtual SkillLevel SkillLevelNavigation { get; set; }
 
+    public virtual ICollection<Topic> Topics { get; set; } = new List<Topic>();
+
     public virtual TrainingCategory TrainingCategory { get; set; }
 }
