@@ -19,7 +19,6 @@
     </div>
 }
 
-
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
 <div class="mx-20 mb-2 mt-10 flex items-center justify-between">
@@ -70,15 +69,30 @@
                 foreach (var user in Model.Users)
                 {
                     <tr class="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-                        <th scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-black">
-                            @($"{user.FirstName} {user.LastName}")
+                        <th scope="row" class="flex items-center gap-3 whitespace-nowrap px-6 py-4 font-medium text-black">
+                            @if (!string.IsNullOrEmpty(user.ProfilePicture))
+                            {
+                                <img src="@user.ProfilePicture" alt="Profile" class="h-10 w-10 rounded-full object-cover" />
+                            }
+                            else
+                            {
+                                <span class="text-2xl">👤</span>
+                            }
+                            <span>@($"{user.FirstName} {user.LastName}")</span>
                         </th>
+
                         <td class="px-6 py-4">@(user.Role == 0 ? "Admin" : "Guest")</td>
                         <td class="px-6 py-4">
                             <div class="flex justify-center gap-5">
-                                <a onclick="editDetails()" class="hover-pointer"><span class="material-symbols-outlined text-[25px]">Edit</span></a>
-                                <a onclick="viewDetails()" class="hover-pointer"><span class="material-symbols-outlined text-[25px]">Visibility</span></a>
-                                <a href="#"><span class="material-symbols-outlined text-[25px]">Delete</span></a>
+                                <a onclick="editDetails()" class="hover-pointer">
+                                    <span class="material-symbols-outlined text-[25px]">Edit</span>
+                                </a>
+                                <a href="javascript:void(0);" onclick="viewDetails(@user.Id)">
+                                    <span class="material-symbols-outlined text-[25px]">Visibility</span>
+                                </a>
+                                <a href="#">
+                                    <span class="material-symbols-outlined text-[25px]">Delete</span>
+                                </a>
                             </div>
                         </td>
                     </tr>
@@ -131,6 +145,10 @@
 @await Html.PartialAsync("_UserViewModal")
 @await Html.PartialAsync("_UserDeleteModal")
 
+
+<!-- AJAX dynamic modal content -->
+<div id="viewUserModalContainer"></div>
+
 <script>
     function openModal() {
         document.getElementById('addUserModal').classList.remove('hidden');
@@ -148,28 +166,20 @@
             $(form).find(".input-validation-error").removeClass("input-validation-error");
         }
     }
-    function editDetails(){
-       document.getElementById('editUserModal').classList.remove('hidden');
-    }
-    function closeEditDetails(){
-        const modal = document.getElementById('editUserModal');
-        modal.classList.add('hidden');
+
+    function editDetails() {
+        document.getElementById('editUserModal').classList.remove('hidden');
     }
 
-    function viewDetails(){
-        document.getElementById('viewUserModal').classList.remove('hidden');
+    function closeEditDetails() {
+        document.getElementById('editUserModal').classList.add('hidden');
     }
-    function closeViewDetails(){
+
+    function closeViewDetails() {
         const modal = document.getElementById('viewUserModal');
-        modal.classList.add('hidden');
-    }
-
-    function deleteUserProfile(){
-        document.getElementById('deleteUserModal').classList.remove('hidden');
-    }
-    function closedeleteUserProfile(){
-        const modal = document.getElementById('deleteUserModal');
-        modal.classList.add('hidden');
+        if (modal) {
+            modal.remove();
+        }
     }
 
     
