@@ -27,6 +27,8 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly TokenProviderOptionsFactory _tokenProviderOptionsFactory;
         private readonly IConfiguration _appConfiguration;
         private readonly IUserService _userService;
+        private readonly IPasswordResetService _passwordResetService;
+        private readonly IEmailService _emailService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
@@ -40,6 +42,8 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="mapper">The mapper.</param>
         /// <param name="tokenValidationParametersFactory">The token validation parameters factory.</param>
         /// <param name="tokenProviderOptionsFactory">The token provider options factory.</param>
+        /// <param name="passwordResetService">The password reset service.</param>
+        /// <param name="emailService">The email service.</param>
         public AccountController(
                             SignInManager signInManager,
                             IHttpContextAccessor httpContextAccessor,
@@ -48,7 +52,9 @@ namespace ASI.Basecode.WebApp.Controllers
                             IMapper mapper,
                             IUserService userService,
                             TokenValidationParametersFactory tokenValidationParametersFactory,
-                            TokenProviderOptionsFactory tokenProviderOptionsFactory) : base(httpContextAccessor, loggerFactory, configuration, mapper)
+                            TokenProviderOptionsFactory tokenProviderOptionsFactory,
+                            IPasswordResetService passwordResetService,
+                            IEmailService emailService) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             this._sessionManager = new SessionManager(this._session);
             this._signInManager = signInManager;
@@ -56,6 +62,8 @@ namespace ASI.Basecode.WebApp.Controllers
             this._tokenValidationParametersFactory = tokenValidationParametersFactory;
             this._appConfiguration = configuration;
             this._userService = userService;
+            this._passwordResetService = passwordResetService;
+            this._emailService = emailService;
         }
 
         /// <summary>
@@ -208,17 +216,28 @@ namespace ASI.Basecode.WebApp.Controllers
         }
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult ForgotPassword(LoginViewModel model)
+        public async Task<IActionResult> ForgotPassword(LoginViewModel model)
         {
-            // Use the existing Required validation from LoginViewModel
             if (ModelState.IsValid)
             {
-                // For mockup - just show success message
-                TempData["SuccessMessage"] = "No worries, we sent you a reset link in your email.";
+                var token = await _passwordResetService.GenerateResetTokenAsync(model.EmailId);
+                if (token != null)
+                {
+                    var resetLink = Url.Action("ResetPassword", "Account", new { token = token }, Request.Scheme);
+                    var dynamicData = new System.Collections.Generic.Dictionary<string, string>
+                    {
+                        { "FirstName", model.EmailId }, // Replace with actual first name if available
+                        { "ResetLink", resetLink }
+                    };
+                    await _emailService.SendEmailAsync(model.EmailId, "d-7ee0cdbc2a14494faf8e4ba28c12af82", dynamicData);
+                    TempData["SuccessMessage"] = "No worries, we sent you a reset link in your email.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Email not found.";
+                }
                 return View(model);
             }
-
-            // ModelState will automatically handle the Required validation error from LoginViewModel
             return View(model);
         }
 
@@ -226,11 +245,51 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         [AllowAnonymous]
         [ServiceFilter(typeof(RoleBasedFilterService))]
-        public IActionResult ResetPassword()
+        public async Task<IActionResult> ResetPassword(string token)
         {
-            return View();
+            if (string.IsNullOrEmpty(token) || !await _passwordResetService.ValidateResetTokenAsync(token))
+            {
+                TempData["ErrorMessage"] = "Invalid or expired reset token.";
+                return RedirectToAction("Login");
+            }
+            var model = new ASI.Basecode.Services.ServiceModels.PasswordResetViewModel { Token = token };
+            return View(model);
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ASI.Basecode.Services.ServiceModels.PasswordResetViewModel model)
+        {
+            if (!ModelState.IsValid || model.NewPassword != model.ConfirmPassword)
+            {
+                TempData["ErrorMessage"] = "Passwords do not match.";
+                return View(model);
+            }
+            var encryptedPassword = ASI.Basecode.Services.Manager.PasswordManager.EncryptPassword(model.NewPassword);
+            var result = await _passwordResetService.ResetPasswordAsync(model.Token, encryptedPassword);
+            if (result)
+            {
+                // Send confirmation email (fetch user email by token if needed)
+                var resetTokenRepo = (ASI.Basecode.Data.Interfaces.IPasswordResetTokenRepository)HttpContext.RequestServices.GetService(typeof(ASI.Basecode.Data.Interfaces.IPasswordResetTokenRepository));
+                var tokenEntity = resetTokenRepo.GetByToken(model.Token);
+                var userEmail = tokenEntity?.Account?.EmailId;
+                var firstName = tokenEntity?.Account?.FirstName ?? "User";
+                if (!string.IsNullOrEmpty(userEmail))
+                {
+                    var loginLink = Url.Action("Login", "Account", null, Request.Scheme);
+                    var dynamicData = new System.Collections.Generic.Dictionary<string, string>
+                    {
+                        { "FirstName", firstName },
+                        { "LoginLink", loginLink }
+                    };
+                    await _emailService.SendEmailAsync(userEmail, "d-34c6128ba49d493895e13800334887ce", dynamicData);
+                }
+                TempData["SuccessMessage"] = "Password updated successfully.";
+                return RedirectToAction("Login");
+            }
+            TempData["ErrorMessage"] = "Invalid or expired reset token.";
+            return View(model);
+        }
 
     }
 }
