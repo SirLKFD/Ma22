@@ -8,7 +8,8 @@ namespace ASI.Basecode.Services.Interfaces
     public interface ITrainingCategoryService
     {
         void AddTrainingCategory(TrainingCategoryViewModel model);
-        List<TrainingCategory> GetAllTrainingCategories();
-        TrainingCategory GetTrainingCategoryById(int id);
+        List<ASI.Basecode.Data.Models.TrainingCategory> GetAllTrainingCategories();
+        ASI.Basecode.Data.Models.TrainingCategory GetTrainingCategoryById(int id);
+        List<TrainingCategoryViewModel> GetAllTrainingCategoryViewModels();
     }
 }

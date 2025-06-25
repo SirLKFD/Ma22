@@ -47,7 +47,9 @@ namespace ASI.Basecode.WebApp.Controllers
         [Authorize(Roles = "0")]
         public IActionResult AdminTrainingCategory()
         {
-            return View("~/Views/Admin/AdminTrainingCategory.cshtml");
+            List<TrainingCategoryViewModel> categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+
+            return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
         }
 
         [HttpPost]
@@ -101,7 +103,10 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 _trainingCategoryService.AddTrainingCategory(model);
                 Console.WriteLine("✅ Training category added");
+
+                List<TrainingCategoryViewModel> categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
                 ViewBag.NewCategory = model;
+
                 return View("~/Views/Admin/AdminTrainingCategory.cshtml", model);
             }
             catch (Exception ex)
