@@ -29,6 +29,9 @@ namespace ASI.Basecode.Data
         public virtual DbSet<Training> Trainings { get; set; }
 
         public virtual DbSet<TrainingCategory> TrainingCategories { get; set; }
+
+        public virtual DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Account>(entity =>
@@ -201,6 +204,19 @@ namespace ASI.Basecode.Data
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Training Category Owner");
+            });
+
+            modelBuilder.Entity<PasswordResetToken>(entity =>
+            {
+                entity.ToTable("PasswordResetTokens");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Token).IsRequired().HasMaxLength(128);
+                entity.Property(e => e.Expiration).IsRequired();
+                entity.Property(e => e.IsUsed).IsRequired();
+                entity.HasOne(e => e.Account)
+                    .WithMany()
+                    .HasForeignKey(e => e.AccountId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
            OnModelCreatingPartial(modelBuilder);
