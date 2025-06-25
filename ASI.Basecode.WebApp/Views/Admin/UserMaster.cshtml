@@ -90,11 +90,10 @@
                                 <a href="javascript:void(0);" onclick="viewDetails(@user.Id)">
                                     <span class="material-symbols-outlined text-[25px]">Visibility</span>
                                 </a>
-                                @*
-                                <a href="#">
-                                    <span class="material-symbols-outlined text-[25px]">Delete</span>
+
+                                <a onclick="deleteProfile(@user.Id, '@user.FirstName @user.LastName')" class="hover-pointer">
+                                        <span class="material-symbols-outlined text-[25px]">Delete</span>
                                 </a>
-                                *@
                                 <form asp-action="DeleteUser"
                                       asp-controller="Admin"
                                       asp-route-id="@user.Id"
@@ -155,6 +154,7 @@
 
 @await Html.PartialAsync("_UserAddModal")
 @await Html.PartialAsync("_UserEditModal")
+@await Html.PartialAsync("_UserDeleteModal")
 
 <!-- AJAX dynamic modal content -->
 <div id="viewUserModalContainer"></div>
@@ -282,5 +282,11 @@
             .catch(error => {
                 alert(error.message);
             });
+    }
+    function deleteProfile(){
+        document.getElementById('deleteUserModal').classList.remove('hidden');
+    }
+    function closeDeleteProfile() {
+        document.getElementById('deleteUserModal').classList.add('hidden');
     }
 </script>
