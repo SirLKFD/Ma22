@@ -139,5 +139,13 @@ namespace ASI.Basecode.Services.Services
 
             _repository.UpdateUser(user);
         }
+        public void DeleteUser(int userId)
+        {
+            var user = _repository.GetUserById(userId);
+            if (user != null)
+            {
+                _repository.DeleteUser(user);
+            }
+        }
     }
 }
