@@ -1,8 +1,8 @@
-﻿@model ASI.Basecode.Services.ServiceModels.TrainingCategoryViewModel
+﻿@model List<ASI.Basecode.Services.ServiceModels.TrainingCategoryViewModel>
 @{
     ViewData["Title"] = "Admin Training Category";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    var categories = ViewBag.TrainingCategories as IEnumerable<ASI.Basecode.Services.ServiceModels.TrainingCategoryViewModel>;
+    // var categories = ViewBag.TrainingCategories as IEnumerable<ASI.Basecode.Services.ServiceModels.TrainingCategoryViewModel>;
 }
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
@@ -32,129 +32,36 @@
 
 </div>
 
-
 <div class="flex flex-wrap gap-6 mb-10">
+    @foreach (var category in Model)
+    {
+        <div class="flex flex-col ml-20 w-[350px] bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700 outline outline-1 outline-black">
+            <div class="h-[180px] overflow-hidden rounded-t-lg">
+                <img class="w-full h-full object-cover" src="@category.CoverPicture" alt="Cover Image" />
+            </div>
 
-    <div class="flex flex-col ml-20 w-[350px] bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700 outline outline-1 outline-black
-    ">
-        <a href="#">
-            <img class="rounded-t-lg w-full" src="https://bairesdev.mo.cloudinary.net/blog/2023/08/How-to-Choose-the-Right-Programming-Language-for-a-New-Project.jpg" alt="Sample Image" />
-        </a>
 
-        <div class="flex justify-between items-center px-4 py-2">
-            <h1 class="text-2xl">Programming</h1>
-            <div class="">
-                <span class="material-symbols-outlined cursor-pointer text-gray-700 hover:text-black">edit</span>
-                <span class="material-symbols-outlined cursor-pointer text-red-600 hover:text-red-800">delete</span>
+            <div class="flex justify-between items-center px-4 py-2">
+                <h1 class="text-2xl">@category.CategoryName</h1>
+                <div>
+                    <span class="material-symbols-outlined cursor-pointer text-gray-700 hover:text-black">edit</span>
+                    <span class="material-symbols-outlined cursor-pointer text-red-600 hover:text-red-800">delete</span>
+                </div>
+            </div>
+
+            <div class="flex justify-between px-4 py-2">
+                <p class="text-sm">@category.Description</p>
+            </div>
+
+            <div class="flex justify-between px-4 py-2 text-xs mb-2">
+                <div>
+                    <p>Date Modified: @category.UpdatedTime.ToString("MMM dd, yyyy")</p>
+                    <p>Created By: @category.CreatedBy</p>
+                </div>
+                <button class="bg-[#640A16] text-white text-sm px-4 py-1 rounded-lg">Access</button>
             </div>
         </div>
-
-        <div class="flex justify-between px-4 py-2">
-            <p class="text-sm">
-                An overview and introduction to the major areas of computer science.
-            </p>
-        </div>
-
-        <div class="flex justify-between px-4 py-2 text-xs mb-2">
-            <div>
-                <p>Date Modified: </p>
-                <p>Created By: </p>
-            </div>
-            <button class="bg-[#640A16] text-white text-sm px-4 py-1 rounded-lg">Access</button>
-        </div>
-
-    </div>
-
-    <div class="flex flex-col ml-20 w-[350px] bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700 outline outline-1 outline-black
-    ">
-        <a href="#">
-            <img class="rounded-t-lg w-full" src="https://bairesdev.mo.cloudinary.net/blog/2023/08/How-to-Choose-the-Right-Programming-Language-for-a-New-Project.jpg" alt="Sample Image" />
-        </a>
-
-        <div class="flex justify-between items-center px-4 py-2">
-            <h1 class="text-2xl">Programming</h1>
-            <div class="">
-                <span class="material-symbols-outlined cursor-pointer text-gray-700 hover:text-black">edit</span>
-                <span class="material-symbols-outlined cursor-pointer text-red-600 hover:text-red-800">delete</span>
-            </div>
-        </div>
-
-        <div class="flex justify-between px-4 py-2">
-            <p class="text-sm">
-                An overview and introduction to the major areas of computer science.
-            </p>
-        </div>
-
-        <div class="flex justify-between px-4 py-2 text-xs mb-2">
-            <div>
-                <p>Date Modified: </p>
-                <p>Created By: </p>
-            </div>
-            <button class="bg-[#640A16] text-white text-sm px-4 py-1 rounded-lg">Access</button>
-        </div>
-
-    </div>
-
-    <div class="flex flex-col ml-20 w-[350px] bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700 outline outline-1 outline-black
-    ">
-        <a href="#">
-            <img class="rounded-t-lg w-full" src="https://bairesdev.mo.cloudinary.net/blog/2023/08/How-to-Choose-the-Right-Programming-Language-for-a-New-Project.jpg" alt="Sample Image" />
-        </a>
-
-        <div class="flex justify-between items-center px-4 py-2">
-            <h1 class="text-2xl">Programming</h1>
-            <div class="">
-                <span class="material-symbols-outlined cursor-pointer text-gray-700 hover:text-black">edit</span>
-                <span class="material-symbols-outlined cursor-pointer text-red-600 hover:text-red-800">delete</span>
-            </div>
-        </div>
-
-        <div class="flex justify-between px-4 py-2">
-            <p class="text-sm">
-                An overview and introduction to the major areas of computer science.
-            </p>
-        </div>
-
-        <div class="flex justify-between px-4 py-2 text-xs mb-2">
-            <div>
-                <p>Date Modified: </p>
-                <p>Created By: </p>
-            </div>
-            <button class="bg-[#640A16] text-white text-sm px-4 py-1 rounded-lg">Access</button>
-        </div>
-
-    </div>
-
-    <div class="flex flex-col ml-20 w-[350px] bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700 outline outline-1 outline-black
-    ">
-        <a href="#">
-            <img class="rounded-t-lg w-full" src="https://bairesdev.mo.cloudinary.net/blog/2023/08/How-to-Choose-the-Right-Programming-Language-for-a-New-Project.jpg" alt="Sample Image" />
-        </a>
-
-        <div class="flex justify-between items-center px-4 py-2">
-            <h1 class="text-2xl">Programming</h1>
-            <div class="">
-                <span class="material-symbols-outlined cursor-pointer text-gray-700 hover:text-black">edit</span>
-                <span class="material-symbols-outlined cursor-pointer text-red-600 hover:text-red-800">delete</span>
-            </div>
-        </div>
-
-        <div class="flex justify-between px-4 py-2">
-            <p class="text-sm">
-                An overview and introduction to the major areas of computer science.
-            </p>
-        </div>
-
-        <div class="flex justify-between px-4 py-2 text-xs mb-2">
-            <div>
-                <p>Date Modified: </p>
-                <p>Created By: </p>
-            </div>
-            <button class="bg-[#640A16] text-white text-sm px-4 py-1 rounded-lg">Access</button>
-        </div>
-
-    </div>
-
+    }
 </div>
 
 <div class="flex justify-end mx-20 my-10">
