@@ -37,12 +37,15 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<IUserService, UserService>();
             this._services.AddScoped<ITrainingCategoryService, TrainingCategoryService>();
             this._services.AddScoped<ITrainingService, TrainingService>();
+            this._services.AddScoped<ITopicService, TopicService>();
+            this._services.AddScoped<ITopicMediaService, TopicMediaService>();
 
             // Repositories
             this._services.AddScoped<IUserRepository, UserRepository>();
             this._services.AddScoped<ITrainingCategoryRepository, TrainingCategoryRepository>();
             this._services.AddScoped<ITrainingRepository, TrainingRepository>();
-
+            this._services.AddScoped<ITopicRepository, TopicRepository>();
+            this._services.AddScoped<ITopicMediaRepository, TopicMediaRepository>();
             // Manager Class
             this._services.AddScoped<SignInManager>();
 

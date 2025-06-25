@@ -9,6 +9,38 @@
     <p>Manage training courses and materials.</p>
 </div>
 
+@if (ViewBag.Trainings != null)
+{
+    <h3>Existing Trainings</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Skill Level</th>
+                <th>Duration</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var training in ViewBag.Trainings)
+        {
+            <tr>
+                <td>@training.TrainingName</td>
+                <td>@training.TrainingCategoryId</td>
+                <td>@training.SkillLevel</td>
+                <td>@training.Duration</td>
+                <td>
+                    <a href="@Url.Action("AdminTrainingTopics", "AdminTraining", new { trainingId = training.Id })" class="btn btn-primary btn-sm">
+                        View Topics
+                    </a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
 @if (ViewBag.NewTraining != null)
 {
     var training = ViewBag.NewTraining;
