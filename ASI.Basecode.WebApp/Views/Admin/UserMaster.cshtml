@@ -1,4 +1,5 @@
 @model ASI.Basecode.Services.ServiceModels.AdminCreateUserViewModel
+
 @{
     ViewData["Title"] = "UserMaster Page";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -29,7 +30,7 @@
         <div class="relative">
             <input type="search" name="search" id="default-search"
                    class="block h-[50px] w-[380px] rounded-xl border border-gray-300 bg-[#fff] px-5 text-sm text-gray-900"
-                   placeholder="Search Users..." />
+                   placeholder="Search Users..." value="@Context.Request.Query["search"]" />
             <button type="submit"
                     class="absolute bottom-1.5 end-2.5 rounded-lg bg-[#EAC231] px-3 py-2 text-sm font-medium text-black hover:bg-[#cfa221]">
                 Search
