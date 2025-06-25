@@ -90,7 +90,7 @@
                                 <a href="javascript:void(0);" onclick="viewDetails(@user.Id)">
                                     <span class="material-symbols-outlined text-[25px]">Visibility</span>
                                 </a>
-                                <a href="#">
+                                <a onclick="deleteProfile()" class="hover-pointer">
                                     <span class="material-symbols-outlined text-[25px]">Delete</span>
                                 </a>
                             </div>
@@ -142,6 +142,7 @@
 
 @await Html.PartialAsync("_UserAddModal")
 @await Html.PartialAsync("_UserEditModal")
+@await Html.PartialAsync("_UserDeleteModal")
 
 <!-- AJAX dynamic modal content -->
 <div id="viewUserModalContainer"></div>
@@ -269,5 +270,11 @@
             .catch(error => {
                 alert(error.message);
             });
+    }
+    function deleteProfile(){
+        document.getElementById('deleteUserModal').classList.remove('hidden');
+    }
+    function closeDeleteProfile() {
+        document.getElementById('deleteUserModal').classList.add('hidden');
     }
 </script>
