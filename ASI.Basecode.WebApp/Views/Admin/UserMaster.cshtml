@@ -84,7 +84,7 @@
                         <td class="px-6 py-4">@(user.Role == 0 ? "Admin" : "Guest")</td>
                         <td class="px-6 py-4">
                             <div class="flex justify-center gap-5">
-                                <a onclick="editDetails()" class="hover-pointer">
+                                <a href="javascript:void(0);" onclick="editDetails(@user.Id)" class="hover-pointer">
                                     <span class="material-symbols-outlined text-[25px]">Edit</span>
                                 </a>
                                 <a href="javascript:void(0);" onclick="viewDetails(@user.Id)">
@@ -164,12 +164,90 @@
         }
     }
 
-    function editDetails() {
-        document.getElementById('editUserModal').classList.remove('hidden');
+    function editDetails(userId) {
+        // Fetch user data and populate the edit modal
+        fetch(`/Admin/GetUserForEdit?userId=${userId}`)
+            .then(response => {
+                if (!response.ok) throw new Error("Unable to fetch user data.");
+                return response.json();
+            })
+            .then(user => {
+                // Populate the edit modal with user data
+                document.getElementById('editUserIdInput').value = user.id;
+                document.getElementById('editFirstName').value = user.firstName;
+                document.getElementById('editLastName').value = user.lastName;
+                document.getElementById('editEmail').value = user.emailId;
+                document.getElementById('editContact').value = user.contact || '';
+                document.getElementById('editRole').value = user.role;
+                
+                // Handle birthdate
+                if (user.birthdate) {
+                    const birthdate = new Date(user.birthdate);
+                    document.getElementById('editBirthdate').value = birthdate.toISOString().split('T')[0];
+                } else {
+                    document.getElementById('editBirthdate').value = '';
+                }
+
+                // Handle profile picture
+                const profileImage = document.getElementById('editProfileImage');
+                const placeholder = document.getElementById('editProfilePlaceholder');
+                const container = document.getElementById('editProfileImageContainer');
+                const existingProfilePictureInput = document.getElementById('editExistingProfilePicture');
+                
+                if (user.profilePicture) {
+                    profileImage.src = user.profilePicture;
+                    profileImage.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                    container.style.background = 'transparent';
+                    // Set the existing profile picture URL in the hidden input
+                    existingProfilePictureInput.value = user.profilePicture;
+                } else {
+                    profileImage.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+                    container.style.background = '#FFE9C6';
+                    // Clear the hidden input if no existing profile picture
+                    existingProfilePictureInput.value = '';
+                }
+
+                // Update user info display
+                document.getElementById('editUserName').textContent = `${user.firstName} ${user.lastName}`;
+                document.getElementById('editUserId').textContent = `ID: ${user.id}`;
+                document.getElementById('editUserEmail').textContent = user.emailId;
+                
+                if (user.createdTime) {
+                    const createdDate = new Date(user.createdTime);
+                    document.getElementById('editUserCreated').textContent = `Account Created: ${createdDate.toLocaleDateString()}`;
+                } else {
+                    document.getElementById('editUserCreated').textContent = 'Account Created: N/A';
+                }
+
+                // Show the edit modal
+                document.getElementById('editUserModal').classList.remove('hidden');
+            })
+            .catch(error => {
+                alert(error.message);
+            });
     }
 
     function closeEditDetails() {
         document.getElementById('editUserModal').classList.add('hidden');
+        
+        // Reset the edit form
+        const form = document.getElementById("editUserForm");
+        if (form) {
+            form.reset();
+        }
+        
+        // Reset profile image
+        const profileImage = document.getElementById('editProfileImage');
+        const placeholder = document.getElementById('editProfilePlaceholder');
+        const container = document.getElementById('editProfileImageContainer');
+        const existingProfilePictureInput = document.getElementById('editExistingProfilePicture');
+        
+        profileImage.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+        container.style.background = '#FFE9C6';
+        existingProfilePictureInput.value = '';
     }
 
     function closeViewDetails() {

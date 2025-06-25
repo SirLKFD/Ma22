@@ -47,6 +47,10 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<SignInManager>();
 
             this._services.AddHttpClient();
+
+            // Role-based filter service
+            this._services.AddScoped<RoleBasedFilterService>();
+            this._services.AddScoped<SessionRestorationFilter>();
         }
     }
 }
