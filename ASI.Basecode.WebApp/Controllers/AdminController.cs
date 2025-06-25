@@ -302,5 +302,12 @@ namespace ASI.Basecode.WebApp.Controllers
             return RedirectToAction("UserMaster");
         }
 
+        [HttpPost]
+        public IActionResult DeleteUser(int id)
+        {
+            _userService.DeleteUser(id);
+            return RedirectToAction("UserMaster");
+        }
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ASI.Basecode.Data.Interfaces;
 using ASI.Basecode.Data.Models;
 using Basecode.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,5 +67,15 @@ namespace ASI.Basecode.Data.Repositories
                 UnitOfWork.SaveChanges();
             }
         }
+        public void DeleteUser(Account user)
+        {
+            var existingUser = this.GetDbSet<Account>().FirstOrDefault(x => x.Id == user.Id);
+            if (existingUser != null)
+            {
+                this.GetDbSet<Account>().Remove(existingUser);
+                UnitOfWork.SaveChanges();
+            }
+        }
+
     }
 }
