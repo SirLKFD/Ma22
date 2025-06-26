@@ -11,11 +11,11 @@ using System.Text;
 
 namespace ASI.Basecode.Services.Services
 {
-    public class SessionRestorationFilter : IActionFilter
+    public class SessionRestorationService : IActionFilter
     {
-        private readonly ILogger<SessionRestorationFilter> _logger;
+        private readonly ILogger<SessionRestorationService> _logger;
 
-        public SessionRestorationFilter(ILogger<SessionRestorationFilter> logger)
+        public SessionRestorationService(ILogger<SessionRestorationService> logger)
         {
             _logger = logger;
         }
