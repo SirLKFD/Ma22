@@ -16,7 +16,8 @@ public partial class Account
     public string LastName { get; set; }
 
     public string Contact { get; set; }
-    public DateTime? Birthdate { get; set; }
+
+    public DateOnly? Birthdate { get; set; }
 
     public string ProfilePicture { get; set; }
 
@@ -31,6 +32,10 @@ public partial class Account
     public int Role { get; set; }
 
     public virtual Role RoleNavigation { get; set; }
+
+    public virtual ICollection<TopicMedium> TopicMedia { get; set; } = new List<TopicMedium>();
+
+    public virtual ICollection<Topic> Topics { get; set; } = new List<Topic>();
 
     public virtual ICollection<Training> Training { get; set; } = new List<Training>();
 

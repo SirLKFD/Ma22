@@ -67,5 +67,20 @@ namespace ASI.Basecode.Services.Services
         {
             return _repository.GetTrainingCategories().FirstOrDefault(c => c.Id == id);
         }
+
+        public List<TrainingCategoryViewModel> GetAllTrainingCategoryViewModels()
+        {
+            var categories = _repository.GetTrainingCategories()
+                .Select(c => new TrainingCategoryViewModel
+                {
+                    Id = c.Id,
+                    CategoryName = c.CategoryName,
+                    Description = c.Description,
+                    CoverPicture = c.CoverPicture,
+                    CreatedBy = c.CreatedBy,
+                    UpdatedTime = c.UpdatedTime
+                }).ToList();
+            return categories;
+        }
     }
 }

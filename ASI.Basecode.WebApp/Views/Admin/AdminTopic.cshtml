@@ -1,7 +1,39 @@
-﻿
 @{
-    ViewData["Title"] = "AdminTopic";
+    ViewData["Title"] = "Admin Topic Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var topic = ViewBag.Topic;
+    var mediaList = ViewBag.TopicMedia as List<ASI.Basecode.Data.Models.TopicMedium>;
 }
 
-<h1>AdminTopic</h1>
-
+<h2>Topic Details</h2>
+@if (topic != null)
+{
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4>@topic.TopicName</h4>
+            <p><b>Description:</b> @topic.Description</p>
+            <p><b>Created By:</b> @ViewBag.Account.FirstName @ViewBag.Account.LastName</p>
+            <p><b>Created Time:</b> @topic.CreatedTime</p>
+        </div>
+    </div>
+    <h4>Media</h4>
+    <ul>
+    @if (mediaList != null && mediaList.Count > 0)
+    {
+        foreach (var media in mediaList)
+        {
+            <li>
+                <a href="@media.MediaUrl" target="_blank">@media.Name</a>
+            </li>
+        }
+    }
+    else
+    {
+        <li>No media uploaded for this topic.</li>
+    }
+    </ul>
+}
+else
+{
+    <div class="alert alert-warning">Topic not found.</div>
+} 

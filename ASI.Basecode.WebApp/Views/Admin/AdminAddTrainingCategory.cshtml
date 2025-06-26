@@ -1,5 +1,4 @@
-﻿<h1>Add Training Category</h1>
-
+﻿@* 
 <form asp-action="AddTrainingCategory" asp-controller="AdminTrainingCategory" method="post" enctype="multipart/form-data">
     <div>
         <label asp-for="CategoryName">Category Name</label>
@@ -33,5 +32,4 @@
 }
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} *@

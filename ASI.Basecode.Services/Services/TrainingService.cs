@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.Linq;
 using static ASI.Basecode.Resources.Constants.Enums;
+using System.Collections.Generic;
 
 namespace ASI.Basecode.Services.Services
 {
@@ -54,6 +55,21 @@ namespace ASI.Basecode.Services.Services
                 Console.WriteLine($"[Service] ❌ Error: Training '{model.TrainingName}' already exists.");
                 throw new InvalidDataException(Resources.Messages.Errors.TrainingExists);
             }
+        }
+
+        public List<Training> GetAllTrainingsByCategoryId(int categoryId)
+        {
+            return _repository.GetTrainings().Where(t => t.TrainingCategoryId == categoryId).ToList();
+        }
+
+        public Training GetTrainingById(int id)
+        {
+            return _repository.GetTrainings().FirstOrDefault(t => t.Id == id);
+        }
+
+        public List<Training> GetAllTrainings()
+        {
+            return _repository.GetTrainings().ToList();
         }
     }
 }
