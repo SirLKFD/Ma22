@@ -39,5 +39,7 @@ public partial class Account
 
     public virtual ICollection<Training> Training { get; set; } = new List<Training>();
 
+    public virtual ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = new List<PasswordResetToken>();
+
     public virtual ICollection<TrainingCategory> TrainingCategories { get; set; } = new List<TrainingCategory>();
 }
