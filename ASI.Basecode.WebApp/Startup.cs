@@ -98,7 +98,7 @@ namespace ASI.Basecode.WebApp
             // Add global filters
             services.AddControllersWithViews(options =>
             {
-                options.Filters.Add<SessionRestorationFilter>();
+                options.Filters.Add<SessionRestorationService>();
             });
 
             //Configuration
