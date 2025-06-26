@@ -29,6 +29,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly IUserService _userService;
         private readonly IPasswordResetService _passwordResetService;
         private readonly IEmailService _emailService;
+        private readonly ILogger<AccountController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
@@ -44,6 +45,7 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="tokenProviderOptionsFactory">The token provider options factory.</param>
         /// <param name="passwordResetService">The password reset service.</param>
         /// <param name="emailService">The email service.</param>
+        /// <param name="logger">The logger.</param>
         public AccountController(
                             SignInManager signInManager,
                             IHttpContextAccessor httpContextAccessor,
@@ -54,7 +56,8 @@ namespace ASI.Basecode.WebApp.Controllers
                             TokenValidationParametersFactory tokenValidationParametersFactory,
                             TokenProviderOptionsFactory tokenProviderOptionsFactory,
                             IPasswordResetService passwordResetService,
-                            IEmailService emailService) : base(httpContextAccessor, loggerFactory, configuration, mapper)
+                            IEmailService emailService,
+                            ILogger<AccountController> logger) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             this._sessionManager = new SessionManager(this._session);
             this._signInManager = signInManager;
@@ -64,6 +67,7 @@ namespace ASI.Basecode.WebApp.Controllers
             this._userService = userService;
             this._passwordResetService = passwordResetService;
             this._emailService = emailService;
+            this._logger = logger;
         }
 
         /// <summary>
@@ -202,41 +206,52 @@ namespace ASI.Basecode.WebApp.Controllers
         [ServiceFilter(typeof(RoleBasedFilterService))]
         public IActionResult ForgotPassword(string email = "")
         {
-            var model = new LoginViewModel();
-
-            // If email is provided from login page, pre-fill it
+            var model = new PasswordResetRequestViewModel();
             if (!string.IsNullOrEmpty(email))
             {
-                model.EmailId = email;
-                // Show success message if email was provided
+                model.Email = email;
                 TempData["SuccessMessage"] = "No worries, we sent you a reset link in your email.";
             }
-
             return View(model);
         }
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> ForgotPassword(LoginViewModel model)
+        public async Task<IActionResult> ForgotPassword(PasswordResetRequestViewModel model)
         {
+            _logger.LogInformation("ForgotPassword POST called for email: {Email}", model.Email);
             if (ModelState.IsValid)
             {
-                var token = await _passwordResetService.GenerateResetTokenAsync(model.EmailId);
+                var token = await _passwordResetService.GenerateResetTokenAsync(model.Email);
                 if (token != null)
                 {
                     var resetLink = Url.Action("ResetPassword", "Account", new { token = token }, Request.Scheme);
                     var dynamicData = new System.Collections.Generic.Dictionary<string, string>
                     {
-                        { "FirstName", model.EmailId }, // Replace with actual first name if available
+                        { "FirstName", model.Email }, // Replace with actual first name if available
                         { "ResetLink", resetLink }
                     };
-                    await _emailService.SendEmailAsync(model.EmailId, "d-7ee0cdbc2a14494faf8e4ba28c12af82", dynamicData);
+                    _logger.LogInformation("Sending reset email to {Email} with link: {ResetLink}", model.Email, resetLink);
+                    await _emailService.SendEmailAsync(model.Email, "d-7ee0cdbc2a14494faf8e4ba28c12af82", dynamicData);
                     TempData["SuccessMessage"] = "No worries, we sent you a reset link in your email.";
                 }
                 else
                 {
+                    _logger.LogWarning("ForgotPassword: Email not found: {Email}", model.Email);
                     TempData["ErrorMessage"] = "Email not found.";
                 }
                 return View(model);
+            }
+            else
+            {
+                foreach (var key in ModelState.Keys)
+                {
+                    var errors = ModelState[key].Errors;
+                    foreach (var error in errors)
+                    {
+                        _logger.LogWarning("ModelState error for key '{Key}': {Error}", key, error.ErrorMessage);
+                    }
+                }
+                _logger.LogWarning("ForgotPassword: Invalid model state for email: {Email}", model.Email);
             }
             return View(model);
         }
@@ -260,8 +275,10 @@ namespace ASI.Basecode.WebApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(ASI.Basecode.Services.ServiceModels.PasswordResetViewModel model)
         {
+            _logger.LogInformation("ResetPassword POST called for token: {Token}", model.Token);
             if (!ModelState.IsValid || model.NewPassword != model.ConfirmPassword)
             {
+                _logger.LogWarning("ResetPassword: Passwords do not match or model invalid for token: {Token}", model.Token);
                 TempData["ErrorMessage"] = "Passwords do not match.";
                 return View(model);
             }
@@ -269,7 +286,6 @@ namespace ASI.Basecode.WebApp.Controllers
             var result = await _passwordResetService.ResetPasswordAsync(model.Token, encryptedPassword);
             if (result)
             {
-                // Send confirmation email (fetch user email by token if needed)
                 var resetTokenRepo = (ASI.Basecode.Data.Interfaces.IPasswordResetTokenRepository)HttpContext.RequestServices.GetService(typeof(ASI.Basecode.Data.Interfaces.IPasswordResetTokenRepository));
                 var tokenEntity = resetTokenRepo.GetByToken(model.Token);
                 var userEmail = tokenEntity?.Account?.EmailId;
@@ -282,11 +298,14 @@ namespace ASI.Basecode.WebApp.Controllers
                         { "FirstName", firstName },
                         { "LoginLink", loginLink }
                     };
+                    _logger.LogInformation("Sending password reset confirmation email to {Email}", userEmail);
                     await _emailService.SendEmailAsync(userEmail, "d-34c6128ba49d493895e13800334887ce", dynamicData);
                 }
                 TempData["SuccessMessage"] = "Password updated successfully.";
-                return RedirectToAction("Login");
+                _logger.LogInformation("Password reset successful for token: {Token}", model.Token);
+                return View(model);
             }
+            _logger.LogWarning("ResetPassword: Invalid or expired reset token: {Token}", model.Token);
             TempData["ErrorMessage"] = "Invalid or expired reset token.";
             return View(model);
         }

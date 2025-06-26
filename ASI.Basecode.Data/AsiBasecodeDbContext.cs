@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -298,22 +298,23 @@ namespace ASI.Basecode.Data
             {
                 entity.ToTable("PasswordResetTokens");
 
-                entity.HasKey(e => e.Id);
+                entity.HasKey(e => e.TokenId);
 
                 entity.Property(e => e.Token)
                     .IsRequired()
                     .HasMaxLength(128);
 
-                entity.Property(e => e.Expiration)
+                entity.Property(e => e.ExpirationTime)
                     .IsRequired();
 
                 entity.Property(e => e.IsUsed)
                     .IsRequired();
 
                 entity.HasOne(e => e.Account)
-                    .WithMany()
+                    .WithMany(p => p.PasswordResetTokens)
                     .HasForeignKey(e => e.AccountId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_PasswordResetTokens_Accounts");
             });
 
             OnModelCreatingPartial(modelBuilder);
