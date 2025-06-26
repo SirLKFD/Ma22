@@ -1,157 +1,103 @@
 ﻿@model List<ASI.Basecode.Services.ServiceModels.TrainingCategoryViewModel>
+
 @{
     ViewData["Title"] = "Admin Training Category";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    // var categories = ViewBag.TrainingCategories as IEnumerable<ASI.Basecode.Services.ServiceModels.TrainingCategoryViewModel>;
 }
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-<div class="mx-20 mb-10 mt-10 flex flex-col gap-4">
-    <h1 class="text-4xl font-weight-bold uppercase">Training Categories</h1>
-    <div class="flex items-center justify-between">
+<div class="mx-20 mt-12 mb-16 flex flex-col gap-8">
+    <!-- Header and Action Row -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h1 class="text-4xl font-bold text-[#222] tracking-tight uppercase">Training Categories</h1>
 
-        <div class="relative w-[400px]">
-            <!-- Search icon inside input -->
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                search
-            </span>
-      
-            <input type="search" name="search" id="default-search"
-                   class="block h-[50px] w-[400px] rounded-xl border border-gray-300 bg-[#fff] pl-10 pr-[90px] text-sm text-gray-900"
-                   placeholder="Search Category..." />
+        <div class="flex flex-col sm:flex-row gap-4">
+            <!-- Search Field -->
+            <div class="relative w-full sm:w-[400px]">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">
+                    search
+                </span>
+                <input type="search" placeholder="Search Category..."
+                       class="w-full h-12 pl-10 pr-[100px] rounded-full border border-gray-300 bg-white text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
 
-            <button type="submit"
-                    class="absolute right-2.5 top-1.5 rounded-lg bg-[#EAC231] px-3 py-2 text-sm font-medium text-black hover:bg-[#cfa221]">
-                Search
+                <button type="submit"
+                        class="absolute right-2 top-[6px] rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black hover:bg-[#cfa221] transition">
+                    Search
+                </button>
+            </div>
+
+            <!-- Add Button -->
+            <button class="rounded-full bg-[#EAC231] px-6 py-2 text-sm font-semibold text-black shadow-md hover:bg-[#cfa221] transition">
+                Add+
             </button>
-
         </div>
-
-        <button class="rounded-xl bg-[#EAC231] px-8 py-2 text-sm font-medium hover:bg-[#cfa221]">Add+</button>
     </div>
 
-</div>
-
-<div class="flex flex-wrap gap-6 mb-10">
-    @foreach (var category in Model)
-    {
-        <div class="flex flex-col ml-20 w-[350px] bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700 outline outline-1 outline-black">
-            <div class="h-[180px] overflow-hidden rounded-t-lg">
-                <img class="w-full h-full object-cover" src="@category.CoverPicture" alt="Cover Image" />
-            </div>
-
-
-            <div class="flex justify-between items-center px-4 py-2">
-                <h1 class="text-2xl">@category.CategoryName</h1>
-                <div>
-                    <span class="material-symbols-outlined cursor-pointer text-gray-700 hover:text-black">edit</span>
-                    <span class="material-symbols-outlined cursor-pointer text-red-600 hover:text-red-800">delete</span>
-                </div>
-            </div>
-
-            <div class="flex justify-between px-4 py-2">
-                <p class="text-sm">@category.Description</p>
-            </div>
-
-            <div class="flex justify-between px-4 py-2 text-xs mb-2">
-                <div>
-                    <p>Date Modified: @category.UpdatedTime.ToString("MMM dd, yyyy")</p>
-                    <p>Created By: @category.CreatedBy</p>
-                </div>
-                <button class="bg-[#640A16] text-white text-sm px-4 py-1 rounded-lg">Access</button>
-            </div>
-        </div>
-    }
-</div>
-
-<div class="flex justify-end mx-20 my-10">
-
-    <nav aria-label="Page navigation example">
-        <ul class="inline-flex -space-x-px text-sm">
-            <li>
-                <a href="#" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
-            </li>
-            <li>
-                <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
-            </li>
-            <li>
-                <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
-            </li>
-            <li>
-                <a href="#" aria-current="page" class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
-            </li>
-            <li>
-                <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">4</a>
-            </li>
-            <li>
-                <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">5</a>
-            </li>
-            <li>
-                <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</a>
-            </li>
-        </ul>
-    </nav>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@* <h1>Add Training Category</h1>
-
-<form asp-action="AddTrainingCategory" asp-controller="AdminTrainingCategory" method="post" enctype="multipart/form-data">
-    <div>
-        <label asp-for="CategoryName">Category Name</label>
-        <input asp-for="CategoryName" />
-        <span asp-validation-for="CategoryName"></span>
-    </div>
-    <div>
-        <label asp-for="Description">Description</label>
-        <input asp-for="Description" />
-        <span asp-validation-for="Description"></span>
-    </div>
-    <div>
-        <label for="CoverPicture">Cover Picture</label>
-        <input type="file" name="CoverPicture" />
-    </div>
-    <button type="submit">Add Training Category</button>
-</form>
-
-@if (ViewBag.NewCategory != null)
-{
-    var cat = ViewBag.NewCategory;
-    <div class="alert alert-success mt-3">
-        <strong>New Training Category Added:</strong><br />
-        Name: @cat.CategoryName <br />
-        Description: @cat.Description <br />
-        @if (!string.IsNullOrEmpty(cat.CoverPicture))
+    <!-- Cards Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        @foreach (var category in Model)
         {
-            <img src="@cat.CoverPicture" alt="Cover Picture" style="max-width:100px;max-height:100px;" />
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col min-h-[400px]">
+                <!-- Image -->
+                <div class="h-[180px]">
+                    <img class="w-full h-full object-cover outline outline-1 outline-black" src="@category.CoverPicture" alt="Cover Image" />
+                </div>
+
+                <!-- Content -->
+                <div class="p-4 flex flex-col flex-grow">
+                    <!-- Title and Actions -->
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-xl font-semibold text-gray-800">@category.CategoryName</h2>
+                        <div class="flex gap-2 text-gray-600">
+                            <span class="material-symbols-outlined cursor-pointer hover:text-black">edit</span>
+                            <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700">delete</span>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="text-sm text-gray-600 line-clamp-3">@category.Description</p>
+
+                    <!-- Footer -->
+                    <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
+                        <div>
+                            <p><strong>Modified:</strong> @category.UpdatedTime.ToString("MMM dd, yyyy")</p>
+                            <p><strong>By:</strong> @category.CreatedBy</p>
+                        </div>
+                        <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
+                            Access
+                        </button>
+                    </div>
+                </div>
+            </div>
         }
     </div>
-}
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-} *@
+    <!-- Pagination -->
+    <div class="flex justify-end">
+        <nav>
+            <ul class="inline-flex gap-1 text-sm">
+                <li>
+                    <a href="#" class="px-3 py-2 rounded-l-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition">Previous</a>
+                </li>
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <li>
+                        <a href="#" class="px-3 py-2 border border-gray-300 @(i == 3 ? "bg-blue-50 text-blue-600" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") rounded-md transition">
+                            @i
+                        </a>
+                    </li>
+                }
+                <li>
+                    <a href="#" class="px-3 py-2 rounded-r-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+
+
+<script>
+
+</script>
 
