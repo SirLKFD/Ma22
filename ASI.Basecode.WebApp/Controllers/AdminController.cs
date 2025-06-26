@@ -51,7 +51,7 @@ namespace ASI.Basecode.WebApp.Controllers
 
         public IActionResult UserMaster(int page = 1, string filter = "all", string search = "")
         {
-            const int PageSize = 8;
+            const int PageSize = 7;
 
             var allUsers = _userService.GetAllUsers().ToList();
 

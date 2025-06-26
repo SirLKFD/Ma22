@@ -22,17 +22,18 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-<div class="mx-20 mb-2 mt-10 flex items-center justify-between">
-    <h1 class="font-weight-bold text-4xl uppercase">User Panel</h1>
+<!-- Header -->
+<div class="mx-20 mt-12 mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <h1 class="text-4xl font-bold uppercase text-gray-800">User Panel</h1>
 
-    <form class="max-w-md" method="get" action="@Url.Action("UserMaster")">
+    <form class="w-full sm:w-auto" method="get" action="@Url.Action("UserMaster")">
         <input type="hidden" name="filter" value="@filter" />
-        <div class="relative">
+        <div class="relative w-full sm:w-[380px]">
             <input type="search" name="search" id="default-search"
-                   class="block h-[50px] w-[380px] rounded-xl border border-gray-300 bg-[#fff] px-5 text-sm text-gray-900"
+                   class="w-full h-12 rounded-full border border-gray-300 px-5 pr-[90px] text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231] transition"
                    placeholder="Search Users..." value="@Context.Request.Query["search"]" />
             <button type="submit"
-                    class="absolute bottom-1.5 end-2.5 rounded-lg bg-[#EAC231] px-3 py-2 text-sm font-medium text-black hover:bg-[#cfa221]">
+                    class="absolute top-[6px] right-2 rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black hover:bg-[#cfa221] transition">
                 Search
             </button>
         </div>
@@ -41,27 +42,27 @@
 
 <hr class="mx-20 my-4 border-t-2 border-[#640A16]" />
 
-<div class="mx-20 mb-4 flex flex-row items-center justify-between rounded-xl p-2">
-    <div class="flex flex-row gap-20 text-xl">
-        <a href="@Url.Action("UserMaster", new { page = 1, filter = "all" })">All (@Model.TotalUsers)</a>
-        <a href="@Url.Action("UserMaster", new { page = 1, filter = "admin" })">Admin (@Model.TotalAdmins)</a>
-        <a href="@Url.Action("UserMaster", new { page = 1, filter = "guest" })">Guest (@Model.TotalGuests)</a>
+<!-- Filter Tabs and Add User -->
+<div class="mx-20 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div class="flex gap-6 text-base font-medium text-gray-600">
+        <a href="@Url.Action("UserMaster", new { page = 1, filter = "all" })" class="hover:text-black transition">All (@Model.TotalUsers)</a>
+        <a href="@Url.Action("UserMaster", new { page = 1, filter = "admin" })" class="hover:text-black transition">Admin (@Model.TotalAdmins)</a>
+        <a href="@Url.Action("UserMaster", new { page = 1, filter = "guest" })" class="hover:text-black transition">Guest (@Model.TotalGuests)</a>
     </div>
 
-    <div>
-        <button onclick="openModal()" class="rounded-lg bg-[#EAC231] p-2 text-sm font-medium hover:bg-[#cfa221]">
-            Add User +
-        </button>
-    </div>
+    <button onclick="openModal()" class="rounded-full bg-[#EAC231] px-5 py-2 text-sm font-semibold text-black shadow-md hover:bg-[#cfa221] transition">
+        Add User +
+    </button>
 </div>
 
-<div class="mx-20 overflow-x-auto rounded-xl">
+<!-- Table -->
+<div class="mx-20 overflow-x-auto rounded-xl shadow-lg bg-white">
     <table class="w-full text-left text-sm text-black">
-        <thead class="bg-[#640A16] text-center text-xl text-white">
+        <thead class="bg-[#640A16] text-white text-sm uppercase tracking-wide">
             <tr>
                 <th scope="col" class="px-6 py-3 text-left">User</th>
                 <th scope="col" class="px-6 py-3 text-left">Position</th>
-                <th scope="col" class="px-6 py-3">Actions</th>
+                <th scope="col" class="px-6 py-3 text-center">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -69,8 +70,8 @@
             {
                 foreach (var user in Model.Users)
                 {
-                    <tr class="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-                        <th scope="row" class="flex items-center gap-3 whitespace-nowrap px-6 py-4 font-medium text-black">
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <th scope="row" class="flex items-center gap-3 whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                             @if (!string.IsNullOrEmpty(user.ProfilePicture))
                             {
                                 <img src="@user.ProfilePicture" alt="Profile" class="h-10 w-10 rounded-full object-cover" />
@@ -82,18 +83,18 @@
                             <span>@($"{user.FirstName} {user.LastName}")</span>
                         </th>
 
-                        <td class="px-6 py-4">@(user.Role == 0 ? "Admin" : "Guest")</td>
+                        <td class="px-6 py-4 text-sm text-gray-700">@(user.Role == 0 ? "Admin" : "Guest")</td>
+
                         <td class="px-6 py-4">
-                            <div class="flex justify-center gap-5">
-                                <a href="javascript:void(0);" onclick="editDetails(@user.Id)" class="hover-pointer">
-                                    <span class="material-symbols-outlined text-[25px]">Edit</span>
+                            <div class="flex justify-center gap-5 text-gray-600">
+                                <a href="javascript:void(0);" onclick="editDetails(@user.Id)">
+                                    <span class="material-symbols-outlined text-[22px] hover:text-black transition cursor-pointer">Edit</span>
                                 </a>
                                 <a href="javascript:void(0);" onclick="viewDetails(@user.Id)">
-                                    <span class="material-symbols-outlined text-[25px]">Visibility</span>
+                                    <span class="material-symbols-outlined text-[22px] hover:text-black transition cursor-pointer">Visibility</span>
                                 </a>
-
-                                <a onclick="deleteProfile(@user.Id, '@user.FirstName @user.LastName', '@(user.ProfilePicture ?? "")')" class="hover-pointer">
-                                    <span class="material-symbols-outlined text-[25px]">Delete</span>
+                                <a onclick="deleteProfile(@user.Id, '@user.FirstName @user.LastName', '@(user.ProfilePicture ?? "")')">
+                                    <span class="material-symbols-outlined text-[22px] text-red-600 hover:text-red-800 transition cursor-pointer">Delete</span>
                                 </a>
                             </div>
                         </td>
@@ -103,21 +104,22 @@
             else
             {
                 <tr>
-                    <td colspan="3" class="py-4 text-center">No users found.</td>
+                    <td colspan="3" class="py-4 text-center text-gray-500">No users found.</td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
 
-<div class="mx-20 my-10 flex justify-end">
+<!-- Pagination -->
+<div class="mx-20 mt-10 flex justify-end">
     <nav aria-label="Page navigation">
-        <ul class="flex h-8 items-center -space-x-px text-sm">
+        <ul class="flex gap-1 text-sm">
             @if (Model.CurrentPage > 1)
             {
                 <li>
                     <a href="@Url.Action("UserMaster", new { page = Model.CurrentPage - 1, filter = filter })"
-                       class="flex h-8 items-center justify-center rounded-s-lg border border-gray-300 px-3 hover:bg-gray-100">Prev</a>
+                       class="px-3 py-2 rounded-l-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 hover:text-black transition">Prev</a>
                 </li>
             }
 
@@ -125,9 +127,7 @@
             {
                 <li>
                     <a href="@Url.Action("UserMaster", new { page = i, filter = filter })"
-                       class="flex h-8 items-center justify-center border border-gray-300 px-3 @(i == Model.CurrentPage ? "bg-gray-300" : "hover:bg-gray-100")">
-                        @i
-                    </a>
+                       class="px-3 py-2 border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 hover:text-black transition @(i == Model.CurrentPage ? "bg-[#EAC231] text-black font-semibold" : "")">@i</a>
                 </li>
             }
 
@@ -135,7 +135,7 @@
             {
                 <li>
                     <a href="@Url.Action("UserMaster", new { page = Model.CurrentPage + 1, filter = filter })"
-                       class="flex h-8 items-center justify-center rounded-e-lg border border-gray-300 px-3 hover:bg-gray-100">Next</a>
+                       class="px-3 py-2 rounded-r-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 hover:text-black transition">Next</a>
                 </li>
             }
         </ul>
