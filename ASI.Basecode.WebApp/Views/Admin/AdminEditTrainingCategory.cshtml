@@ -1,0 +1,65 @@
+﻿@model TrainingCategoryViewModel
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<div id="editTrainingCategory" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm hidden">
+    <div class="flex max-h-[700px] w-full max-w-3xl flex-col rounded-xl bg-[#640A16] text-white shadow-lg p-6">
+        <div class="flex">
+            <a onclick="closeEditTrainingCategory()" class="hover-pointer">
+                <span class="material-symbols-outlined text-[50px]">arrow_circle_left</span>
+            </a>
+        </div>
+        <div class="flex align-items-center justify-start w-full my-3">
+            <h1 class="uppercase text-2xl font-weight-bold">Edit Training Category</h1>
+        </div>
+        <form asp-action="AddTrainingCategory" asp-controller="AdminTrainingCategory" method="post" enctype="multipart/form-data" class="flex flex-col gap-4">
+            <label for="CoverPicture" class="flex flex-col items-center justify-center bg-white h-[150px] w-full rounded-xl cursor-pointer">
+                <input type="file"
+                       name="CoverPicture"
+                       id="CoverPicture"
+                       accept="image/*"
+                       class="hidden" />
+                <span class="material-symbols-outlined text-[50px] text-black">add_photo_alternate</span>
+                <h1 class="text-black uppercase">Upload Cover Photo</h1>
+            </label>
+
+            <div class="flex flex-col gap-4">
+
+                <div>
+                    <label asp-for="CategoryName" class="block text-sm font-medium text-white mb-2">Category Name</label>
+                    <input asp-for="CategoryName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black" />
+                    <span asp-validation-for="CategoryName" class="text-red-500 text-sm"></span>
+                </div>
+                <div>
+                    <label asp-for="Description" class="block text-sm font-medium text-white mb-2">Description</label>
+                    <textarea asp-for="Description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black"></textarea>
+                    <span asp-validation-for="Description" class="text-red-500 text-sm"></span>
+                </div>
+                <button class="bg-[#FFE9C6] w-2/3 text-black align-self-center py-2 rounded-xl font-weight-bold ">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (ViewBag.NewCategory != null)
+{
+    var cat = ViewBag.NewCategory;
+    <div class="alert alert-success mt-3">
+        <strong>New Training Category Added:</strong><br />
+        Name: @cat.CategoryName <br />
+        Description: @cat.Description <br />
+        @if (!string.IsNullOrEmpty(cat.CoverPicture))
+        {
+            <img src="@cat.CoverPicture" alt="Cover Picture" style="max-width:100px;max-height:100px;" />
+        }
+    </div>
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+
