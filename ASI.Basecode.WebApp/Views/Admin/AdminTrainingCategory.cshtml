@@ -49,7 +49,7 @@
                     <div class="flex justify-between items-center mb-2">
                         <h2 class="text-xl font-semibold text-gray-800">@category.CategoryName</h2>
                         <div class="flex gap-2 text-gray-600">
-                            <span class="material-symbols-outlined cursor-pointer hover:text-black">edit</span>
+                            <span class="material-symbols-outlined cursor-pointer hover:text-black" onclick="editTrainingCategory()">edit</span>
                             <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700">delete</span>
                         </div>
                     </div>
@@ -96,6 +96,7 @@
 </div>
 
 @await Html.PartialAsync("~/Views/Admin/AdminAddTrainingCategory.cshtml", new TrainingCategoryViewModel())
+@await Html.PartialAsync("~/Views/Admin/AdminEditTrainingCategory.cshtml", new TrainingCategoryViewModel())
 
  <script type="text/javascript">
         function addTrainingCategory(){
@@ -104,6 +105,13 @@
 
         function closeTrainingCategory(){
             document.getElementById('addTrainingCategory').classList.add('hidden');
+        }
+
+        function editTrainingCategory(){
+            document.getElementById('editTrainingCategory').classList.remove('hidden');
+        }
+        function closeEditTrainingCategory(){
+            document.getElementById('editTrainingCategory').classList.add('hidden');
         }
 </script>
 
