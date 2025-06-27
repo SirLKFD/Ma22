@@ -82,47 +82,5 @@ namespace ASI.Basecode.Services.Services
                 }).ToList();
             return categories;
         }
-
-        public List<TrainingCategoryViewModel> GetTrainingCategories(string search, int page, int pageSize)
-        {
-            var query = _repository.GetTrainingCategories().AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                search = search.ToLower();
-                query = query.Where(c =>
-                    c.CategoryName.ToLower().Contains(search) ||
-                    (c.Description != null && c.Description.ToLower().Contains(search)));
-            }
-
-            return query
-                .OrderByDescending(c => c.CreatedTime)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .Select(c => new TrainingCategoryViewModel
-                {
-                    Id = c.Id,
-                    CategoryName = c.CategoryName,
-                    Description = c.Description,
-                    CoverPicture = c.CoverPicture,
-                    CreatedBy = c.CreatedBy,
-                    UpdatedTime = c.UpdatedTime
-                }).ToList();
-        }
-
-        public int CountTrainingCategories(string search)
-        {
-            var query = _repository.GetTrainingCategories().AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                search = search.ToLower();
-                query = query.Where(c =>
-                    c.CategoryName.ToLower().Contains(search) ||
-                    (c.Description != null && c.Description.ToLower().Contains(search)));
-            }
-
-            return query.Count();
-        }
     }
 }
