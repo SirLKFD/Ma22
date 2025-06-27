@@ -43,20 +43,13 @@ namespace ASI.Basecode.WebApp.Controllers
         /// </summary>
         /// <returns> Home View </returns>
         /// 
-
+        
         [Authorize(Roles = "0")]
-        public IActionResult AdminTrainingCategory(string search = "", int page = 1)
+        public IActionResult AdminTrainingCategory()
         {
-            const int pageSize = 6;
-            var result = _trainingCategoryService.GetTrainingCategories(search, page, pageSize); // ← CHANGED
+            List<TrainingCategoryViewModel> categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
 
-            // ✅ CHANGED: Pass pagination info to ViewBag (like UserMaster)
-            ViewBag.Search = search;
-            ViewBag.PageSize = pageSize;
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalCount = _trainingCategoryService.CountTrainingCategories(search); // ← CHANGED
-
-            return View("~/Views/Admin/AdminTrainingCategory.cshtml", result); // ← CHANGED
+            return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
         }
 
         [HttpPost]
@@ -112,8 +105,9 @@ namespace ASI.Basecode.WebApp.Controllers
                 _trainingCategoryService.AddTrainingCategory(model);
                 Console.WriteLine("✅ Training category added");
 
-                return RedirectToAction("AdminTrainingCategory", new { page = 1 });
+                ViewBag.NewCategory = model;
 
+                return RedirectToAction("AdminTrainingCategory");
             }
             catch (Exception ex)
             {
