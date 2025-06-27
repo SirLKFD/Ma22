@@ -66,9 +66,10 @@ namespace ASI.Basecode.WebApp.Controllers
             IFormFile CoverPicture,
             [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
+            List<TrainingCategoryViewModel> categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
             if (!ModelState.IsValid)
             {
-                return View("~/Views/Admin/AdminTrainingCategory.cshtml", model);
+                return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
             }
 
             try
@@ -112,11 +113,12 @@ namespace ASI.Basecode.WebApp.Controllers
                 Console.WriteLine("✅ Training category added");
 
                 return RedirectToAction("AdminTrainingCategory", new { page = 1 });
+
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
-                return View("~/Views/Admin/AdminTrainingCategory.cshtml", model);
+                return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
             }
         }
     }
