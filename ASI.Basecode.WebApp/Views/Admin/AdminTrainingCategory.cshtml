@@ -4,6 +4,12 @@
     ViewData["Title"] = "Admin Training Category";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 
+    int totalCount = ViewBag.TotalCount;
+    int pageSize = ViewBag.PageSize;
+    int currentPage = ViewBag.CurrentPage;
+    string search = ViewBag.Search as string ?? "";
+    int totalPages = (int)Math.Ceiling((decimal)totalCount / pageSize);
+
 }
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 <div class="mx-20 mt-12 mb-16 flex flex-col gap-8">
@@ -13,18 +19,19 @@
 
         <div class="flex flex-col sm:flex-row gap-4">
             <!-- Search Field -->
-            <div class="relative w-full sm:w-[400px]">
+            <form class="relative w-full sm:w-[400px]" method="get" action="@Url.Action("AdminTrainingCategory")">
+                <input type="hidden" name="page" value="1" />
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">
                     search
                 </span>
-                <input type="search" placeholder="Search Category..."
+                <input type="search" name="search" value="@search"
+                       placeholder="Search Category..."
                        class="w-full h-12 pl-10 pr-[100px] rounded-full border border-gray-300 bg-white text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
-
                 <button type="submit"
                         class="absolute right-2 top-[6px] rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black hover:bg-[#cfa221] transition">
                     Search
                 </button>
-            </div>
+            </form>
 
             <!-- Add Button -->
             <button class="rounded-full bg-[#EAC231] px-6 py-2 text-sm font-semibold text-black shadow-md hover:bg-[#cfa221] transition" onclick="addTrainingCategory()">
@@ -73,24 +80,27 @@
     </div>
 
     <!-- Pagination -->
-    <div class="flex justify-end">
-        <nav>
-            <ul class="inline-flex gap-1 text-sm">
-                <li>
-                    <a href="#" class="px-3 py-2 rounded-l-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition">Previous</a>
-                </li>
-                @for (int i = 1; i <= 5; i++)
-                {
-                    <li>
-                        <a href="#" class="px-3 py-2 border border-gray-300 @(i == 3 ? "bg-blue-50 text-blue-600" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") rounded-md transition">
-                            @i
-                        </a>
-                    </li>
-                }
-                <li>
-                    <a href="#" class="px-3 py-2 rounded-r-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition">Next</a>
-                </li>
-            </ul>
+    <div class="flex justify-center mt-10">
+        <nav class="flex items-center space-x-2">
+            @if (currentPage > 1)
+            {
+                <a href="@Url.Action("AdminTrainingCategory", new { page = currentPage - 1, search = search })"
+                   class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-sm">Previous</a>
+            }
+
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <a href="@Url.Action("AdminTrainingCategory", new { page = i, search = search })"
+                   class="px-4 py-2 rounded @(i == currentPage ? "bg-[#EAC231] text-black font-bold" : "bg-gray-100 text-gray-800") text-sm">
+                    @i
+                </a>
+            }
+
+            @if (currentPage < totalPages)
+            {
+                <a href="@Url.Action("AdminTrainingCategory", new { page = currentPage + 1, search = search })"
+                   class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-sm">Next</a>
+            }
         </nav>
     </div>
 </div>
