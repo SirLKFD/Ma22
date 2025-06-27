@@ -1,21 +1,40 @@
-﻿@* 
-<form asp-action="AddTrainingCategory" asp-controller="AdminTrainingCategory" method="post" enctype="multipart/form-data">
-    <div>
-        <label asp-for="CategoryName">Category Name</label>
-        <input asp-for="CategoryName" />
-        <span asp-validation-for="CategoryName"></span>
+﻿@* <div id="addTrainingCategory" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm hidden">
+    <div class="relative flex max-h-[700px] w-full max-w-6xl flex-row rounded-xl bg-white shadow-lg p-6">
+        <div class="w-full">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Add Training Category</h2>
+                <button onclick="closeTrainingCategory()" class="text-gray-500 hover:text-gray-700">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+             <form asp-action="AddTrainingCategory" asp-controller="AdminTrainingCategory" method="post" enctype="multipart/form-data" class="space-y-4">
+                <div>
+                    <label asp-for="CategoryName" class="block text-sm font-medium text-gray-700 mb-2">Category Name</label>
+                    <input asp-for="CategoryName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
+                    <span asp-validation-for="CategoryName" class="text-red-500 text-sm"></span>
+                </div>
+                <div>
+                    <label asp-for="Description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea asp-for="Description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231]"></textarea>
+                    <span asp-validation-for="Description" class="text-red-500 text-sm"></span>
+                </div>
+                <div>
+                    <label for="CoverPicture" class="block text-sm font-medium text-gray-700 mb-2">Cover Picture</label>
+                    <input type="file" name="CoverPicture" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
+                </div>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" onclick="closeTrainingCategory()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-[#EAC231] text-black font-semibold rounded-md hover:bg-[#cfa221] transition">
+                        Add Training Category
+                    </button>
+                </div>
+            </form> 
+        </div>
     </div>
-    <div>
-        <label asp-for="Description">Description</label>
-        <input asp-for="Description" />
-        <span asp-validation-for="Description"></span>
-    </div>
-    <div>
-        <label for="CoverPicture">Cover Picture</label>
-        <input type="file" name="CoverPicture" />
-    </div>
-    <button type="submit">Add Training Category</button>
-</form>
+</div>
 
 @if (ViewBag.NewCategory != null)
 {
@@ -32,4 +51,85 @@
 }
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} *@
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+} *@
+
+
+
+
+
+
+
+
+
+@model ASI.Basecode.Services.ServiceModels.TrainingCategoryViewModel
+
+<div id="AddTrainingCategory" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+    <div class="relative flex max-h-[700px] w-full max-w-5xl flex-row rounded-xl bg-[#640A16] shadow-lg">
+
+        <!-- Left: Cover Picture Upload -->
+        <div class="flex w-[450px] flex-col items-center justify-center rounded-l-xl bg-white relative">
+            <div class="absolute left-5 top-5">
+                <a onclick="document.getElementById('AddTrainingCategory').classList.add('hidden')" class="cursor-pointer">
+                    <span class="material-symbols-outlined text-[50px]">arrow_circle_left</span>
+                </a>
+            </div>
+
+            <!-- Upload UI -->
+            <label for="coverPictureInput" class="mb-10 block h-[300px] w-[300px] cursor-pointer">
+                <div class="flex h-full w-full items-center justify-center overflow-hidden rounded-3xl bg-[#FFE9C6]">
+                    <img id="coverPreview" src="" alt="Preview" class="hidden h-full w-full rounded-3xl object-cover" />
+                    <h1 id="coverPlus" class="text-5xl">+</h1>
+                </div>
+            </label>
+
+            <h2 class="text-center font-semibold text-xl">Upload Cover</h2>
+        </div>
+
+        <!-- Right: Form -->
+        <div class="flex-1 p-6">
+            <h2 class="mb-4 text-2xl font-bold uppercase text-white">Add Training Category</h2>
+
+            <form method="post" enctype="multipart/form-data" class="space-y-4">
+                <input id="coverPictureInput" name="CoverPicture" type="file" accept="image/*" class="hidden" />
+
+                <div>
+                    <label class="text-white block mb-1">Category Name</label>
+                    <input name="CategoryName" class="w-full rounded-xl border p-2" />
+                </div>
+
+                <div>
+                    <label class="text-white block mb-1">Description</label>
+                    <textarea name="Description" class="w-full rounded-xl border p-2 h-[100px]"></textarea>
+                </div>
+
+                <div class="flex justify-center pt-4">
+                    <button type="submit" class="w-[400px] rounded bg-[#FFE9C6] px-6 py-2 font-bold text-black">
+                        Add Category
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const coverInput = document.getElementById('coverPictureInput');
+    const coverPreview = document.getElementById('coverPreview');
+    const coverPlus = document.getElementById('coverPlus');
+
+    coverInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                coverPreview.src = e.target.result;
+                coverPreview.classList.remove('hidden');
+                coverPlus.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
