@@ -4,7 +4,200 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="text-center">
+<div class="flex flex-col gap-8 mx-20 mt-12 mb-16">
+
+    <h1 class="text-4xl uppercase font-weight-bold align-self-center ">Programming</h1>
+    <div class="relative w-full sm:w-[500px] align-self-center mb-8">
+        <!-- Search Input -->
+        <input type="search" name="search" id="default-search"
+               class="w-full h-12 rounded-full border border-gray-300 px-5 pr-[180px] text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231] transition"
+               placeholder="Search Trainings..." value="@Context.Request.Query["search"]" />
+
+        <!-- Right-side group (filter + submit button) -->
+        <div class="absolute top-1/2 right-2 -translate-y-1/2 flex items-center gap-2">
+            <!-- Filter Tag -->
+            <div class="inline-flex items-center bg-[#C6FFCD] text-black text-sm font-medium px-3 py-1 rounded-full shadow-md">
+                <span class="mr-2">Category X</span>
+                <button type="button" onclick="clearFilter()" class="flex items-center justify-center w-5 h-5 rounded-full hover:bg-[#cfa221] transition">
+                    <span class="material-symbols-outlined text-base leading-none">
+                        close
+                    </span>
+                </button>
+            </div>
+
+            <!-- Search Button -->
+            <button type="submit"
+                    class="rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black hover:bg-[#cfa221] transition">
+                Search
+            </button>
+        </div>
+    </div>
+
+    <button class="align-self-end rounded-full bg-[#EAC231] py-2 w-[100px] text-sm font-semibold text-black shadow-md hover:bg-[#cfa221] transition" onclick="addTraining()">
+        Add+
+    </button>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col min-h-[400px]">
+            <!-- Image -->
+            <div class="h-[180px]">
+                <img class="w-full h-full object-cover outline outline-1 outline-black" alt="Cover Image" />
+            </div>
+
+            <!-- Content -->
+            <div class="p-4 flex flex-col flex-grow">
+                <!-- Title and Actions -->
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-xl font-semibold text-gray-800">Dummy Name</h2>
+                    <div class="flex gap-2 text-gray-600">
+                        <span class="material-symbols-outlined cursor-pointer hover:text-black" onclick="editTraining()">edit</span>
+                        <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700" onclick="deleteTraining()">delete</span>
+                    </div>
+                </div>
+
+
+                <!-- Description -->
+                <p class="text-sm text-gray-600 line-clamp-3">dummy desc</p>
+
+                <!-- Footer -->
+                <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
+                    <div>
+                        <p><strong>Modified:</strong> time and day</p>
+                        <p><strong>By:</strong> jaborel</p>
+                    </div>
+                    <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
+                        Access
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col min-h-[400px]">
+            <!-- Image -->
+            <div class="h-[180px]">
+                <img class="w-full h-full object-cover outline outline-1 outline-black" alt="Cover Image" />
+            </div>
+
+            <!-- Content -->
+            <div class="p-4 flex flex-col flex-grow">
+                <!-- Title and Actions -->
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-xl font-semibold text-gray-800">Dummy Name</h2>
+                    <div class="flex gap-2 text-gray-600">
+                        <span class="material-symbols-outlined cursor-pointer hover:text-black" onclick="editTraining()">edit</span>
+                        <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700" onclick="deleteTraining()">delete</span>
+                    </div>
+                </div>
+
+
+                <!-- Description -->
+                <p class="text-sm text-gray-600 line-clamp-3">dummy desc</p>
+
+                <!-- Footer -->
+                <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
+                    <div>
+                        <p><strong>Modified:</strong> time and day</p>
+                        <p><strong>By:</strong> jaborel</p>
+                    </div>
+                    <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
+                        Access
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col min-h-[400px]">
+            <!-- Image -->
+            <div class="h-[180px]">
+                <img class="w-full h-full object-cover outline outline-1 outline-black" alt="Cover Image" />
+            </div>
+
+            <!-- Content -->
+            <div class="p-4 flex flex-col flex-grow">
+                <!-- Title and Actions -->
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-xl font-semibold text-gray-800">Dummy Name</h2>
+                    <div class="flex gap-2 text-gray-600">
+                        <span class="material-symbols-outlined cursor-pointer hover:text-black" onclick="editTraining()">edit</span>
+                        <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700" onclick="deleteTraining()">delete</span>
+                    </div>
+                </div>
+
+
+                <!-- Description -->
+                <p class="text-sm text-gray-600 line-clamp-3">dummy desc</p>
+
+                <!-- Footer -->
+                <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
+                    <div>
+                        <p><strong>Modified:</strong> time and day</p>
+                        <p><strong>By:</strong> jaborel</p>
+                    </div>
+                    <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
+                        Access
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="flex justify-end">
+        <nav>
+            <ul class="inline-flex gap-1 text-sm">
+                <li>
+                    <a href="#" class="px-3 py-2 rounded-l-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition">Previous</a>
+                </li>
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <li>
+                        <a href="#" class="px-3 py-2 border border-gray-300 @(i == 3 ? "bg-blue-50 text-blue-600" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") rounded-md transition">
+                            @i
+                        </a>
+                    </li>
+                }
+                <li>
+                    <a href="#" class="px-3 py-2 rounded-r-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+
+
+@await Html.PartialAsync("~/Views/Admin/AddTraining.cshtml", new TrainingViewModel())
+@await Html.PartialAsync("~/Views/Admin/EditTraining.cshtml", new TrainingViewModel())
+@await Html.PartialAsync("~/Views/Admin/DeleteTraining.cshtml", new TrainingViewModel())
+<script>
+    function addTraining() {
+        document.getElementById('addTraining').classList.remove('hidden');
+    }
+
+    function closeAddTraining() {
+        document.getElementById('addTraining').classList.add('hidden');
+    }
+
+    function editTraining() {
+       document.getElementById('editTraining').classList.remove('hidden');
+    }
+
+    function closeEditTraining() {
+        document.getElementById('editTraining').classList.add('hidden');
+    }
+    function deleteTraining() {
+       document.getElementById('deleteTraining').classList.remove('hidden');
+    }
+
+    function closeDeleteTraining() {
+        document.getElementById('deleteTraining').classList.add('hidden');
+    }
+</script>
+
+
+
+
+
+@* <div class="text-center">
     <h1 class="display-4">ADMIN TRAINING SCREEN</h1>
     <p>Manage training courses and materials.</p>
 </div>
@@ -134,5 +327,5 @@
             </div>
         </div>
     </div>
-</div>
+</div> *@
 
