@@ -63,7 +63,7 @@
                             <p><strong>Modified:</strong> @category.UpdatedTime.ToString("MMM dd, yyyy")</p>
                             <p><strong>By:</strong> @category.CreatedBy</p>
                         </div>
-                        <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition" onclick="ViewTrainingCategory()">
+                        <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
                             Access
                         </button>
                     </div>
@@ -98,7 +98,7 @@
 @await Html.PartialAsync("~/Views/Admin/AdminAddTrainingCategory.cshtml", new TrainingCategoryViewModel())
 @await Html.PartialAsync("~/Views/Admin/AdminEditTrainingCategory.cshtml", new TrainingCategoryViewModel())
 @await Html.PartialAsync("~/Views/Admin/AdminDelTrainingCategory.cshtml", new TrainingCategoryViewModel())
-@await Html.PartialAsync("~/Views/Admin/TCTrainingView.cshtml", new TrainingCategoryViewModel())
+@* @await Html.PartialAsync("~/Views/Admin/TCTrainingView.cshtml", new TrainingCategoryViewModel()) *@
 
  <script type="text/javascript">
         function addTrainingCategory(){
@@ -123,21 +123,6 @@
                 document.getElementById('deleteTrainingCategory').classList.add('hidden');
         }
 
-        function ViewTrainingCategory(){
-            const modal = document.getElementById('viewTrainingCategory');
-            const content = document.getElementById('modalContent');
-
-            // Show modal
-            modal.classList.remove('hidden');
-
-            // Animate upward
-            requestAnimationFrame(() => {
-                content.classList.remove('translate-y-full', 'opacity-0');
-            });
-
-        }
-        function closeViewTrainingCategory(){
-            document.getElementById('viewTrainingCategory').classList.add('hidden');
-        }
+        
 </script>
 
