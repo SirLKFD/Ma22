@@ -13,18 +13,19 @@
 
         <div class="flex flex-col sm:flex-row gap-4">
             <!-- Search Field -->
-            <div class="relative w-full sm:w-[400px]">
+            <form method="get" asp-action="AdminTrainingCategory" class="relative w-full sm:w-[400px]">
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">
                     search
                 </span>
-                <input type="search" placeholder="Search Category..."
+                <input type="search" name="search" value="@ViewBag.Search"
+                       placeholder="Search Category..."
                        class="w-full h-12 pl-10 pr-[100px] rounded-full border border-gray-300 bg-white text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
 
                 <button type="submit"
                         class="absolute right-2 top-[6px] rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black hover:bg-[#cfa221] transition">
                     Search
                 </button>
-            </div>
+            </form>
 
             <!-- Add Button -->
             <button class="rounded-full bg-[#EAC231] px-6 py-2 text-sm font-semibold text-black shadow-md hover:bg-[#cfa221] transition" onclick="addTrainingCategory()">
@@ -73,26 +74,37 @@
     </div>
 
     <!-- Pagination -->
-    <div class="flex justify-end">
-        <nav>
-            <ul class="inline-flex gap-1 text-sm">
-                <li>
-                    <a href="#" class="px-3 py-2 rounded-l-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition">Previous</a>
-                </li>
-                @for (int i = 1; i <= 5; i++)
-                {
+    @if (ViewBag.TotalCount > ViewBag.PageSize)
+    {
+        var totalPages = (int)Math.Ceiling((decimal)ViewBag.TotalCount / ViewBag.PageSize);
+        <div class="flex justify-end mt-8">
+            <nav>
+                <ul class="inline-flex gap-1 text-sm">
                     <li>
-                        <a href="#" class="px-3 py-2 border border-gray-300 @(i == 3 ? "bg-blue-50 text-blue-600" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") rounded-md transition">
-                            @i
+                        <a class="px-3 py-2 rounded-l-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 transition"
+                           href="@Url.Action("AdminTrainingCategory", new { page = Math.Max(ViewBag.CurrentPage - 1, 1), search = ViewBag.Search })">
+                            Previous
                         </a>
                     </li>
-                }
-                <li>
-                    <a href="#" class="px-3 py-2 rounded-r-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition">Next</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        <li>
+                            <a class="px-3 py-2 border border-gray-300 @(i == ViewBag.CurrentPage ? "bg-blue-50 text-blue-600" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") rounded-md transition"
+                               href="@Url.Action("AdminTrainingCategory", new { page = i, search = ViewBag.Search })">
+                                @i
+                            </a>
+                        </li>
+                    }
+                    <li>
+                        <a class="px-3 py-2 rounded-r-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 transition"
+                           href="@Url.Action("AdminTrainingCategory", new { page = Math.Min(ViewBag.CurrentPage + 1, totalPages), search = ViewBag.Search })">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
 </div>
 
 @await Html.PartialAsync("~/Views/Admin/AdminAddTrainingCategory.cshtml", new TrainingCategoryViewModel())

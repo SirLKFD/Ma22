@@ -109,6 +109,7 @@ namespace ASI.Basecode.Services.Services
         public List<TrainingCategoryViewModel> GetAllTrainingCategoryViewModels()
         {
             var categories = _repository.GetTrainingCategories()
+                .OrderByDescending(c => c.CreatedTime)
                 .Select(c => new TrainingCategoryViewModel
                 {
                     Id = c.Id,
@@ -117,9 +118,39 @@ namespace ASI.Basecode.Services.Services
                     CoverPicture = c.CoverPicture,
                     UpdatedTime = c.UpdatedTime,
                     AccountFirstName = c.Account.FirstName,
-                    AccountLastName = c.Account.LastName,
+                    AccountLastName = c.Account.LastName
                 }).ToList();
+
             return categories;
+        }
+
+        public List<TrainingCategoryViewModel> GetPaginatedTrainingCategories(string search, int page, int pageSize, out int totalCount)
+        {
+            var query = _repository.GetTrainingCategories();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(c => c.CategoryName.Contains(search));
+            }
+
+            totalCount = query.Count();
+
+            var paged = query
+                .OrderByDescending(c => c.CreatedTime)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(c => new TrainingCategoryViewModel
+                {
+                    Id = c.Id,
+                    CategoryName = c.CategoryName,
+                    Description = c.Description,
+                    CoverPicture = c.CoverPicture,
+                    UpdatedTime = c.UpdatedTime,
+                    AccountFirstName = c.Account.FirstName,
+                    AccountLastName = c.Account.LastName
+                }).ToList();
+
+            return paged;
         }
     }
 }
