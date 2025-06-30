@@ -1,11 +1,188 @@
-@model ASI.Basecode.Services.ServiceModels.TopicViewModel
+﻿@model ASI.Basecode.Services.ServiceModels.TopicViewModel
 
 @{
     ViewData["Title"] = "Admin Training Topics";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
+@section NoPadding {}
 
-<div class="row">
+
+
+<div class="position-relative w-full mb-24">
+
+    <!--Cover Photo-->
+    <div class="flex items-center justify-center bg-[#C6FFCD] w-full h-[150px] object-cover">
+        <h1 class="text-4xl">PLACEHOLDER FOR COVER PHOTO</h1>
+    </div>
+
+    <!--Title-->
+    <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-10
+                bg-white w-[90%] rounded-md shadow-lg flex flex-col justify-between items-center pb-6">
+        <div class="bg-[#640A16] w-full h-[10px] rounded-tl-md rounded-tr-md"></div>
+        <h2 class="text-4xl font-bold pt-2">CMSC 11: Introduction to Programming</h2>
+        <div class="flex items-center">
+            <div class="text-yellow-500 text-xl">⭐⭐⭐⭐⭐</div>
+            <div class="ml-2 text-sm text-gray-600">5.0<br />Positive Reviews</div>
+        </div>
+    </div>
+    
+</div>
+
+<div class="flex mx-20 gap-4">
+    <!--Description-->
+    <div class="flex flex-col justify-center w-1/3 gap-2 px-4 py-2 bg-white rounded-md shadow-lg sticky top-[100px] h-fit self-start">
+
+        <h2 class="text-2xl font-weight-bold align-self-center">Description</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor 
+            in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, 
+            sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
+            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip 
+            ex ea commodo consequat.
+        </p>
+    </div>
+    <div class="flex flex-col justify-start w-2/3 bg-white rounded-md shadow-lg px-4 py-2 gap-4">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-5">
+            <h2 class="text-3xl font-bold">Topics</h2>
+            <button class="bg-[#EAC231] p-2 rounded-lg font-semibold" onclick="addTopic()">Add Topic +</button>
+        </div>
+
+        <!-- Topic Card -->
+        <div class="flex flex-col bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs">
+            <!-- Title and Actions -->
+            <div class="flex justify-between items-center mb-2 w-full">
+                <h3 class="text-2xl font-semibold">Flowcharts</h3>
+                <div class="flex gap-2">
+                    <span class="material-symbols-outlined !text-[20px] cursor-pointer" onclick="editTopic()">edit</span>
+                    <span class="material-symbols-outlined !text-[20px] cursor-pointer" onclick="deleteTopic()">delete</span>
+                </div>
+            </div>
+
+            <!-- Meta Info -->
+            <p>Created by: John Doe</p>
+            <p>June 12, 2025</p>
+
+            <!-- Attachments -->
+            <div class="flex items-center gap-1 mt-auto">
+                <span class="material-symbols-outlined !text-[20px]">attachment</span>
+                <span>5 Attachments</span>
+            </div>
+        </div>
+        <div class="flex flex-col bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs">
+            <!-- Title and Actions -->
+            <div class="flex justify-between items-center mb-2 w-full">
+                <h3 class="text-2xl font-semibold">Flowcharts</h3>
+                <div class="flex gap-2">
+                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">edit</span>
+                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">delete</span>
+                </div>
+            </div>
+
+            <!-- Meta Info -->
+            <p>Created by: John Doe</p>
+            <p>June 12, 2025</p>
+
+            <!-- Attachments -->
+            <div class="flex items-center gap-1 mt-auto">
+                <span class="material-symbols-outlined !text-[20px]">attachment</span>
+                <span>5 Attachments</span>
+            </div>
+        </div>
+        <div class="flex flex-col bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs">
+            <!-- Title and Actions -->
+            <div class="flex justify-between items-center mb-2 w-full">
+                <h3 class="text-2xl font-semibold">Flowcharts</h3>
+                <div class="flex gap-2">
+                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">edit</span>
+                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">delete</span>
+                </div>
+            </div>
+
+            <!-- Meta Info -->
+            <p>Created by: John Doe</p>
+            <p>June 12, 2025</p>
+
+            <!-- Attachments -->
+            <div class="flex items-center gap-1 mt-auto">
+                <span class="material-symbols-outlined !text-[20px]">attachment</span>
+                <span>5 Attachments</span>
+            </div>
+        </div>
+        <div class="flex flex-col bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs">
+            <!-- Title and Actions -->
+            <div class="flex justify-between items-center mb-2 w-full">
+                <h3 class="text-2xl font-semibold">Flowcharts</h3>
+                <div class="flex gap-2">
+                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">edit</span>
+                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">delete</span>
+                </div>
+            </div>
+
+            <!-- Meta Info -->
+            <p>Created by: John Doe</p>
+            <p>June 12, 2025</p>
+
+            <!-- Attachments -->
+            <div class="flex items-center gap-1 mt-auto">
+                <span class="material-symbols-outlined !text-[20px]">attachment</span>
+                <span>5 Attachments</span>
+            </div>
+        </div>
+        <div class="flex flex-col bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs">
+            <!-- Title and Actions -->
+            <div class="flex justify-between items-center mb-2 w-full">
+                <h3 class="text-2xl font-semibold">Flowcharts</h3>
+                <div class="flex gap-2">
+                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">edit</span>
+                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">delete</span>
+                </div>
+            </div>
+
+            <!-- Meta Info -->
+            <p>Created by: John Doe</p>
+            <p>June 12, 2025</p>
+
+            <!-- Attachments -->
+            <div class="flex items-center gap-1 mt-auto">
+                <span class="material-symbols-outlined !text-[20px]">attachment</span>
+                <span>5 Attachments</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+@await Html.PartialAsync("~/Views/Admin/AddTopic.cshtml", new TopicViewModel())
+@await Html.PartialAsync("~/Views/Admin/EditTopic.cshtml", new TopicViewModel())
+@await Html.PartialAsync("~/Views/Admin/DeleteTopic.cshtml", new TopicViewModel())
+
+<script type="text/javascript">
+    function addTopic(){
+        document.getElementById('addTopic').classList.remove('hidden')
+    }
+    function closeAddTopic(){
+        document.getElementById('addTopic').classList.add('hidden')
+    }
+
+    function editTopic(){
+        document.getElementById('editTopic').classList.remove('hidden')
+    }
+    function closeEditTopic(){
+        document.getElementById('editTopic').classList.add('hidden')
+    }
+
+    function deleteTopic(){
+        document.getElementById('deleteTopic').classList.remove('hidden')
+    }
+    function closeDeleteTopic(){
+        document.getElementById('deleteTopic').classList.add('hidden')
+    }
+</script>
+
+@* <div class="row">
     <!-- Left: Add Topic Form -->
     <div class="col-md-7">
         <h2 class="mb-4"><b>ADD NEW TOPIC</b> for @ViewBag.Training.TrainingName</h2>
@@ -69,4 +246,4 @@
             </tbody>
         </table>
     </div>
-</div> 
+</div>  *@
