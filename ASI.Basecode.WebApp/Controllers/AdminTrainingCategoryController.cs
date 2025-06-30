@@ -48,9 +48,18 @@ namespace ASI.Basecode.WebApp.Controllers
         /// 
         
         [Authorize(Roles = "0")]
-        public IActionResult AdminTrainingCategory()
+        public IActionResult AdminTrainingCategory(string search, int page = 1)
         {
-            List<TrainingCategoryViewModel> categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+            const int pageSize = 6;
+            int totalCount;
+
+
+            var categories = _trainingCategoryService.GetPaginatedTrainingCategories(search, page, pageSize, out totalCount);
+
+            ViewBag.TotalCount = totalCount;
+            ViewBag.PageSize = pageSize;
+            ViewBag.CurrentPage = page;
+            ViewBag.Search = search;
 
             return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
         }
@@ -62,11 +71,22 @@ namespace ASI.Basecode.WebApp.Controllers
             IFormFile CoverPictureAdd,
             [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
-            List<TrainingCategoryViewModel> categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+            int totalCount;
+            const int pageSize = 6;
+            int currentPage = 1;
+            string search = "";
+
+            var categories = _trainingCategoryService.GetPaginatedTrainingCategories(search, currentPage, pageSize, out totalCount);
+
             if (!ModelState.IsValid)
             {
+                ViewBag.TotalCount = totalCount;
+                ViewBag.PageSize = pageSize;
+                ViewBag.CurrentPage = currentPage;
+                ViewBag.Search = search;
                 return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
             }
+
 
             try
             {
@@ -110,12 +130,17 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 ViewBag.NewCategory = model;
 
-                return RedirectToAction("AdminTrainingCategory");
+                return RedirectToAction("AdminTrainingCategory", new { page = 1, search = "" });
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
+                ViewBag.TotalCount = totalCount;
+                ViewBag.PageSize = pageSize;
+                ViewBag.CurrentPage = currentPage;
+                ViewBag.Search = search;
                 return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
+
             }
         }
 
@@ -123,11 +148,22 @@ namespace ASI.Basecode.WebApp.Controllers
         [Authorize(Roles = "0")]
         public IActionResult EditTrainingCategory(TrainingCategoryViewModel model, IFormFile CoverPictureEdit, [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
-            List<TrainingCategoryViewModel> categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+            int totalCount;
+            const int pageSize = 6;
+            int currentPage = 1;
+            string search = "";
+
+            var categories = _trainingCategoryService.GetPaginatedTrainingCategories(search, currentPage, pageSize, out totalCount);
+
             if (!ModelState.IsValid)
             {
-                return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);  
+                ViewBag.TotalCount = totalCount;
+                ViewBag.PageSize = pageSize;
+                ViewBag.CurrentPage = currentPage;
+                ViewBag.Search = search;
+                return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
             }
+
 
             var existingCategory = _trainingCategoryService.GetTrainingCategoryById(model.Id);
             model.AccountId = existingCategory.AccountId;
@@ -171,12 +207,17 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 ViewBag.EditedCategory = model;
 
-                return RedirectToAction("AdminTrainingCategory");
+                return RedirectToAction("AdminTrainingCategory", new { page = 1, search = "" });
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
+                ViewBag.TotalCount = totalCount;
+                ViewBag.PageSize = pageSize;
+                ViewBag.CurrentPage = currentPage;
+                ViewBag.Search = search;
                 return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
+
             }
         }
 
@@ -184,8 +225,14 @@ namespace ASI.Basecode.WebApp.Controllers
         [Authorize(Roles = "0")]
         public IActionResult DeleteTrainingCategory(int id)
         {
-            List<TrainingCategoryViewModel> categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
-            try{
+            int totalCount;
+            const int pageSize = 6;
+            int currentPage = 1;
+            string search = "";
+
+            var categories = _trainingCategoryService.GetPaginatedTrainingCategories(search, currentPage, pageSize, out totalCount);
+            try
+            {
             _trainingCategoryService.DeleteTrainingCategory(id);
             return RedirectToAction("AdminTrainingCategory");
             }

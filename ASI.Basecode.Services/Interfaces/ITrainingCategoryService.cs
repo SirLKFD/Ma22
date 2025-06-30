@@ -15,5 +15,7 @@ namespace ASI.Basecode.Services.Interfaces
         List<ASI.Basecode.Data.Models.TrainingCategory> GetAllTrainingCategories();
         TrainingCategoryViewModel GetTrainingCategoryById(int id);
         List<TrainingCategoryViewModel> GetAllTrainingCategoryViewModels();
+        List<TrainingCategoryViewModel> GetPaginatedTrainingCategories(string search, int page, int pageSize, out int totalCount);
+
     }
 }
