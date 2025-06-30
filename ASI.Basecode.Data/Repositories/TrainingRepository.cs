@@ -31,5 +31,36 @@ namespace ASI.Basecode.Data.Repositories
             this.GetDbSet<Training>().Add(training);
             UnitOfWork.SaveChanges();
         }
+
+        public void UpdateTraining(Training training)
+        {
+            var existingTraining = this.GetDbSet<Training>().FirstOrDefault(x => x.Id == training.Id);
+            if (existingTraining != null)
+            {
+                existingTraining.TrainingName = training.TrainingName;
+                existingTraining.TrainingCategoryId = training.TrainingCategoryId;
+                existingTraining.SkillLevel = training.SkillLevel;
+                existingTraining.Description = training.Description;
+                existingTraining.CoverPicture = training.CoverPicture;
+                existingTraining.Duration = training.Duration;
+                existingTraining.CourseCode = training.CourseCode;
+                existingTraining.Ratings = training.Ratings;
+                existingTraining.UpdatedTime = training.UpdatedTime;
+                existingTraining.UpdatedBy = training.UpdatedBy;
+                UnitOfWork.SaveChanges();
+            }
+        }
+
+        public void DeleteTraining(Training training)
+        {
+            var existingTraining = this.GetDbSet<Training>().FirstOrDefault(x => x.Id == training.Id);
+            if (existingTraining != null)
+            {
+                this.GetDbSet<Training>().Remove(existingTraining);
+                UnitOfWork.SaveChanges();
+            }
+
+        }
     }
+
 }

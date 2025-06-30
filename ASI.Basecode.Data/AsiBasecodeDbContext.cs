@@ -158,7 +158,7 @@ namespace ASI.Basecode.Data
 
                 entity.HasOne(d => d.Account).WithMany(p => p.Training)
                     .HasForeignKey(d => d.AccountId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Trainings_Accounts");
 
                 entity.HasOne(d => d.DurationNavigation).WithMany(p => p.Training)
@@ -244,7 +244,7 @@ namespace ASI.Basecode.Data
 
                 entity.HasOne(d => d.Account).WithMany(p => p.Topics)
                     .HasForeignKey(d => d.AccountId)
-                    .OnDelete(DeleteBehavior.Cascade)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Table_1_Accounts");
 
                 entity.HasOne(d => d.Training).WithMany(p => p.Topics)
@@ -285,7 +285,7 @@ namespace ASI.Basecode.Data
 
                 entity.HasOne(d => d.Account).WithMany(p => p.TopicMedia)
                     .HasForeignKey(d => d.AccountId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Table_2_Accounts");
 
                 entity.HasOne(d => d.Topic).WithMany(p => p.TopicMedia)

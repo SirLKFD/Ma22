@@ -27,15 +27,18 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="localizer"></param>
         /// <param name="mapper"></param>
         private readonly ITrainingCategoryService _trainingCategoryService;
+        private readonly ITrainingService _trainingService;
 
         
         public AdminTrainingCategoryController(IHttpContextAccessor httpContextAccessor,
                               ILoggerFactory loggerFactory,
                               IConfiguration configuration,
                               IMapper mapper = null,
-                              ITrainingCategoryService trainingCategoryService = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
+                              ITrainingCategoryService trainingCategoryService = null,
+                              ITrainingService trainingService = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             _trainingCategoryService = trainingCategoryService;
+            _trainingService = trainingService;
         }
 
         /// <summary>
@@ -194,10 +197,16 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetTrainingCategory(int id)
+        public IActionResult TrainingCategoryDetails(int categoryId)
         {
-            var category = _trainingCategoryService.GetTrainingCategoryById(id);
-            return View("~/Views/Admin/AdminEditTrainingCategory.cshtml", category);
+            List<TrainingViewModel> trainings = _trainingService.GetAllTrainingsByCategoryId(categoryId);
+            List<TrainingCategoryViewModel> trainingCategories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+
+            Console.WriteLine($"Found {trainings?.Count ?? 0} trainings in category {categoryId}"); 
+            
+            ViewData["categories"] = trainingCategories;
+            
+            return View("~/Views/Admin/AdminTraining.cshtml", trainings);
         }
     }
 }
