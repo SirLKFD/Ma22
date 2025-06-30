@@ -10,6 +10,8 @@ using CloudinaryDotNet.Actions;
 using CloudinaryDotNet;
 using System;
 using ASI.Basecode.Services.Interfaces;
+using System.Collections.Generic;
+using ASI.Basecode.Data.Models;
 
 
 namespace ASI.Basecode.WebApp.Controllers
@@ -52,14 +54,14 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <returns> Admin Training View </returns>
         public IActionResult AdminTraining()
         {
-            var trainingCategories = _trainingCategoryService.GetAllTrainingCategories();
-            ViewBag.TrainingCategories = trainingCategories;
+            List<TrainingViewModel> trainings = _trainingService.GetAllTrainings();
+            List<TrainingCategoryViewModel> trainingCategories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
 
-            // Fetch all trainings
-            var trainings = _trainingService.GetAllTrainings();
-            ViewBag.Trainings = trainings;
-
-            return View("~/Views/Admin/AdminTraining.cshtml");
+            Console.WriteLine($"Found {trainings?.Count ?? 0} trainings"); 
+            
+            ViewData["categories"] = trainingCategories;
+            
+            return View("~/Views/Admin/AdminTraining.cshtml", trainings);
         }
 
         [HttpPost]
@@ -68,9 +70,16 @@ namespace ASI.Basecode.WebApp.Controllers
             IFormFile CoverPicture,
             [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
+            Console.WriteLine($"TrainingCategoryId submitted: {model.TrainingCategoryId}");
+            Console.WriteLine($"SkillLevel submitted: {model.SkillLevel}");
+            
+            List<TrainingViewModel> trainings = _trainingService.GetAllTrainings();
+            List<TrainingCategoryViewModel> trainingCategories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+            ViewData["categories"] = trainingCategories;
+            
             if (!ModelState.IsValid)
             {
-                return View("~/Views/Admin/AdminTraining.cshtml", model);
+                return View("~/Views/Admin/AdminTraining.cshtml", trainings);
             }
 
             try
@@ -122,12 +131,12 @@ namespace ASI.Basecode.WebApp.Controllers
                 ViewBag.DurationText = durationText;
                 ViewBag.TrainingCategoryText = trainingCategoryText;
                 
-                return View("~/Views/Admin/AdminTraining.cshtml", model);
+                return RedirectToAction("AdminTraining");
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
-                return View("~/Views/Admin/AdminTraining.cshtml", model);
+                return View("~/Views/Admin/AdminTraining.cshtml", trainings);
             }
         }
 

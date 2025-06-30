@@ -1,11 +1,11 @@
-@model ASI.Basecode.Services.ServiceModels.TrainingViewModel
+@model List<ASI.Basecode.Services.ServiceModels.TrainingViewModel>
 @{
     ViewData["Title"] = "AdminTraining";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+   
 }
 
 <div class="flex flex-col gap-8 mx-20 mt-12 mb-16">
-
     <h1 class="text-4xl uppercase font-weight-bold align-self-center ">Programming</h1>
     <div class="relative w-full sm:w-[500px] align-self-center mb-8">
         <!-- Search Input -->
@@ -38,18 +38,19 @@
     </button>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-
+        @foreach (var training in Model)
+        {
         <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col min-h-[400px]">
             <!-- Image -->
             <div class="h-[180px]">
-                <img class="w-full h-full object-cover outline outline-1 outline-black" alt="Cover Image" />
+                <img class="w-full h-full object-cover outline outline-1 outline-black" src="@training.CoverPicture" alt="Cover Image" />
             </div>
 
             <!-- Content -->
             <div class="p-4 flex flex-col flex-grow">
                 <!-- Title and Actions -->
                 <div class="flex justify-between items-center mb-2">
-                    <h2 class="text-xl font-semibold text-gray-800">Dummy Name</h2>
+                    <h2 class="text-xl font-semibold text-gray-800">@training.TrainingName</h2>
                     <div class="flex gap-2 text-gray-600">
                         <span class="material-symbols-outlined cursor-pointer hover:text-black" onclick="editTraining()">edit</span>
                         <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700" onclick="deleteTraining()">delete</span>
@@ -58,88 +59,21 @@
 
 
                 <!-- Description -->
-                <p class="text-sm text-gray-600 line-clamp-3">dummy desc</p>
+                <p class="text-sm text-gray-600 line-clamp-3">@training.Description</p>
 
                 <!-- Footer -->
                 <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
                     <div>
-                        <p><strong>Modified:</strong> time and day</p>
-                        <p><strong>By:</strong> jaborel</p>
+                        <p><strong>Modified:</strong> @training.UpdatedTime.ToString("MMM dd, yyyy")</p>
+                        <p><strong>By:</strong> @training.AccountFirstName @training.AccountLastName</p>
                     </div>
-                    <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
+                    <a href="@Url.Action("AdminTrainingTopics", "AdminTraining", new { trainingId = training.Id })" class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
                         Access
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
-        <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col min-h-[400px]">
-            <!-- Image -->
-            <div class="h-[180px]">
-                <img class="w-full h-full object-cover outline outline-1 outline-black" alt="Cover Image" />
-            </div>
-
-            <!-- Content -->
-            <div class="p-4 flex flex-col flex-grow">
-                <!-- Title and Actions -->
-                <div class="flex justify-between items-center mb-2">
-                    <h2 class="text-xl font-semibold text-gray-800">Dummy Name</h2>
-                    <div class="flex gap-2 text-gray-600">
-                        <span class="material-symbols-outlined cursor-pointer hover:text-black" onclick="editTraining()">edit</span>
-                        <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700" onclick="deleteTraining()">delete</span>
-                    </div>
-                </div>
-
-
-                <!-- Description -->
-                <p class="text-sm text-gray-600 line-clamp-3">dummy desc</p>
-
-                <!-- Footer -->
-                <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
-                    <div>
-                        <p><strong>Modified:</strong> time and day</p>
-                        <p><strong>By:</strong> jaborel</p>
-                    </div>
-                    <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
-                        Access
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col min-h-[400px]">
-            <!-- Image -->
-            <div class="h-[180px]">
-                <img class="w-full h-full object-cover outline outline-1 outline-black" alt="Cover Image" />
-            </div>
-
-            <!-- Content -->
-            <div class="p-4 flex flex-col flex-grow">
-                <!-- Title and Actions -->
-                <div class="flex justify-between items-center mb-2">
-                    <h2 class="text-xl font-semibold text-gray-800">Dummy Name</h2>
-                    <div class="flex gap-2 text-gray-600">
-                        <span class="material-symbols-outlined cursor-pointer hover:text-black" onclick="editTraining()">edit</span>
-                        <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700" onclick="deleteTraining()">delete</span>
-                    </div>
-                </div>
-
-
-                <!-- Description -->
-                <p class="text-sm text-gray-600 line-clamp-3">dummy desc</p>
-
-                <!-- Footer -->
-                <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
-                    <div>
-                        <p><strong>Modified:</strong> time and day</p>
-                        <p><strong>By:</strong> jaborel</p>
-                    </div>
-                    <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
-                        Access
-                    </button>
-                </div>
-            </div>
-        </div>
-
-
+        }
     </div>
     <div class="flex justify-end">
         <nav>
@@ -193,139 +127,4 @@
     }
 </script>
 
-
-
-
-
-@* <div class="text-center">
-    <h1 class="display-4">ADMIN TRAINING SCREEN</h1>
-    <p>Manage training courses and materials.</p>
-</div>
-
-@if (ViewBag.Trainings != null)
-{
-    <h3>Existing Trainings</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Skill Level</th>
-                <th>Duration</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var training in ViewBag.Trainings)
-        {
-            <tr>
-                <td>@training.TrainingName</td>
-                <td>@training.TrainingCategoryId</td>
-                <td>@training.SkillLevel</td>
-                <td>@training.Duration</td>
-                <td>
-                    <a href="@Url.Action("AdminTrainingTopics", "AdminTraining", new { trainingId = training.Id })" class="btn btn-primary btn-sm">
-                        View Topics
-                    </a>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
-
-@if (ViewBag.NewTraining != null)
-{
-    var training = ViewBag.NewTraining;
-    <div class="alert alert-success mt-3">
-        <strong>New Training Added:</strong><br />
-        Name: @training.TrainingName <br />
-        Course Code: @training.CourseCode <br />
-        Description: @training.Description <br />
-        Training Category: @ViewBag.TrainingCategoryText <br />
-        Skill Level: @ViewBag.SkillLevelText <br />
-        Duration: @ViewBag.DurationText <br />
-        @if (training.CoverPicture != null)
-        {
-            <img src="@training.CoverPicture" alt="Cover Picture" style="max-width:200px;max-height:200px;" />
-        }
-    </div>
-}
-
-<div class="row">
-    <div class="col-md-8 offset-md-2">
-        <div class="card">
-            <div class="card-header">
-                <h5>Add New Training</h5>
-            </div>
-            <div class="card-body">
-                <form asp-action="AddTraining" method="post" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="TrainingName">Training Name</label>
-                        <input name="TrainingName" class="form-control" required />
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="CourseCode">Course Code</label>
-                        <input name="CourseCode" class="form-control" required />
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="Description">Description</label>
-                        <textarea name="Description" class="form-control" rows="3"></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="TrainingCategoryId">Training Category</label>
-                        <select name="TrainingCategoryId" class="form-control" required>
-                            <option value="">Select a category</option>
-                            @if (ViewBag.TrainingCategories != null)
-                            {
-                                foreach (var category in ViewBag.TrainingCategories)
-                                {
-                                    <option value="@category.Id">@category.CategoryName</option>
-                                }
-                            }
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="SkillLevel">Skill Level</label>
-                        <select name="SkillLevel" class="form-control" required>
-                            <option value="1">Beginner</option>
-                            <option value="2">Intermediate</option>
-                            <option value="3">Advanced</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="Duration">Duration</label>
-                        <select name="Duration" class="form-control" required>
-                            <option value="1">1 week</option>
-                            <option value="2">2 weeks</option>
-                            <option value="3">3 weeks</option>
-                            <option value="4">1 month</option>
-                            <option value="5">2 months</option>
-                            <option value="6">3 months</option>
-                            <option value="7">4–6 months</option>
-                            <option value="8">6–9 months</option>
-                            <option value="9">9–12 months</option>
-                            <option value="10">1 year</option>
-                            <option value="11">More than 1 year</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="CoverPicture">Cover Picture</label>
-                        <input name="CoverPicture" type="file" class="form-control" accept="image/*" />
-                    </div>
-                    
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Add Training</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div> *@
 
