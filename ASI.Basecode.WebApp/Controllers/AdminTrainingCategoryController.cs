@@ -27,15 +27,18 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="localizer"></param>
         /// <param name="mapper"></param>
         private readonly ITrainingCategoryService _trainingCategoryService;
+        private readonly ITrainingService _trainingService;
 
         
         public AdminTrainingCategoryController(IHttpContextAccessor httpContextAccessor,
                               ILoggerFactory loggerFactory,
                               IConfiguration configuration,
                               IMapper mapper = null,
-                              ITrainingCategoryService trainingCategoryService = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
+                              ITrainingCategoryService trainingCategoryService = null,
+                              ITrainingService trainingService = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             _trainingCategoryService = trainingCategoryService;
+            _trainingService = trainingService;
         }
 
         /// <summary>
@@ -56,7 +59,7 @@ namespace ASI.Basecode.WebApp.Controllers
         [Authorize(Roles = "0")]
         public IActionResult AddTrainingCategory(
             TrainingCategoryViewModel model,
-            IFormFile CoverPicture,
+            IFormFile CoverPictureAdd,
             [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
             List<TrainingCategoryViewModel> categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
@@ -67,13 +70,13 @@ namespace ASI.Basecode.WebApp.Controllers
 
             try
             {
-                if (CoverPicture != null && CoverPicture.Length > 0)
+                if (CoverPictureAdd != null && CoverPictureAdd.Length > 0)
                 {
-                    using var stream = CoverPicture.OpenReadStream();
+                    using var stream = CoverPictureAdd.OpenReadStream();
 
                     var uploadParams = new ImageUploadParams
                     {
-                        File = new FileDescription(CoverPicture.FileName, stream),
+                        File = new FileDescription(CoverPictureAdd.FileName, stream),
                         Folder = "training_category"
                     };
 
@@ -114,6 +117,96 @@ namespace ASI.Basecode.WebApp.Controllers
                 ModelState.AddModelError("", ex.Message);
                 return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
             }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "0")]
+        public IActionResult EditTrainingCategory(TrainingCategoryViewModel model, IFormFile CoverPictureEdit, [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
+        {
+            List<TrainingCategoryViewModel> categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);  
+            }
+
+            var existingCategory = _trainingCategoryService.GetTrainingCategoryById(model.Id);
+            model.AccountId = existingCategory.AccountId;
+            model.AccountFirstName = existingCategory.AccountFirstName;
+            model.AccountLastName = existingCategory.AccountLastName;
+
+            Console.WriteLine($"CoverPicture is null: {CoverPictureEdit == null}, Length: {CoverPictureEdit?.Length}");
+            try
+            {
+                if (CoverPictureEdit != null && CoverPictureEdit.Length > 0)
+                {
+                    using var stream = CoverPictureEdit.OpenReadStream();
+
+                    var uploadParams = new ImageUploadParams
+                    {
+                        File = new FileDescription(CoverPictureEdit.FileName, stream),
+                        Folder = "training_category"
+                    };
+
+                    var uploadResult = cloudinary.Upload(uploadParams);
+
+                    if (uploadResult.Error != null)
+                    {
+                        Console.WriteLine("❌ Upload failed: " + uploadResult.Error.Message);
+                        throw new Exception("Cloudinary upload failed: " + uploadResult.Error.Message);
+                    }
+                    else
+                    {
+                        Console.WriteLine("✅ Upload succeeded");
+                        Console.WriteLine("Secure URL: " + uploadResult.SecureUrl);
+
+                        model.CoverPicture = uploadResult.SecureUrl?.ToString();
+                    }
+                }
+                else{
+                    model.CoverPicture = existingCategory.CoverPicture;
+                }
+
+                _trainingCategoryService.EditTrainingCategory(model);
+                Console.WriteLine("✅ Training category edited");
+
+                ViewBag.EditedCategory = model;
+
+                return RedirectToAction("AdminTrainingCategory");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "0")]
+        public IActionResult DeleteTrainingCategory(int id)
+        {
+            List<TrainingCategoryViewModel> categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+            try{
+            _trainingCategoryService.DeleteTrainingCategory(id);
+            return RedirectToAction("AdminTrainingCategory");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult TrainingCategoryDetails(int categoryId)
+        {
+            List<TrainingViewModel> trainings = _trainingService.GetAllTrainingsByCategoryId(categoryId);
+            List<TrainingCategoryViewModel> trainingCategories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+
+            Console.WriteLine($"Found {trainings?.Count ?? 0} trainings in category {categoryId}"); 
+            
+            ViewData["categories"] = trainingCategories;
+            
+            return View("~/Views/Admin/AdminTraining.cshtml", trainings);
         }
     }
 }

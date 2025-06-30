@@ -9,34 +9,33 @@
                 <span class="material-symbols-outlined text-[50px]">arrow_circle_left</span>
             </a>
         </div>
-        <div class="flex align-items-center justify-center w-full my-5">
-            <h1 class="text-2xl font-weight-bold">Are you sure you want to delete this category</h1>
+        <div class="flex align-items-center justify-center w-full mt-5 mb-3">
+            <h1 class="text-2xl font-weight-bold">Are you sure you want to delete this category?</h1>
         </div>
 
 
         <!-- Dummy Card -->
-        <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col max-h-[250px] w-[450px] align-self-center mb-5">
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col max-h-[300px] w-[450px] align-self-center mb-3">
             <!-- Image -->
-            <div class="h-[180px]">
-                <img class="w-full h-full object-cover outline outline-1 outline-black" alt="Cover Image" />
+            <div class="h-[140px]">
+                <img id="CategoryImage" class="w-full h-full object-cover outline outline-1 outline-black" alt="Cover Image" />
             </div>
 
             <!-- Content -->
             <div class="p-4 flex flex-col flex-grow">
                 <!-- Title and Actions -->
                 <div class="flex justify-between items-center mb-2">
-                    <h2 class="text-xl font-semibold text-gray-800">Dummy Name</h2>
-                    
+                    <h2 id="CategoryTitle" class="text-xl font-semibold text-gray-800"></h2> 
                 </div>
 
                 <!-- Description -->
-                <p class="text-sm text-gray-600 line-clamp-3">dummy desc</p>
+                <p id="CategoryDescription" class="text-sm text-gray-600 line-clamp-3"></p>
 
                 <!-- Footer -->
                 <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
                     <div>
-                        <p><strong>Modified:</strong> time and day</p>
-                        <p><strong>By:</strong> jaborel</p>
+                        <p id="CategoryModified"><strong>Modified:</strong></p>
+                        <p id="CategoryBy"><strong>By:</strong></p>
                     </div>
                     <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
                         Access
@@ -50,10 +49,29 @@
             <p>WARNING! Deleting this will also remove the trainings under this category.</p>
         </div>
 
-        <button class="bg-[#FFE9C6] w-[450px] text-black align-self-center py-2 rounded-xl font-weight-bold ">
-            Confirm
-        </button>
+        <form asp-action="DeleteTrainingCategory" asp-controller="AdminTrainingCategory" method="post" class="align-self-center">
+            <input type="hidden" name="id" id="categoryIdToDelete" />
+            <button type="submit" class="bg-[#FFE9C6] w-[450px] text-black  py-2 rounded-xl font-weight-bold">
+                Confirm
+            </button>
+        </form>
         
     </div>
 
 </div> 
+
+<script>
+    function openDeleteTrainingCategory(categoryId, coverPicture, categoryName, description, updatedTime, accountFirstName, accountLastName) {
+        const date = new Date(updatedTime);
+        const formattedTime = date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+        
+        document.getElementById('categoryIdToDelete').value = categoryId;
+        document.getElementById('CategoryImage').src = coverPicture;
+        document.getElementById('CategoryTitle').textContent = categoryName;
+        document.getElementById('CategoryDescription').textContent = description;
+        document.getElementById('CategoryModified').textContent = formattedTime;
+        document.getElementById('CategoryBy').textContent = accountFirstName + " " + accountLastName;
+        
+        document.getElementById('deleteTrainingCategory').classList.remove('hidden');
+    }
+</script> 

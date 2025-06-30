@@ -119,5 +119,34 @@ namespace ASI.Basecode.Services.Services
                 AccountLastName = t.Account.LastName
             }).ToList();
         }
+
+        public void UpdateTraining(TrainingViewModel model)
+        {
+            var training = _repository.GetTrainings().FirstOrDefault(c => c.Id == model.Id);
+            if (training != null)
+            {
+                Console.WriteLine($"[Service] Attempting to edit training: {training.TrainingName}, AccountId: {training.AccountId}");
+                if (!_repository.TrainingExists(training.TrainingName))
+                {
+                    Console.WriteLine($"[Service] ❌ Error: Training '{training.TrainingName}' already exists.");
+                    throw new InvalidDataException(Resources.Messages.Errors.TrainingExists);
+                }
+                _mapper.Map(model, training);
+                training.UpdatedTime = DateTime.Now;
+                training.UpdatedBy = System.Environment.UserName;
+                Console.WriteLine($"[Service] Mapped Training: {training.TrainingName}, AccountId: {training.AccountId}, UpdatedBy: {training.UpdatedBy}, UpdatedTime: {training.UpdatedTime}");
+                _repository.UpdateTraining(training);
+            }
+        }
+
+        public void DeleteTraining(int id)
+        {
+            var training = _repository.GetTrainings().FirstOrDefault(t => t.Id == id);
+            if (training != null)
+            {
+                _repository.DeleteTraining(training);
+            }
+        }
+        
     }
 }

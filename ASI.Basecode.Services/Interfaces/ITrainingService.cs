@@ -11,6 +11,7 @@ namespace ASI.Basecode.Services.Interfaces
         List<TrainingViewModel> GetAllTrainings();
         List<TrainingViewModel> GetAllTrainingsByCategoryId(int categoryId);
         TrainingViewModel GetTrainingById(int id);
-        
+        void UpdateTraining(TrainingViewModel model);
+        void DeleteTraining(int id);
     }
 }

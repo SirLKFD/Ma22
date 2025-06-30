@@ -67,11 +67,9 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpPost]
         public IActionResult AddTraining(
             TrainingViewModel model,
-            IFormFile CoverPicture,
+            IFormFile CoverPictureAddTraining,
             [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
-            Console.WriteLine($"TrainingCategoryId submitted: {model.TrainingCategoryId}");
-            Console.WriteLine($"SkillLevel submitted: {model.SkillLevel}");
             
             List<TrainingViewModel> trainings = _trainingService.GetAllTrainings();
             List<TrainingCategoryViewModel> trainingCategories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
@@ -84,14 +82,14 @@ namespace ASI.Basecode.WebApp.Controllers
 
             try
             {
-                if (CoverPicture != null && CoverPicture.Length > 0)
+                if (CoverPictureAddTraining != null && CoverPictureAddTraining.Length > 0)
                 {
-                    using var stream = CoverPicture.OpenReadStream();
+                    using var stream = CoverPictureAddTraining.OpenReadStream();
 
                     var uploadParams = new ImageUploadParams
                     {
-                        File = new FileDescription(CoverPicture.FileName, stream),
-                        Folder = "training_category"
+                        File = new FileDescription(CoverPictureAddTraining.FileName, stream),
+                        Folder = "training"
                     };
 
                     var uploadResult = cloudinary.Upload(uploadParams);
@@ -120,17 +118,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 model.AccountId = accountId.Value;
                 _trainingService.AddTraining(model);
                 Console.WriteLine("✅ Training added");
-                
-                // Get the actual text values for SkillLevel and Duration
-                var skillLevelText = GetSkillLevelText(model.SkillLevel);
-                var durationText = GetDurationText(model.Duration);
-                var trainingCategoryText = GetTrainingCategoryText(model.TrainingCategoryId);
-                
-                ViewBag.NewTraining = model;
-                ViewBag.SkillLevelText = skillLevelText;
-                ViewBag.DurationText = durationText;
-                ViewBag.TrainingCategoryText = trainingCategoryText;
-                
+
                 return RedirectToAction("AdminTraining");
             }
             catch (Exception ex)
@@ -140,41 +128,98 @@ namespace ASI.Basecode.WebApp.Controllers
             }
         }
 
-        private string GetSkillLevelText(int skillLevelId)
+        [HttpPost]
+        public IActionResult UpdateTraining(
+            TrainingViewModel model,
+            IFormFile CoverPictureEditTraining,
+            [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
-            return skillLevelId switch
+            _logger.LogInformation("[UpdateTraining] Called with model.Id={Id}", model.Id);
+            List<TrainingViewModel> trainings = _trainingService.GetAllTrainings();
+            List<TrainingCategoryViewModel> trainingCategories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+            ViewData["categories"] = trainingCategories;
+
+            if (!ModelState.IsValid)
             {
-                1 => "Beginner",
-                2 => "Intermediate", 
-                3 => "Advanced",
-                _ => "Unknown"
-            };
+                _logger.LogWarning("[UpdateTraining] ModelState is invalid for model.Id={Id}", model.Id);
+                return View("~/Views/Admin/AdminTraining.cshtml", trainings);
+            }
+
+            var existingTraining = _trainingService.GetTrainingById(model.Id);
+            if (existingTraining != null)
+            {
+                _logger.LogInformation("[UpdateTraining] Found existing training for Id={Id}", model.Id);
+                model.AccountId = existingTraining.AccountId;
+                model.AccountFirstName = existingTraining.AccountFirstName;
+                model.AccountLastName = existingTraining.AccountLastName;
+            }
+            else
+            {
+                _logger.LogWarning("[UpdateTraining] No existing training found for Id={Id}", model.Id);
+            }
+
+            try
+            {
+                if (CoverPictureEditTraining != null && CoverPictureEditTraining.Length > 0)
+                {
+                    _logger.LogInformation("[UpdateTraining] Uploading new cover picture for Id={Id}", model.Id);
+                    using var stream = CoverPictureEditTraining.OpenReadStream();
+
+                    var uploadParams = new ImageUploadParams
+                    {
+                        File = new FileDescription(CoverPictureEditTraining.FileName, stream),
+                        Folder = "training"
+                    };
+
+                    var uploadResult = cloudinary.Upload(uploadParams);
+
+                    if (uploadResult.Error != null)
+                    {
+                        _logger.LogError("[UpdateTraining] Cloudinary upload failed: {Error}", uploadResult.Error.Message);
+                        throw new Exception("Cloudinary upload failed: " + uploadResult.Error.Message);
+                    }
+                    else
+                    {
+                        _logger.LogInformation("[UpdateTraining] Cloudinary upload succeeded. Secure URL: {Url}", uploadResult.SecureUrl);
+                        model.CoverPicture = uploadResult.SecureUrl?.ToString();
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation("[UpdateTraining] No new cover picture uploaded for Id={Id}. Using existing.", model.Id);
+                    model.CoverPicture = existingTraining.CoverPicture;
+                }
+
+                _logger.LogInformation("[UpdateTraining] Calling _trainingService.UpdateTraining for Id={Id}", model.Id);
+                _trainingService.UpdateTraining(model);
+                _logger.LogInformation("[UpdateTraining] Training updated successfully for Id={Id}", model.Id);
+
+                return RedirectToAction("AdminTraining");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[UpdateTraining] Exception occurred for Id={Id}", model.Id);
+                ModelState.AddModelError("", ex.Message);
+                return View("~/Views/Admin/AdminTraining.cshtml", trainings);
+            }
         }
 
-        private string GetDurationText(int? durationId)
+        [HttpPost]
+        [Authorize(Roles = "0")]
+        public IActionResult DeleteTraining(int id)
         {
-            return durationId switch
+            List<TrainingViewModel> trainings = _trainingService.GetAllTrainings();
+            try{
+            _trainingService.DeleteTraining(id);
+            return RedirectToAction("AdminTraining");
+            }
+            catch (Exception ex)
             {
-                1 => "1 week",
-                2 => "2 weeks",
-                3 => "3 weeks",
-                4 => "1 month",
-                5 => "2 months",
-                6 => "3 months",
-                7 => "4–6 months",
-                8 => "6–9 months",
-                9 => "9–12 months",
-                10 => "1 year",
-                11 => "More than 1 year",
-                _ => "Unknown"
-            };
+                ModelState.AddModelError("", ex.Message);
+                return View("~/Views/Admin/AdminTraining.cshtml", trainings);
+            }
         }
 
-        private string GetTrainingCategoryText(int trainingCategoryId)
-        {
-            var trainingCategory = _trainingCategoryService.GetTrainingCategoryById(trainingCategoryId);
-            return trainingCategory?.CategoryName ?? "Unknown";
-        }
         [HttpGet]
         public IActionResult AdminTrainingTopics(int trainingId)
         {

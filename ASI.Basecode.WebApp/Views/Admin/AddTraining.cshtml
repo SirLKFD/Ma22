@@ -17,14 +17,15 @@
             <h1 class="uppercase text-2xl font-weight-bold">Add New Training</h1>
         </div>
         <form asp-action="AddTraining" asp-controller="AdminTraining" method="post" enctype="multipart/form-data" class="flex flex-col gap-4">
-            <label for="CoverPicture" class="flex flex-col items-center justify-center bg-white h-[125px] w-full rounded-xl cursor-pointer">
+            <label for="CoverPictureAddTraining" class="flex flex-col items-center justify-center bg-white h-[125px] w-full rounded-xl cursor-pointer">
                 <input type="file"
-                       name="CoverPicture"
-                       id="CoverPicture"
+                       name="CoverPictureAddTraining"
+                       id="CoverPictureAddTraining"
                        accept="image/*"
                        class="hidden" />
-                <span class="material-symbols-outlined text-[50px] text-black">add_photo_alternate</span>
-                <h1 class="text-black uppercase">Upload Cover Photo</h1>
+                <img id="CoverPictureAddTrainingPreview" alt="Cover Picture" class="w-full h-full object-cover rounded-xl hidden" />
+                <span id="CoverPictureAddTrainingPlaceholder" class="material-symbols-outlined text-[50px] text-black">add_photo_alternate</span>
+                <h1 id="CoverPictureAddTrainingText" class="text-black uppercase">Upload Cover Photo</h1>
             </label>
             <div class="flex flex-col gap-2">
 
@@ -99,3 +100,35 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<script>
+    // Show preview of uploaded image when a new file is selected in AddTraining modal
+    document.getElementById('CoverPictureAddTraining').addEventListener('change', function() {
+        const file = this.files[0];
+        const imageElement = document.getElementById('CoverPictureAddTrainingPreview');
+        const placeholderElement = document.getElementById('CoverPictureAddTrainingPlaceholder');
+        const textElement = document.getElementById('CoverPictureAddTrainingText');
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imageElement.src = e.target.result;
+                imageElement.classList.remove('hidden');
+                placeholderElement.classList.add('hidden');
+                placeholderElement.classList.remove('material-symbols-outlined');
+                textElement.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            imageElement.classList.add('hidden');
+            placeholderElement.classList.remove('hidden');
+            placeholderElement.classList.add('material-symbols-outlined');
+            textElement.classList.remove('hidden');
+        }
+    });
+</script>

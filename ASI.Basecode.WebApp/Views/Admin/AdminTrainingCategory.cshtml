@@ -49,8 +49,8 @@
                     <div class="flex justify-between items-center mb-2">
                         <h2 class="text-xl font-semibold text-gray-800">@category.CategoryName</h2>
                         <div class="flex gap-2 text-gray-600">
-                            <span class="material-symbols-outlined cursor-pointer hover:text-black" onclick="editTrainingCategory()">edit</span>
-                            <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700" onclick="deleteTrainingCategory()">delete</span>
+                            <span class="material-symbols-outlined cursor-pointer hover:text-black" onclick="openEditTrainingCategory('@category.Id', '@category.CoverPicture', '@category.CategoryName', '@category.Description')">edit</span>
+                            <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700" onclick="openDeleteTrainingCategory('@category.Id', '@category.CoverPicture', '@category.CategoryName', '@category.Description', '@category.UpdatedTime', '@category.AccountFirstName', '@category.AccountLastName')">delete</span>
                         </div>
                     </div>
 
@@ -63,9 +63,9 @@
                             <p><strong>Modified:</strong> @category.UpdatedTime.ToString("MMM dd, yyyy")</p>
                             <p><strong>By:</strong> @category.AccountFirstName @category.AccountLastName</p>
                         </div>
-                        <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
+                        <a href="@Url.Action("TrainingCategoryDetails", "AdminTrainingCategory", new { categoryId = category.Id })" class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
                             Access
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -109,16 +109,10 @@
             document.getElementById('addTrainingCategory').classList.add('hidden');
         }
 
-        function editTrainingCategory(){
-            document.getElementById('editTrainingCategory').classList.remove('hidden');
-        }
         function closeEditTrainingCategory(){
             document.getElementById('editTrainingCategory').classList.add('hidden');
         }
 
-        function deleteTrainingCategory(){
-            document.getElementById('deleteTrainingCategory').classList.remove('hidden');
-        }
         function closeDeleteTrainingCategory(){
                 document.getElementById('deleteTrainingCategory').classList.add('hidden');
         }
