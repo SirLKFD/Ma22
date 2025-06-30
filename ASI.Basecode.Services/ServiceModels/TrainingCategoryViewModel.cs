@@ -16,7 +16,10 @@ public class TrainingCategoryViewModel
 
     public string? CoverPicture { get; set; }
     public int Id { get; set; }
-    public string CreatedBy { get; set; }
     public DateTime UpdatedTime { get; set; }
+
+    public string AccountFirstName { get; set; }
+
+    public string AccountLastName { get; set; }
 
 }
