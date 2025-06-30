@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace ASI.Basecode.Data.Repositories
 {
@@ -18,7 +19,7 @@ namespace ASI.Basecode.Data.Repositories
 
         public IQueryable<TrainingCategory> GetTrainingCategories()
         {
-            return this.GetDbSet<TrainingCategory>();
+            return this.GetDbSet<TrainingCategory>().Include(c => c.Account);
         }
 
         public bool TrainingCategoryExists(string name)

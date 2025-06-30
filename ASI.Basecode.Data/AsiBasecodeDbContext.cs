@@ -158,7 +158,7 @@ namespace ASI.Basecode.Data
 
                 entity.HasOne(d => d.Account).WithMany(p => p.Training)
                     .HasForeignKey(d => d.AccountId)
-                    .OnDelete(DeleteBehavior.Cascade)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Trainings_Accounts");
 
                 entity.HasOne(d => d.DurationNavigation).WithMany(p => p.Training)

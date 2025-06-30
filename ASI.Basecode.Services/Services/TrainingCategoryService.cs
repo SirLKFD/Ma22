@@ -77,8 +77,9 @@ namespace ASI.Basecode.Services.Services
                     CategoryName = c.CategoryName,
                     Description = c.Description,
                     CoverPicture = c.CoverPicture,
-                    CreatedBy = c.CreatedBy,
-                    UpdatedTime = c.UpdatedTime
+                    UpdatedTime = c.UpdatedTime,
+                    AccountFirstName = c.Account.FirstName,
+                    AccountLastName = c.Account.LastName,
                 }).ToList();
             return categories;
         }

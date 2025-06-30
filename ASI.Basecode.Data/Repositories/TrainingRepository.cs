@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.EntityFrameworkCore;
 namespace ASI.Basecode.Data.Repositories
 {
     public class TrainingRepository : BaseRepository, ITrainingRepository
@@ -18,7 +18,7 @@ namespace ASI.Basecode.Data.Repositories
 
         public IQueryable<Training> GetTrainings()
         {
-            return this.GetDbSet<Training>();
+            return this.GetDbSet<Training>().Include(t => t.Account).Include(t => t.TrainingCategory);
         }
 
         public bool TrainingExists(string name)
