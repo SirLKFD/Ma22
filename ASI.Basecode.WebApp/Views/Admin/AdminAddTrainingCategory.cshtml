@@ -12,14 +12,15 @@
             <h1 class="uppercase text-2xl font-weight-bold">Add New Training Category</h1>
         </div>
         <form asp-action="AddTrainingCategory" asp-controller="AdminTrainingCategory" method="post" enctype="multipart/form-data"class="flex flex-col gap-4">
-            <label for="CoverPicture" class="flex flex-col items-center justify-center bg-white h-[150px] w-full rounded-xl cursor-pointer">
+            <label for="CoverPictureAdd" class="flex flex-col items-center justify-center bg-white h-[150px] w-full rounded-xl cursor-pointer">
                 <input type="file"
-                       name="CoverPicture"
-                       id="CoverPicture"
+                       name="CoverPictureAdd"
+                       id="CoverPictureAdd"
                        accept="image/*"
                        class="hidden" />
-                <span class="material-symbols-outlined text-[50px] text-black">add_photo_alternate</span>
-                <h1 class="text-black uppercase">Upload Cover Photo</h1>
+                <img id="CoverPictureAddPreview" alt="Cover Picture" class="w-full h-full object-cover rounded-xl hidden" />
+                <span id="CoverPictureAddPlaceholder" class="material-symbols-outlined text-[50px] text-black">add_photo_alternate</span>
+                <h1 id="CoverPictureAddText" class="text-black uppercase">Upload Cover Photo</h1>
             </label>
 
             <div class="flex flex-col gap-4">
@@ -61,5 +62,31 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
+<script>
+    // Show preview of uploaded image when a new file is selected in Add modal
+    document.getElementById('CoverPictureAdd').addEventListener('change', function() {
+        const file = this.files[0];
+        const imageElement = document.getElementById('CoverPictureAddPreview');
+        const placeholderElement = document.getElementById('CoverPictureAddPlaceholder');
+        const textElement = document.getElementById('CoverPictureAddText');
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imageElement.src = e.target.result;
+                imageElement.classList.remove('hidden');
+                placeholderElement.classList.add('hidden');
+                placeholderElement.classList.remove('material-symbols-outlined');
+                textElement.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            imageElement.classList.add('hidden');
+            placeholderElement.classList.remove('hidden');
+            placeholderElement.classList.add('material-symbols-outlined');
+            textElement.classList.remove('hidden');
+        }
+    });
+</script>
 
 

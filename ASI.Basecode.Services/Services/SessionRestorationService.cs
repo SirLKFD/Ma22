@@ -52,9 +52,9 @@ namespace ASI.Basecode.Services.Services
                                 session.Set("HasSession", Encoding.UTF8.GetBytes("Exist"));
                                 session.Set("UserName", Encoding.UTF8.GetBytes($"{account.FirstName} {account.LastName}"));
                                 session.Set("UserEmail", Encoding.UTF8.GetBytes(account.EmailId));
-                                session.Set("AccountId", BitConverter.GetBytes(account.Id));
+                                session.SetInt32("AccountId", account.Id);
                                 
-                                _logger.LogInformation($"Session restored for user: {account.FirstName} {account.LastName}");
+                                _logger.LogInformation($"Session restored for user: {account.FirstName} {account.LastName} {account.Id}");
                             }
                             else
                             {

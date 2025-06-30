@@ -56,7 +56,7 @@ namespace ASI.Basecode.WebApp.Controllers
         [Authorize(Roles = "0")]
         public IActionResult AddTrainingCategory(
             TrainingCategoryViewModel model,
-            IFormFile CoverPicture,
+            IFormFile CoverPictureAdd,
             [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
             List<TrainingCategoryViewModel> categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
@@ -67,13 +67,13 @@ namespace ASI.Basecode.WebApp.Controllers
 
             try
             {
-                if (CoverPicture != null && CoverPicture.Length > 0)
+                if (CoverPictureAdd != null && CoverPictureAdd.Length > 0)
                 {
-                    using var stream = CoverPicture.OpenReadStream();
+                    using var stream = CoverPictureAdd.OpenReadStream();
 
                     var uploadParams = new ImageUploadParams
                     {
-                        File = new FileDescription(CoverPicture.FileName, stream),
+                        File = new FileDescription(CoverPictureAdd.FileName, stream),
                         Folder = "training_category"
                     };
 
@@ -114,6 +114,90 @@ namespace ASI.Basecode.WebApp.Controllers
                 ModelState.AddModelError("", ex.Message);
                 return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
             }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "0")]
+        public IActionResult EditTrainingCategory(TrainingCategoryViewModel model, IFormFile CoverPictureEdit, [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
+        {
+            List<TrainingCategoryViewModel> categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);  
+            }
+
+            var existingCategory = _trainingCategoryService.GetTrainingCategoryById(model.Id);
+            model.AccountId = existingCategory.AccountId;
+            model.AccountFirstName = existingCategory.AccountFirstName;
+            model.AccountLastName = existingCategory.AccountLastName;
+
+            Console.WriteLine($"CoverPicture is null: {CoverPictureEdit == null}, Length: {CoverPictureEdit?.Length}");
+            try
+            {
+                if (CoverPictureEdit != null && CoverPictureEdit.Length > 0)
+                {
+                    using var stream = CoverPictureEdit.OpenReadStream();
+
+                    var uploadParams = new ImageUploadParams
+                    {
+                        File = new FileDescription(CoverPictureEdit.FileName, stream),
+                        Folder = "training_category"
+                    };
+
+                    var uploadResult = cloudinary.Upload(uploadParams);
+
+                    if (uploadResult.Error != null)
+                    {
+                        Console.WriteLine("❌ Upload failed: " + uploadResult.Error.Message);
+                        throw new Exception("Cloudinary upload failed: " + uploadResult.Error.Message);
+                    }
+                    else
+                    {
+                        Console.WriteLine("✅ Upload succeeded");
+                        Console.WriteLine("Secure URL: " + uploadResult.SecureUrl);
+
+                        model.CoverPicture = uploadResult.SecureUrl?.ToString();
+                    }
+                }
+                else{
+                    model.CoverPicture = existingCategory.CoverPicture;
+                }
+
+                _trainingCategoryService.EditTrainingCategory(model);
+                Console.WriteLine("✅ Training category edited");
+
+                ViewBag.EditedCategory = model;
+
+                return RedirectToAction("AdminTrainingCategory");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "0")]
+        public IActionResult DeleteTrainingCategory(int id)
+        {
+            List<TrainingCategoryViewModel> categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+            try{
+            _trainingCategoryService.DeleteTrainingCategory(id);
+            return RedirectToAction("AdminTrainingCategory");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetTrainingCategory(int id)
+        {
+            var category = _trainingCategoryService.GetTrainingCategoryById(id);
+            return View("~/Views/Admin/AdminEditTrainingCategory.cshtml", category);
         }
     }
 }

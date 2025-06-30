@@ -22,6 +22,11 @@ namespace ASI.Basecode.Data.Repositories
             return this.GetDbSet<TrainingCategory>().Include(c => c.Account);
         }
 
+        public TrainingCategory GetTrainingCategoryById(int id)
+        {
+            return this.GetDbSet<TrainingCategory>().Include(c => c.Account).FirstOrDefault(c => c.Id == id);
+        }
+
         public bool TrainingCategoryExists(string name)
         {
             return this.GetDbSet<TrainingCategory>().Any(x => x.CategoryName == name);
@@ -33,6 +38,28 @@ namespace ASI.Basecode.Data.Repositories
             this.GetDbSet<TrainingCategory>().Add(trainingCategory);
             UnitOfWork.SaveChanges();
             Console.WriteLine("SaveChanges called.");
+        }
+
+        public void UpdateTrainingCategory(TrainingCategory trainingCategory){
+            var existingTrainingCategory = this.GetDbSet<TrainingCategory>().FirstOrDefault(x => x.Id == trainingCategory.Id);  
+            if (existingTrainingCategory != null){
+                existingTrainingCategory.CategoryName = trainingCategory.CategoryName;
+                existingTrainingCategory.Description = trainingCategory.Description;
+                existingTrainingCategory.CoverPicture = trainingCategory.CoverPicture;
+                existingTrainingCategory.UpdatedTime = trainingCategory.UpdatedTime;
+                existingTrainingCategory.UpdatedBy = trainingCategory.UpdatedBy;
+                UnitOfWork.SaveChanges();
+                Console.WriteLine("SaveChanges called.");
+            }
+        }
+
+        public void DeleteTrainingCategory(TrainingCategory trainingCategory){
+            var existingTrainingCategory = this.GetDbSet<TrainingCategory>().FirstOrDefault(x => x.Id == trainingCategory.Id);
+            if (existingTrainingCategory != null){
+                this.GetDbSet<TrainingCategory>().Remove(existingTrainingCategory);
+                UnitOfWork.SaveChanges();
+                Console.WriteLine("SaveChanges called.");
+            }
         }
     }
 }
