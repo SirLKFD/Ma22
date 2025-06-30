@@ -57,19 +57,96 @@ namespace ASI.Basecode.Services.Services
             }
         }
 
-        public List<Training> GetAllTrainingsByCategoryId(int categoryId)
+        public List<TrainingViewModel> GetAllTrainingsByCategoryId(int categoryId)
         {
-            return _repository.GetTrainings().Where(t => t.TrainingCategoryId == categoryId).ToList();
+            return _repository.GetTrainings().Where(t => t.TrainingCategoryId == categoryId).Select(t => new TrainingViewModel
+            {
+                Id = t.Id,
+                Ratings = t.Ratings,
+                AccountId = t.AccountId,
+                TrainingName = t.TrainingName,
+                TrainingCategoryId = t.TrainingCategoryId,
+                SkillLevel = t.SkillLevel,
+                Description = t.Description,
+                CoverPicture = t.CoverPicture,
+                Duration = t.Duration,
+                CourseCode = t.CourseCode,
+                UpdatedTime = t.UpdatedTime,
+                AccountFirstName = t.Account.FirstName,
+                AccountLastName = t.Account.LastName
+            }).ToList();
         }
 
-        public Training GetTrainingById(int id)
+        public TrainingViewModel GetTrainingById(int id)
         {
-            return _repository.GetTrainings().FirstOrDefault(t => t.Id == id);
+            var training = _repository.GetTrainings().FirstOrDefault(t => t.Id == id);
+            if (training == null) return null;
+            
+            return new TrainingViewModel
+            {
+                Id = training.Id,
+                Ratings = training.Ratings,
+                AccountId = training.AccountId,
+                TrainingName = training.TrainingName,
+                TrainingCategoryId = training.TrainingCategoryId,
+                SkillLevel = training.SkillLevel,
+                Description = training.Description,
+                CoverPicture = training.CoverPicture,
+                Duration = training.Duration,
+                CourseCode = training.CourseCode,
+                UpdatedTime = training.UpdatedTime,
+                AccountFirstName = training.Account.FirstName,
+                AccountLastName = training.Account.LastName,
+            };
         }
 
-        public List<Training> GetAllTrainings()
+        public List<TrainingViewModel> GetAllTrainings()
         {
-            return _repository.GetTrainings().ToList();
+            return _repository.GetTrainings().Select(t => new TrainingViewModel
+            {
+                Id = t.Id,
+                Ratings = t.Ratings,
+                AccountId = t.AccountId,
+                TrainingName = t.TrainingName,
+                TrainingCategoryId = t.TrainingCategoryId,
+                SkillLevel = t.SkillLevel,
+                Description = t.Description,
+                CoverPicture = t.CoverPicture,
+                Duration = t.Duration,
+                CourseCode = t.CourseCode,
+                UpdatedTime = t.UpdatedTime,
+                AccountFirstName = t.Account.FirstName,
+                AccountLastName = t.Account.LastName
+            }).ToList();
         }
+
+        public void UpdateTraining(TrainingViewModel model)
+        {
+            var training = _repository.GetTrainings().FirstOrDefault(c => c.Id == model.Id);
+            if (training != null)
+            {
+                Console.WriteLine($"[Service] Attempting to edit training: {training.TrainingName}, AccountId: {training.AccountId}");
+                if (!_repository.TrainingExists(training.TrainingName))
+                {
+                    Console.WriteLine($"[Service] ❌ Error: Training '{training.TrainingName}' already exists.");
+                    throw new InvalidDataException(Resources.Messages.Errors.TrainingExists);
+                }
+                _mapper.Map(model, training);
+                training.UpdatedTime = DateTime.Now;
+                training.UpdatedBy = System.Environment.UserName;
+                Console.WriteLine($"[Service] Mapped Training: {training.TrainingName}, AccountId: {training.AccountId}, UpdatedBy: {training.UpdatedBy}, UpdatedTime: {training.UpdatedTime}");
+                _repository.UpdateTraining(training);
+            }
+        }
+
+        public void DeleteTraining(int id)
+        {
+            var training = _repository.GetTrainings().FirstOrDefault(t => t.Id == id);
+            if (training != null)
+            {
+                _repository.DeleteTraining(training);
+            }
+        }
+        
     }
 }

@@ -12,5 +12,7 @@ namespace ASI.Basecode.Data.Interfaces
         IQueryable<Training> GetTrainings();
         bool TrainingExists(string name);
         void AddTraining(Training training);
+        void UpdateTraining(Training training);
+        void DeleteTraining(Training training);
     }
 }

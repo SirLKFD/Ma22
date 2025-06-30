@@ -7,6 +7,10 @@ namespace ASI.Basecode.Services.ServiceModels;
 
 public class TrainingViewModel
 {
+    public int Id { get; set; }
+
+    public int Ratings { get; set; }
+
     [Required(ErrorMessage = "Account ID is required.")]
     public int AccountId { get; set; }
 
@@ -27,5 +31,10 @@ public class TrainingViewModel
 
     [Required(ErrorMessage = "Course code is required.")]
     public string CourseCode { get; set; }
+    public DateTime UpdatedTime { get; set; }
+
+    public string AccountFirstName { get; set; }
+
+    public string AccountLastName { get; set; }
 
 }

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.EntityFrameworkCore;
 namespace ASI.Basecode.Data.Repositories
 {
     public class TrainingRepository : BaseRepository, ITrainingRepository
@@ -18,7 +18,7 @@ namespace ASI.Basecode.Data.Repositories
 
         public IQueryable<Training> GetTrainings()
         {
-            return this.GetDbSet<Training>();
+            return this.GetDbSet<Training>().Include(t => t.Account).Include(t => t.TrainingCategory);
         }
 
         public bool TrainingExists(string name)
@@ -31,5 +31,36 @@ namespace ASI.Basecode.Data.Repositories
             this.GetDbSet<Training>().Add(training);
             UnitOfWork.SaveChanges();
         }
+
+        public void UpdateTraining(Training training)
+        {
+            var existingTraining = this.GetDbSet<Training>().FirstOrDefault(x => x.Id == training.Id);
+            if (existingTraining != null)
+            {
+                existingTraining.TrainingName = training.TrainingName;
+                existingTraining.TrainingCategoryId = training.TrainingCategoryId;
+                existingTraining.SkillLevel = training.SkillLevel;
+                existingTraining.Description = training.Description;
+                existingTraining.CoverPicture = training.CoverPicture;
+                existingTraining.Duration = training.Duration;
+                existingTraining.CourseCode = training.CourseCode;
+                existingTraining.Ratings = training.Ratings;
+                existingTraining.UpdatedTime = training.UpdatedTime;
+                existingTraining.UpdatedBy = training.UpdatedBy;
+                UnitOfWork.SaveChanges();
+            }
+        }
+
+        public void DeleteTraining(Training training)
+        {
+            var existingTraining = this.GetDbSet<Training>().FirstOrDefault(x => x.Id == training.Id);
+            if (existingTraining != null)
+            {
+                this.GetDbSet<Training>().Remove(existingTraining);
+                UnitOfWork.SaveChanges();
+            }
+
+        }
     }
+
 }

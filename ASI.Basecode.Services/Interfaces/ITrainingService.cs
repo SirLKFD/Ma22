@@ -8,9 +8,10 @@ namespace ASI.Basecode.Services.Interfaces
     public interface ITrainingService
     {
         void AddTraining(TrainingViewModel model);
-        List<Training> GetAllTrainings();
-        List<Training> GetAllTrainingsByCategoryId(int categoryId);
-        Training GetTrainingById(int id);
-        
+        List<TrainingViewModel> GetAllTrainings();
+        List<TrainingViewModel> GetAllTrainingsByCategoryId(int categoryId);
+        TrainingViewModel GetTrainingById(int id);
+        void UpdateTraining(TrainingViewModel model);
+        void DeleteTraining(int id);
     }
 }

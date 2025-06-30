@@ -1,0 +1,216 @@
+﻿@model TrainingCategoryViewModel
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<div id="viewTrainingCategory" class="fixed inset-0 z-50 flex items-end bg-black bg-opacity-40 backdrop-blur-sm hidden">
+    <div id="modalContent" class="flex h-[90vh] w-full flex-col rounded-xl bg-white text-black shadow-lg p-6 overflow-y-auto transition-all duration-300 transform translate-y-full opacity-0 gap-5">
+        <div class="flex">
+            <a onclick="closeViewTrainingCategory()" class="hover-pointer">
+                <span class="material-symbols-outlined text-[50px]">arrow_circle_up</span>
+            </a>
+        </div>
+        <h1 class="text-4xl uppercase font-weight-bold align-self-center ">Programming</h1>
+        <div class="relative w-full sm:w-[500px] align-self-center mb-8">
+            <input type="search" name="search" id="default-search"
+                   class="w-full h-12 rounded-full border border-gray-300 px-5 pr-[90px] text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231] transition"
+                   placeholder="Search Trainings..." value="@Context.Request.Query["search"]" />
+            <button type="submit"
+                    class="absolute top-[6px] right-2 rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black hover:bg-[#cfa221] transition">
+                Search
+            </button>
+        </div>
+        <button class="align-self-end rounded-full bg-[#EAC231] py-2 w-[100px] text-sm font-semibold text-black shadow-md hover:bg-[#cfa221] transition" onclick="addTraining()">
+            Add+
+        </button>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center">
+
+            <!-- Dummy Card -->
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col max-h-[250px] w-[450px] align-self-center mb-5">
+                <!-- Image -->
+                <div class="h-[180px]">
+                    <img class="w-full h-full object-cover outline outline-1 outline-black" alt="Cover Image" />
+                </div>
+
+                <!-- Content -->
+                <div class="p-4 flex flex-col flex-grow">
+                    <!-- Title and Actions -->
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-xl font-semibold text-gray-800">Dummy Name</h2>
+
+                    </div>
+
+                    <!-- Description -->
+                    <p class="text-sm text-gray-600 line-clamp-3">dummy desc</p>
+
+                    <!-- Footer -->
+                    <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
+                        <div>
+                            <p><strong>Modified:</strong> time and day</p>
+                            <p><strong>By:</strong> jaborel</p>
+                        </div>
+                        <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
+                            Access
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Dummy Card -->
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col max-h-[250px] w-[450px] align-self-center mb-5">
+                <!-- Image -->
+                <div class="h-[180px]">
+                    <img class="w-full h-full object-cover outline outline-1 outline-black" alt="Cover Image" />
+                </div>
+
+                <!-- Content -->
+                <div class="p-4 flex flex-col flex-grow">
+                    <!-- Title and Actions -->
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-xl font-semibold text-gray-800">Dummy Name</h2>
+
+                    </div>
+
+                    <!-- Description -->
+                    <p class="text-sm text-gray-600 line-clamp-3">dummy desc</p>
+
+                    <!-- Footer -->
+                    <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
+                        <div>
+                            <p><strong>Modified:</strong> time and day</p>
+                            <p><strong>By:</strong> jaborel</p>
+                        </div>
+                        <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
+                            Access
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Dummy Card -->
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col max-h-[250px] w-[450px] align-self-center mb-5">
+                <!-- Image -->
+                <div class="h-[180px]">
+                    <img class="w-full h-full object-cover outline outline-1 outline-black" alt="Cover Image" />
+                </div>
+
+                <!-- Content -->
+                <div class="p-4 flex flex-col flex-grow">
+                    <!-- Title and Actions -->
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-xl font-semibold text-gray-800">Dummy Name</h2>
+
+                    </div>
+
+                    <!-- Description -->
+                    <p class="text-sm text-gray-600 line-clamp-3">dummy desc</p>
+
+                    <!-- Footer -->
+                    <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
+                        <div>
+                            <p><strong>Modified:</strong> time and day</p>
+                            <p><strong>By:</strong> jaborel</p>
+                        </div>
+                        <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
+                            Access
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Dummy Card -->
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col max-h-[250px] w-[450px] align-self-center mb-5">
+                <!-- Image -->
+                <div class="h-[180px]">
+                    <img class="w-full h-full object-cover outline outline-1 outline-black" alt="Cover Image" />
+                </div>
+
+                <!-- Content -->
+                <div class="p-4 flex flex-col flex-grow">
+                    <!-- Title and Actions -->
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-xl font-semibold text-gray-800">Dummy Name</h2>
+
+                    </div>
+
+                    <!-- Description -->
+                    <p class="text-sm text-gray-600 line-clamp-3">dummy desc</p>
+
+                    <!-- Footer -->
+                    <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
+                        <div>
+                            <p><strong>Modified:</strong> time and day</p>
+                            <p><strong>By:</strong> jaborel</p>
+                        </div>
+                        <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
+                            Access
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Dummy Card -->
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col max-h-[250px] w-[450px] align-self-center mb-5">
+                <!-- Image -->
+                <div class="h-[180px]">
+                    <img class="w-full h-full object-cover outline outline-1 outline-black" alt="Cover Image" />
+                </div>
+
+                <!-- Content -->
+                <div class="p-4 flex flex-col flex-grow">
+                    <!-- Title and Actions -->
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-xl font-semibold text-gray-800">Dummy Name</h2>
+
+                    </div>
+
+                    <!-- Description -->
+                    <p class="text-sm text-gray-600 line-clamp-3">dummy desc</p>
+
+                    <!-- Footer -->
+                    <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
+                        <div>
+                            <p><strong>Modified:</strong> time and day</p>
+                            <p><strong>By:</strong> jaborel</p>
+                        </div>
+                        <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
+                            Access
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-end">
+            <nav>
+                <ul class="inline-flex gap-1 text-sm">
+                    <li>
+                        <a href="#" class="px-3 py-2 rounded-l-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition">Previous</a>
+                    </li>
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <li>
+                            <a href="#" class="px-3 py-2 border border-gray-300 @(i == 3 ? "bg-blue-50 text-blue-600" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") rounded-md transition">
+                                @i
+                            </a>
+                        </li>
+                    }
+                    <li>
+                        <a href="#" class="px-3 py-2 rounded-r-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("~/Views/Admin/AddTraining.cshtml", new TrainingViewModel())
+<script>
+    function addTraining() {
+        const addModal = document.getElementById('addTraining');
+        const modalContent = addModal.querySelector('.flex.flex-row');
+
+        addModal.classList.remove('hidden');
+
+        // Animate inner modal (optional)
+        modalContent.classList.add('animate-slideUp'); // if you define this animation
+    }
+
+    function closeAddTraining() {
+        document.getElementById('addTraining').classList.add('hidden');
+    }
+</script>

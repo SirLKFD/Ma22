@@ -58,14 +58,52 @@ namespace ASI.Basecode.Services.Services
             }
         }
 
+        public void EditTrainingCategory(TrainingCategoryViewModel model)
+        {
+            var trainingCategory = _repository.GetTrainingCategories().FirstOrDefault(c => c.Id == model.Id);
+            if (trainingCategory != null)
+            {
+                Console.WriteLine($"[Service] Attempting to edit category: {trainingCategory.CategoryName}, AccountId: {trainingCategory.AccountId}");
+                if (!_repository.TrainingCategoryExists(trainingCategory.CategoryName))
+                {
+                    Console.WriteLine($"[Service] ❌ Error: Category '{trainingCategory.CategoryName}' already exists.");
+                    throw new InvalidDataException(Resources.Messages.Errors.TrainingCategoryExists);
+                }
+                _mapper.Map(model, trainingCategory);
+                trainingCategory.UpdatedTime = DateTime.Now;
+                trainingCategory.UpdatedBy = System.Environment.UserName;
+                Console.WriteLine($"[Service] Mapped TrainingCategory: {trainingCategory.CategoryName}, AccountId: {trainingCategory.AccountId}, UpdatedBy: {trainingCategory.UpdatedBy}, UpdatedTime: {trainingCategory.UpdatedTime}");
+                _repository.UpdateTrainingCategory(trainingCategory);
+            }
+        }
+
+        public void DeleteTrainingCategory(int id)
+        {
+            var trainingCategory = _repository.GetTrainingCategories().FirstOrDefault(c => c.Id == id);
+            if (trainingCategory != null)
+            {
+                _repository.DeleteTrainingCategory(trainingCategory);
+            }
+        }
         public List<TrainingCategory> GetAllTrainingCategories()
         {
             return _repository.GetTrainingCategories().ToList();
         }
 
-        public TrainingCategory GetTrainingCategoryById(int id)
+        public TrainingCategoryViewModel GetTrainingCategoryById(int id)
         {
-            return _repository.GetTrainingCategories().FirstOrDefault(c => c.Id == id);
+            var category = _repository.GetTrainingCategories().FirstOrDefault(c => c.Id == id);
+            return new TrainingCategoryViewModel
+            {
+                Id = category.Id,
+                AccountId = category.AccountId,
+                CategoryName = category.CategoryName,
+                Description = category.Description,
+                CoverPicture = category.CoverPicture,
+                UpdatedTime = category.UpdatedTime,
+                AccountFirstName = category.Account.FirstName,
+                AccountLastName = category.Account.LastName,
+            };
         }
 
         public List<TrainingCategoryViewModel> GetAllTrainingCategoryViewModels()
@@ -77,52 +115,11 @@ namespace ASI.Basecode.Services.Services
                     CategoryName = c.CategoryName,
                     Description = c.Description,
                     CoverPicture = c.CoverPicture,
-                    CreatedBy = c.CreatedBy,
-                    UpdatedTime = c.UpdatedTime
+                    UpdatedTime = c.UpdatedTime,
+                    AccountFirstName = c.Account.FirstName,
+                    AccountLastName = c.Account.LastName,
                 }).ToList();
             return categories;
-        }
-
-        public List<TrainingCategoryViewModel> GetTrainingCategories(string search, int page, int pageSize)
-        {
-            var query = _repository.GetTrainingCategories().AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                search = search.ToLower();
-                query = query.Where(c =>
-                    c.CategoryName.ToLower().Contains(search) ||
-                    (c.Description != null && c.Description.ToLower().Contains(search)));
-            }
-
-            return query
-                .OrderByDescending(c => c.CreatedTime)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .Select(c => new TrainingCategoryViewModel
-                {
-                    Id = c.Id,
-                    CategoryName = c.CategoryName,
-                    Description = c.Description,
-                    CoverPicture = c.CoverPicture,
-                    CreatedBy = c.CreatedBy,
-                    UpdatedTime = c.UpdatedTime
-                }).ToList();
-        }
-
-        public int CountTrainingCategories(string search)
-        {
-            var query = _repository.GetTrainingCategories().AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                search = search.ToLower();
-                query = query.Where(c =>
-                    c.CategoryName.ToLower().Contains(search) ||
-                    (c.Description != null && c.Description.ToLower().Contains(search)));
-            }
-
-            return query.Count();
         }
     }
 }
