@@ -52,15 +52,17 @@ namespace ASI.Basecode.WebApp.Controllers
         /// Returns Admin Training View.
         /// </summary>
         /// <returns> Admin Training View </returns>
-        public IActionResult AdminTraining()
+        public IActionResult AdminTraining(string search, int page = 1)
         {
-            List<TrainingViewModel> trainings = _trainingService.GetAllTrainings();
+            const int pageSize = 6;
+            int totalCount;
+            var trainings = _trainingService.GetPaginatedTrainings(search, page, pageSize, out totalCount);
             List<TrainingCategoryViewModel> trainingCategories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
-
-            Console.WriteLine($"Found {trainings?.Count ?? 0} trainings"); 
-            
             ViewData["categories"] = trainingCategories;
-            
+            ViewBag.TotalCount = totalCount;
+            ViewBag.PageSize = pageSize;
+            ViewBag.CurrentPage = page;
+            ViewBag.Search = search;
             return View("~/Views/Admin/AdminTraining.cshtml", trainings);
         }
 

@@ -3,23 +3,22 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var topic = ViewBag.Topic;
     var mediaList = ViewBag.TopicMedia as List<ASI.Basecode.Data.Models.TopicMedium>;
+    var allTopics = ViewBag.AllTopics as List<ASI.Basecode.Services.ServiceModels.TopicViewModel> ?? new List<ASI.Basecode.Services.ServiceModels.TopicViewModel>();
 }
+
 
 <div class="flex w-full space-x-8">
     <div class="flex flex-col w-2/3 gap-8">
 
         <div class="flex flex-col bg-white w-full rounded-xl shadow-md p-4 gap-4">
-            <h1 class="text-5xl uppercase font-semibold mb-2">Flowcharts</h1>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do 
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut 
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris 
-                nisi ut aliquip ex ea commodo consequat.
+            <h1 class="text-5xl uppercase font-semibold mb-2">@topic.TopicName</h1>
+            <p>@topic.Description</p>
             </p>
             <div class="flex items-center justify-start gap-6 text-sm text-slate-500">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined">group</span>
                     <span>
-                        Created by <strong class="text-slate-700">John Doe</strong>
+                        Created by <strong class="text-slate-700">@topic.Account.FirstName @topic.Account.LastName</strong>
                     </span>
                 </div>
                 <div class="flex items-center gap-2">
@@ -28,7 +27,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined">schedule</span>
-                    <span>Last updated: Dec 2024</span>
+                    <span>Last updated: @topic.CreatedTime</span>
                 </div>
             </div>
         </div>
@@ -38,7 +37,7 @@
                 <div class="flex flex-col">
                     <h2 class="text-xl font-semibold">Video Lessons</h2>
                     <p class="text-sm">4 comprehensive tutorials</p>
-                </div>
+                </div> 
             </div>
             
             <div class="flex overflow-x-auto whitespace-nowrap mt-2 ">

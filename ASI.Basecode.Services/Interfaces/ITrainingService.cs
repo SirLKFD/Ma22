@@ -13,5 +13,7 @@ namespace ASI.Basecode.Services.Interfaces
         TrainingViewModel GetTrainingById(int id);
         void UpdateTraining(TrainingViewModel model);
         void DeleteTraining(int id);
+        // Pagination for trainings
+        List<TrainingViewModel> GetPaginatedTrainings(string search, int page, int pageSize, out int totalCount);
     }
 }

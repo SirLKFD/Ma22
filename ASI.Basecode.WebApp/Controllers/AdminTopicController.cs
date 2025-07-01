@@ -163,9 +163,11 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             var topic = _topicService.GetTopicWithAccountById(topicId);
             var media = _topicMediaService.GetAllTopicMediaByTopicId(topicId);
+            var allTopics = _topicService.GetAllTopicsByTrainingId(topic.TrainingId);
             ViewBag.Topic = topic;
             ViewBag.TopicMedia = media;
             ViewBag.Account = topic.Account;
+            ViewBag.AllTopics = allTopics;
             return View("~/Views/Admin/AdminTopic.cshtml");
         }
 
