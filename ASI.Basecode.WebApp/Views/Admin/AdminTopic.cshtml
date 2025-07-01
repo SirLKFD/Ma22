@@ -1,34 +1,28 @@
-﻿@{
+﻿@model TopicViewModel
+
+@{
     ViewData["Title"] = "Admin Topic Details";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    var topic = ViewBag.Topic;
-    var mediaList = ViewBag.TopicMedia as List<ASI.Basecode.Data.Models.TopicMedium>;
+    var topics = ViewData["topics"] as List<TopicViewModel>;
 }
 
-<div class="flex w-full space-x-8">
-    <div class="flex flex-col w-2/3 gap-8">
+<div class="flex w-full space-x-8 min-w-0">
+    <div class="flex flex-col w-2/3 gap-8 min-w-0">
 
         <div class="flex flex-col bg-white w-full rounded-xl shadow-md p-4 gap-4">
-            <h1 class="text-5xl uppercase font-semibold mb-2">Flowcharts</h1>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do 
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut 
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris 
-                nisi ut aliquip ex ea commodo consequat.
-            </p>
+            <h1 class="text-5xl uppercase font-semibold mb-2">@Model.TopicName</h1>
+            <p>@Model.Description</p>
             <div class="flex items-center justify-start gap-6 text-sm text-slate-500">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined">group</span>
                     <span>
-                        Created by <strong class="text-slate-700">John Doe</strong>
+                        Created by <strong class="text-slate-700">@Model.AccountFirstName @Model.AccountLastName</strong>
                     </span>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[#EAC231]">star_rate</span>
-                    <span>4.8 (2.1k reviews)</span>
-                </div>
+              
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined">schedule</span>
-                    <span>Last updated: Dec 2024</span>
+                    <span>Last updated: @Model.UpdatedTime</span>
                 </div>
             </div>
         </div>
@@ -37,183 +31,138 @@
                 <span class="material-symbols-outlined !text-[25px] bg-red-100 p-2 rounded-xl">movie</span>
                 <div class="flex flex-col">
                     <h2 class="text-xl font-semibold">Video Lessons</h2>
-                    <p class="text-sm">4 comprehensive tutorials</p>
+                    <p class="text-sm">
+                        @(Model.Media != null ? Model.Media.Count(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")) : 0) video resources
+                    </p>
                 </div>
             </div>
             
-            <div class="flex overflow-x-auto whitespace-nowrap mt-2 ">
-                <!--Dummy Video-->
-                <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
-                    <div class="flex w-full h-[120px] items-center justify-center ">
-                        <span class="material-symbols-outlined">play_arrow</span>
-                    </div>
-                    <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
-                        <p class="font-semibold">Introduction to Flowcharts</p>
-                        <p class="text-xs">Learn the basics and fundamentals</p>
-                    </div>
-                </div>
-                <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
-                    <div class="flex w-full h-[120px] items-center justify-center ">
-                        <span class="material-symbols-outlined">play_arrow</span>
-                    </div>
-                    <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
-                        <p class="font-semibold">Introduction to Flowcharts</p>
-                        <p class="text-xs">Learn the basics and fundamentals</p>
-                    </div>
-                </div>
-                <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
-                    <div class="flex w-full h-[120px] items-center justify-center ">
-                        <span class="material-symbols-outlined">play_arrow</span>
-                    </div>
-                    <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
-                        <p class="font-semibold">Introduction to Flowcharts</p>
-                        <p class="text-xs">Learn the basics and fundamentals</p>
-                    </div>
-                </div>
-            </div>
+            <div class="flex overflow-x-auto whitespace-nowrap mt-2 w-full max-w-full min-w-0">
 
+                @if (Model.Media != null && Model.Media.Any(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")))
+                {
+                    foreach (var media in Model.Media.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")))
+                    {
+                        <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
+                            <div class="flex w-full h-[120px] items-center justify-center ">
+                                <a href="@media.MediaUrl" target="_blank">
+                                    <span class="material-symbols-outlined">play_arrow</span>
+                                </a>
+                            </div>
+                            <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
+                                <p class="font-semibold">@(media.Name != null && media.Name.Length > 15 ? media.Name.Substring(0, 15) + "..." : media.Name)</p>
+                                
+                                <p class="text-xs">Video Resource</p>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="flex items-center text-gray-400 ml-4">No video resources.</div>
+                }
+            </div>
         </div>
         <div class="flex flex-col bg-white w-full overflow-x-auto whitespace-nowrap rounded-lg shadow-sm p-4">
             <div class="flex space-x-2">
                 <span class="material-symbols-outlined !text-[25px] bg-green-100 p-2 rounded-xl">docs</span>
                 <div class="flex flex-col">
                     <h2 class="text-xl font-semibold">Documents</h2>
-                    <p class="text-sm">4 downloadable resources</p>
+                    <p class="text-sm">@Model.Media.Count(m => m.MediaType != null && (m.MediaType.ToLower().Contains("pdf") || m.MediaType.ToLower().Contains("word"))) downloadable resources</p>
                 </div>
             </div>
-            <div class=" flex items-center justify-between w-full h-[100px] bg-white rounded-xl shadow-sm p-4 border border-gray-200 m-2 ">
-                <div class="flex space-x-2">
-                    <span class="material-symbols-outlined !text-[25px] bg-red-100 p-2 rounded-xl">docs</span>
-                    <div class="flex flex-col">
-                        <h2 class="text-lg font-semibold">Flowchart Symbols Guide</h2>
-                        <p class="text-xs">Complete reference for all standard symbols</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2 hover:cursor-pointer hover:bg-[#EAC231] p-2 rounded-lg">
-                    <span class="material-symbols-outlined">download</span>
-                    <button>Download</button>
-                </div>
+            <div class="flex flex-col w-full">
+                @if (Model.Media != null && Model.Media.Any(m => m.MediaType != null && (m.MediaType.ToLower().Contains("pdf") || m.MediaType.ToLower().Contains("word"))))
+                {
+                    foreach (var media in Model.Media.Where(m => m.MediaType != null && (m.MediaType.ToLower().Contains("pdf") || m.MediaType.ToLower().Contains("word"))))
+                    {
+                        <div class="flex items-center justify-between w-full h-[100px] bg-white rounded-xl shadow-sm p-4 border border-gray-200 m-2 ">
+                            <div class="flex space-x-2">
+                                <span class="material-symbols-outlined !text-[25px] bg-red-100 p-2 rounded-xl">docs</span>
+                                <div class="flex flex-col">
+                                    <h2 class="text-lg font-semibold">@(media.Name != null && media.Name.Length > 15 ? media.Name.Substring(0, 15) + "..." : media.Name)</h2>
+                                    <p class="text-xs">Document Resource</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2 hover:cursor-pointer hover:bg-[#EAC231] p-2 rounded-lg">
+                                <span class="material-symbols-outlined">download</span>
+                                <a href="@media.MediaUrl" target="_blank">Download</a>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="flex items-center text-gray-400 ml-4">No document resources.</div>
+                }
             </div>
-
-            
-
         </div>
         <div class="flex flex-col bg-white w-full rounded-lg shadow-sm p-4">
             <div class="flex space-x-2">
                 <span class="material-symbols-outlined !text-[25px] bg-purple-100 p-2 rounded-xl">image</span>
                 <div class="flex flex-col">
                     <h2 class="text-xl font-semibold">Visual Examples</h2>
-                    <p class="text-sm">4 references</p>
+                    <p class="text-sm">@Model.Media.Count(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")) references</p>
                 </div>
             </div>
+            <div class="flex overflow-x-auto whitespace-nowrap mt-2 w-full max-w-full min-w-0">
 
-            <div class="flex overflow-x-auto whitespace-nowrap mt-2 ">
-                <!--Dummy Video-->
-                <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
-                    <div class="flex w-full h-[120px] items-center justify-center ">
-                        <span class="material-symbols-outlined">image</span>
-                    </div>
-                    <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
-                        <p class="font-semibold">Sample Flowchart Diagram</p>
-                        <p class="text-xs">Learn the basics and fundamentals</p>
-                    </div>
-                </div>
-                <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
-                    <div class="flex w-full h-[120px] items-center justify-center ">
-                        <span class="material-symbols-outlined">image</span>
-                    </div>
-                    <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
-                        <p class="font-semibold">Sample Flowchart Diagram</p>
-                        <p class="text-xs">Learn the basics and fundamentals</p>
-                    </div>
-                </div>
-                <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
-                    <div class="flex w-full h-[120px] items-center justify-center ">
-                        <span class="material-symbols-outlined">image</span>
-                    </div>
-                    <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
-                        <p class="font-semibold">Sample Flowchart Diagram</p>
-                        <p class="text-xs">Learn the basics and fundamentals</p>
-                    </div>
-                </div>
-
-
-
-
+                @if (Model.Media != null && Model.Media.Any(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")))
+                {
+                    foreach (var media in Model.Media.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")))
+                    {
+                        <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
+                            <div class="flex w-full h-[120px] items-center justify-center ">
+                                <a href="@media.MediaUrl" target="_blank">
+                                    <span class="material-symbols-outlined">image</span>
+                                </a>
+                            </div>
+                            <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
+                                <p class="font-semibold">@(media.Name != null && media.Name.Length > 15 ? media.Name.Substring(0, 15) + "..." : media.Name)</p>
+                                <p class="text-xs">Image Resource</p>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="flex items-center text-gray-400 ml-4">No image resources.</div>
+                }
             </div>
-
         </div>
     </div>
-    <div class="flex-1">
+    <div class="w-1/3">
 
         <div class="bg-[#640A16] text-white max-h-fit flex flex-col rounded-xl shadow-md p-4">
             <div class="flex items-center space-x-2 justify-center">
                 <span class="material-symbols-outlined !text-[40px]">import_contacts</span>
                 <h2 class="text-3xl font-semibold">Other Topics</h2>
             </div>
-            <!--Container for all dummy cards-->
+            <!--Container for all topic cards-->
             <div class="flex flex-col gap-4">
-                <!--dummy card-->
-                <div class="flex flex-col rounded-xl bg-white text-black shadow-sm p-4 border border-gray-200 mt-4">
-                    <div class="flex justify-between">
-                        <h3 class="text-md font-semibold">Compilers</h3>
-                        <span class="material-symbols-outlined hover-pointer">open_in_new</span>
-                    </div>
-                    <p class="text-xs">This is a sample description about compilers.</p>
-                    <div class="flex items-center mt-4 space-x-4">
-                        <span class="text-xs bg-[#EAC231] p-2 rounded-full font-semibold">20 Lessons</span>
-                        <span class="flex text-xs items-center space-x-2">
-                            <span class="material-symbols-outlined text-[#EAC231]">star_rate</span>
-                            <span>4.8</span>
-                        </span>
-                    </div>
-                </div>
-                <!--dummy card-->
-                <div class="flex flex-col rounded-xl bg-white text-black shadow-sm p-4 border border-gray-200 mt-4">
-                    <div class="flex justify-between">
-                        <h3 class="text-md font-semibold">Compilers</h3>
-                        <span class="material-symbols-outlined hover-pointer">open_in_new</span>
-                    </div>
-                    <p class="text-xs">This is a sample description about compilers.</p>
-                    <div class="flex items-center mt-4 space-x-4">
-                        <span class="text-xs bg-[#EAC231] p-2 rounded-full font-semibold">20 Lessons</span>
-                        <span class="flex text-xs items-center space-x-2">
-                            <span class="material-symbols-outlined text-[#EAC231]">star_rate</span>
-                            <span>4.8</span>
-                        </span>
-                    </div>
-                </div>
-                <!--dummy card-->
-                <div class="flex flex-col rounded-xl bg-white text-black shadow-sm p-4 border border-gray-200 mt-4">
-                    <div class="flex justify-between">
-                        <h3 class="text-md font-semibold">Compilers</h3>
-                        <span class="material-symbols-outlined hover-pointer">open_in_new</span>
-                    </div>
-                    <p class="text-xs">This is a sample description about compilers.</p>
-                    <div class="flex items-center mt-4 space-x-4">
-                        <span class="text-xs bg-[#EAC231] p-2 rounded-full font-semibold">20 Lessons</span>
-                        <span class="flex text-xs items-center space-x-2">
-                            <span class="material-symbols-outlined text-[#EAC231]">star_rate</span>
-                            <span>4.8</span>
-                        </span>
-                    </div>
-                </div>
-                <!--dummy card-->
-                <div class="flex flex-col rounded-xl bg-white text-black shadow-sm p-4 border border-gray-200 mt-4">
-                    <div class="flex justify-between">
-                        <h3 class="text-md font-semibold">Compilers</h3>
-                        <span class="material-symbols-outlined hover-pointer">open_in_new</span>
-                    </div>
-                    <p class="text-xs">This is a sample description about compilers.</p>
-                    <div class="flex items-center mt-4 space-x-4">
-                        <span class="text-xs bg-[#EAC231] p-2 rounded-full font-semibold">20 Lessons</span>
-                        <span class="flex text-xs items-center space-x-2">
-                            <span class="material-symbols-outlined text-[#EAC231]">star_rate</span>
-                            <span>4.8</span>
-                        </span>
-                    </div>
-                </div>
-
+                @if (topics != null && topics.Any())
+                {
+                    foreach (var t in topics.Where(t => t.Id != Model.Id))
+                    {
+                        <div class="flex flex-col rounded-xl bg-white text-black shadow-sm p-4 border border-gray-200 mt-4">
+                            <div class="flex justify-between">
+                                <h3 class="text-md font-semibold">@t.TopicName</h3>
+                                <a href="@Url.Action("TopicDetails", "AdminTopic", new { topicId = t.Id })" title="Open Topic">
+                                    <span class="material-symbols-outlined hover-pointer">open_in_new</span>
+                                </a>
+                            </div>
+                            <p class="text-xs">@t.Description</p>
+                            <div class="flex items-center mt-4 space-x-4">
+                                <span class="text-xs bg-[#EAC231] p-2 rounded-full font-semibold">@t.MediaCount Attachments</span>
+                             
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="flex items-center text-gray-200 ml-4">No other topics available.</div>
+                }
             </div>
         </div>
 

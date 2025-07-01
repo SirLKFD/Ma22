@@ -35,14 +35,14 @@
 
 
 
-    <div class="flex flex-row bg-[#FFE9C6] min-h-screen">
+    <div class="flex flex-row bg-[#FFE9C6] min-h-screen overflow-hidden">
             <!-- Sidebar -->
             <div class="w-24 hover:w-64 transition-all duration-300 bg-[#640A16] text-white">
                 <partial name="_Sidebar" />
             </div>
 
             <!-- Main Content -->
-        <div class="flex-1 page-wrapper @((IsSectionDefined("NoPadding") ? "" : "p-6"))">
+        <div class="flex-1 page-wrapper @((IsSectionDefined("NoPadding") ? "" : "p-6")) min-w-0">
                 <main>
                     @RenderBody()
                 </main>

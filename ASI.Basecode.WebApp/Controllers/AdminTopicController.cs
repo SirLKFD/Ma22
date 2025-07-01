@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using System.Linq;
+using System.Text.Json;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -161,12 +162,13 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult TopicDetails(int topicId)
         {
+            Console.WriteLine("topicId is",topicId);
             var topic = _topicService.GetTopicWithAccountById(topicId);
-            var media = _topicMediaService.GetAllTopicMediaByTopicId(topicId);
-            ViewBag.Topic = topic;
-            ViewBag.TopicMedia = media;
-            ViewBag.Account = topic.Account;
-            return View("~/Views/Admin/AdminTopic.cshtml");
+            var topics = _topicService.GetAllTopicsByTrainingId(topic.TrainingId);
+
+            ViewData["topics"] = topics;
+   
+            return View("~/Views/Admin/AdminTopic.cshtml", topic);
         }
 
           [HttpPost]
@@ -179,23 +181,30 @@ namespace ASI.Basecode.WebApp.Controllers
             [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
 
+            Console.WriteLine($"[EditTopic] ModelState.IsValid: {ModelState.IsValid}");
+            Console.WriteLine($"[EditTopic] Incoming model.Id: {model.Id}, model.AccountId: {model.AccountId}, model.TopicName: {model.TopicName}");
+
             if (!ModelState.IsValid)
             {
+                Console.WriteLine("[EditTopic] ModelState is invalid. Redirecting.");
                 return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = model.TrainingId });
             }
 
             try
             {
-                Console.WriteLine(model);
-                var existingTopic = _topicService.GetTopicWithAccountById(model.Id);
+                Console.WriteLine($"[EditTopic] Model: {JsonSerializer.Serialize(model)}");
+                var existingTopic = _topicService.GetTopicById(model.Id);
+                Console.WriteLine($"[EditTopic] existingTopic.Id: {existingTopic?.Id}, existingTopic.AccountId: {existingTopic?.AccountId}");
                 model.AccountId = existingTopic.AccountId;
                 model.AccountFirstName = existingTopic.Account.FirstName;
                 model.AccountLastName = existingTopic.Account.LastName;
-                
+                Console.WriteLine($"[EditTopic] After assignment, model.AccountId: {model.AccountId}");
                 _topicService.UpdateTopic(model);
+                Console.WriteLine("[EditTopic] Called _topicService.UpdateTopic");
 
                 var updatedTopic = _topicService.GetAllTopicsByTrainingId(model.TrainingId)
                     .OrderByDescending(t => t.UpdatedTime).FirstOrDefault(t => t.TopicName == model.TopicName);
+                Console.WriteLine($"[EditTopic] updatedTopic.Id: {updatedTopic?.Id}, updatedTopic.AccountId: {updatedTopic?.AccountId}");
 
                 var allFiles = new List<IFormFile>();
                 if (VideoFilesEdit != null) { allFiles.AddRange(VideoFilesEdit); Console.WriteLine($"[EditTopic] {VideoFilesEdit.Count} video files received."); }
@@ -257,6 +266,7 @@ namespace ASI.Basecode.WebApp.Controllers
                                 MediaUrl = uploadResult.SecureUrl?.ToString(),
                                 AccountId = model.AccountId
                             };
+                            Console.WriteLine($"[EditTopic] About to add TopicMedia: TopicId={topicMedia.TopicId}, Name={topicMedia.Name}, MediaType={topicMedia.MediaType}, MediaUrl={topicMedia.MediaUrl}, AccountId={topicMedia.AccountId}");
                             _topicMediaService.AddTopicMedia(topicMedia);
                             Console.WriteLine($"[EditTopic] Media saved for topic {updatedTopic.Id}: {uploadResult.SecureUrl}");
                         }
@@ -278,9 +288,11 @@ namespace ASI.Basecode.WebApp.Controllers
                     foreach (var mediaId in idsToDelete)
                     {
                         var media = _topicMediaService.GetTopicMediaById(mediaId);
+                        Console.WriteLine($"[EditTopic] Deleting mediaId: {mediaId}, found: {media != null}");
                         if (media != null)
                         {
                             _topicMediaService.DeleteTopicMedia(mediaId);
+                            Console.WriteLine($"[EditTopic] Deleted mediaId: {mediaId}");
                         }
                     }
                 }
@@ -291,7 +303,7 @@ namespace ASI.Basecode.WebApp.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[EditTopic] Exception: {ex.Message}");
+                Console.WriteLine($"[EditTopic] Exception: {ex.Message}\nStackTrace: {ex.StackTrace}");
                 TempData["Error"] = ex.Message;
                 return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = model.TrainingId });
             }
