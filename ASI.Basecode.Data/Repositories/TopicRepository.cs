@@ -26,6 +26,7 @@ namespace ASI.Basecode.Data.Repositories
         {
             return this.GetDbSet<Topic>()
                 .Include(t => t.Account)
+                .Include(t => t.TopicMedia)
                 .FirstOrDefault(t => t.Id == id);
         }
 

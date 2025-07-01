@@ -1,9 +1,9 @@
-﻿@{
+﻿@model ASI.Basecode.Services.ServiceModels.TopicViewModel
+@{
     ViewData["Title"] = "Admin Topic Details";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    var topic = ViewBag.Topic;
-    var mediaList = ViewBag.TopicMedia as List<ASI.Basecode.Data.Models.TopicMedium>;
     var allTopics = ViewBag.AllTopics as List<ASI.Basecode.Services.ServiceModels.TopicViewModel> ?? new List<ASI.Basecode.Services.ServiceModels.TopicViewModel>();
+    var mediaList = Model.Media;
 }
 
 
@@ -11,14 +11,13 @@
     <div class="flex flex-col w-2/3 gap-8">
 
         <div class="flex flex-col bg-white w-full rounded-xl shadow-md p-4 gap-4">
-            <h1 class="text-5xl uppercase font-semibold mb-2">@topic.TopicName</h1>
-            <p>@topic.Description</p>
-            </p>
+            <h1 class="text-5xl uppercase font-semibold mb-2">@Model.TopicName</h1>
+            <p>@Model.Description</p>
             <div class="flex items-center justify-start gap-6 text-sm text-slate-500">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined">group</span>
                     <span>
-                        Created by <strong class="text-slate-700">@topic.Account.FirstName @topic.Account.LastName</strong>
+                        Created by <strong class="text-slate-700">@Model.AccountFirstName @Model.AccountLastName</strong>
                     </span>
                 </div>
                 <div class="flex items-center gap-2">
@@ -27,7 +26,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined">schedule</span>
-                    <span>Last updated: @topic.CreatedTime</span>
+                    <span>Last updated: @Model.UpdatedTime</span>
                 </div>
             </div>
         </div>
@@ -36,39 +35,33 @@
                 <span class="material-symbols-outlined !text-[25px] bg-red-100 p-2 rounded-xl">movie</span>
                 <div class="flex flex-col">
                     <h2 class="text-xl font-semibold">Video Lessons</h2>
-                    <p class="text-sm">4 comprehensive tutorials</p>
+                    <p class="text-sm">@((mediaList?.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")).Count() ?? 0) + " video(s)")</p>
                 </div> 
             </div>
             
             <div class="flex overflow-x-auto whitespace-nowrap mt-2 ">
-                <!--Dummy Video-->
-                <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
-                    <div class="flex w-full h-[120px] items-center justify-center ">
-                        <span class="material-symbols-outlined">play_arrow</span>
-                    </div>
-                    <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
-                        <p class="font-semibold">Introduction to Flowcharts</p>
-                        <p class="text-xs">Learn the basics and fundamentals</p>
-                    </div>
-                </div>
-                <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
-                    <div class="flex w-full h-[120px] items-center justify-center ">
-                        <span class="material-symbols-outlined">play_arrow</span>
-                    </div>
-                    <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
-                        <p class="font-semibold">Introduction to Flowcharts</p>
-                        <p class="text-xs">Learn the basics and fundamentals</p>
-                    </div>
-                </div>
-                <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
-                    <div class="flex w-full h-[120px] items-center justify-center ">
-                        <span class="material-symbols-outlined">play_arrow</span>
-                    </div>
-                    <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
-                        <p class="font-semibold">Introduction to Flowcharts</p>
-                        <p class="text-xs">Learn the basics and fundamentals</p>
-                    </div>
-                </div>
+                @if (mediaList != null && mediaList.Any(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")))
+                {
+                    foreach (var video in mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")))
+                    {
+                        <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
+                            <div class="flex w-full h-[120px] items-center justify-center ">
+                                <video width="100%" height="100%" controls>
+                                    <source src="@video.MediaUrl" type="@video.MediaType">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                            <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
+                                <p class="font-semibold">@video.Name</p>
+                                <p class="text-xs">Uploaded by @Model.AccountFirstName @Model.AccountLastName</p>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-gray-500 p-4">No videos uploaded for this topic.</div>
+                }
             </div>
 
         </div>
@@ -77,68 +70,62 @@
                 <span class="material-symbols-outlined !text-[25px] bg-green-100 p-2 rounded-xl">docs</span>
                 <div class="flex flex-col">
                     <h2 class="text-xl font-semibold">Documents</h2>
-                    <p class="text-sm">4 downloadable resources</p>
+                    <p class="text-sm">@((mediaList?.Where(m => m.MediaType != null && (m.MediaType.ToLower().Contains("pdf") || m.MediaType.ToLower().Contains("word"))).Count() ?? 0) + " document(s)")</p>
                 </div>
             </div>
-            <div class=" flex items-center justify-between w-full h-[100px] bg-white rounded-xl shadow-sm p-4 border border-gray-200 m-2 ">
-                <div class="flex space-x-2">
-                    <span class="material-symbols-outlined !text-[25px] bg-red-100 p-2 rounded-xl">docs</span>
-                    <div class="flex flex-col">
-                        <h2 class="text-lg font-semibold">Flowchart Symbols Guide</h2>
-                        <p class="text-xs">Complete reference for all standard symbols</p>
+            @if (mediaList != null && mediaList.Any(m => m.MediaType != null && (m.MediaType.ToLower().Contains("pdf") || m.MediaType.ToLower().Contains("word"))))
+            {
+                foreach (var doc in mediaList.Where(m => m.MediaType != null && (m.MediaType.ToLower().Contains("pdf") || m.MediaType.ToLower().Contains("word"))))
+                {
+                    <div class="flex items-center justify-between w-full h-[100px] bg-white rounded-xl shadow-sm p-4 border border-gray-200 m-2 ">
+                        <div class="flex space-x-2">
+                            <span class="material-symbols-outlined !text-[25px] bg-red-100 p-2 rounded-xl">docs</span>
+                            <div class="flex flex-col">
+                                <h2 class="text-lg font-semibold">@doc.Name</h2>
+                                <p class="text-xs">Uploaded by @Model.AccountFirstName @Model.AccountLastName</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2 hover:cursor-pointer hover:bg-[#EAC231] p-2 rounded-lg">
+                            <span class="material-symbols-outlined">download</span>
+                            <a href="@doc.MediaUrl" target="_blank" download>Download</a>
+                        </div>
                     </div>
-                </div>
-                <div class="flex items-center space-x-2 hover:cursor-pointer hover:bg-[#EAC231] p-2 rounded-lg">
-                    <span class="material-symbols-outlined">download</span>
-                    <button>Download</button>
-                </div>
-            </div>
-
-            
-
+                }
+            }
+            else
+            {
+                <div class="text-gray-500 p-4">No documents uploaded for this topic.</div>
+            }
         </div>
         <div class="flex flex-col bg-white w-full rounded-lg shadow-sm p-4">
             <div class="flex space-x-2">
                 <span class="material-symbols-outlined !text-[25px] bg-purple-100 p-2 rounded-xl">image</span>
                 <div class="flex flex-col">
                     <h2 class="text-xl font-semibold">Visual Examples</h2>
-                    <p class="text-sm">4 references</p>
+                    <p class="text-sm">@((mediaList?.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")).Count() ?? 0) + " image(s)")</p>
                 </div>
             </div>
 
             <div class="flex overflow-x-auto whitespace-nowrap mt-2 ">
-                <!--Dummy Video-->
-                <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
-                    <div class="flex w-full h-[120px] items-center justify-center ">
-                        <span class="material-symbols-outlined">image</span>
-                    </div>
-                    <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
-                        <p class="font-semibold">Sample Flowchart Diagram</p>
-                        <p class="text-xs">Learn the basics and fundamentals</p>
-                    </div>
-                </div>
-                <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
-                    <div class="flex w-full h-[120px] items-center justify-center ">
-                        <span class="material-symbols-outlined">image</span>
-                    </div>
-                    <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
-                        <p class="font-semibold">Sample Flowchart Diagram</p>
-                        <p class="text-xs">Learn the basics and fundamentals</p>
-                    </div>
-                </div>
-                <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
-                    <div class="flex w-full h-[120px] items-center justify-center ">
-                        <span class="material-symbols-outlined">image</span>
-                    </div>
-                    <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
-                        <p class="font-semibold">Sample Flowchart Diagram</p>
-                        <p class="text-xs">Learn the basics and fundamentals</p>
-                    </div>
-                </div>
-
-
-
-
+                @if (mediaList != null && mediaList.Any(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")))
+                {
+                    foreach (var img in mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")))
+                    {
+                        <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
+                            <div class="flex w-full h-[120px] items-center justify-center ">
+                                <img src="@img.MediaUrl" alt="@img.Name" class="object-contain max-h-[120px] max-w-full" />
+                            </div>
+                            <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
+                                <p class="font-semibold">@img.Name</p>
+                                <p class="text-xs">Uploaded by @Model.AccountFirstName @Model.AccountLastName</p>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-gray-500 p-4">No images uploaded for this topic.</div>
+                }
             </div>
 
         </div>
@@ -150,69 +137,31 @@
                 <span class="material-symbols-outlined !text-[40px]">import_contacts</span>
                 <h2 class="text-3xl font-semibold">Other Topics</h2>
             </div>
-            <!--Container for all dummy cards-->
             <div class="flex flex-col gap-4">
-                <!--dummy card-->
-                <div class="flex flex-col rounded-xl bg-white text-black shadow-sm p-4 border border-gray-200 mt-4">
-                    <div class="flex justify-between">
-                        <h3 class="text-md font-semibold">Compilers</h3>
-                        <span class="material-symbols-outlined hover-pointer">open_in_new</span>
-                    </div>
-                    <p class="text-xs">This is a sample description about compilers.</p>
-                    <div class="flex items-center mt-4 space-x-4">
-                        <span class="text-xs bg-[#EAC231] p-2 rounded-full font-semibold">20 Lessons</span>
-                        <span class="flex text-xs items-center space-x-2">
-                            <span class="material-symbols-outlined text-[#EAC231]">star_rate</span>
-                            <span>4.8</span>
-                        </span>
-                    </div>
-                </div>
-                <!--dummy card-->
-                <div class="flex flex-col rounded-xl bg-white text-black shadow-sm p-4 border border-gray-200 mt-4">
-                    <div class="flex justify-between">
-                        <h3 class="text-md font-semibold">Compilers</h3>
-                        <span class="material-symbols-outlined hover-pointer">open_in_new</span>
-                    </div>
-                    <p class="text-xs">This is a sample description about compilers.</p>
-                    <div class="flex items-center mt-4 space-x-4">
-                        <span class="text-xs bg-[#EAC231] p-2 rounded-full font-semibold">20 Lessons</span>
-                        <span class="flex text-xs items-center space-x-2">
-                            <span class="material-symbols-outlined text-[#EAC231]">star_rate</span>
-                            <span>4.8</span>
-                        </span>
-                    </div>
-                </div>
-                <!--dummy card-->
-                <div class="flex flex-col rounded-xl bg-white text-black shadow-sm p-4 border border-gray-200 mt-4">
-                    <div class="flex justify-between">
-                        <h3 class="text-md font-semibold">Compilers</h3>
-                        <span class="material-symbols-outlined hover-pointer">open_in_new</span>
-                    </div>
-                    <p class="text-xs">This is a sample description about compilers.</p>
-                    <div class="flex items-center mt-4 space-x-4">
-                        <span class="text-xs bg-[#EAC231] p-2 rounded-full font-semibold">20 Lessons</span>
-                        <span class="flex text-xs items-center space-x-2">
-                            <span class="material-symbols-outlined text-[#EAC231]">star_rate</span>
-                            <span>4.8</span>
-                        </span>
-                    </div>
-                </div>
-                <!--dummy card-->
-                <div class="flex flex-col rounded-xl bg-white text-black shadow-sm p-4 border border-gray-200 mt-4">
-                    <div class="flex justify-between">
-                        <h3 class="text-md font-semibold">Compilers</h3>
-                        <span class="material-symbols-outlined hover-pointer">open_in_new</span>
-                    </div>
-                    <p class="text-xs">This is a sample description about compilers.</p>
-                    <div class="flex items-center mt-4 space-x-4">
-                        <span class="text-xs bg-[#EAC231] p-2 rounded-full font-semibold">20 Lessons</span>
-                        <span class="flex text-xs items-center space-x-2">
-                            <span class="material-symbols-outlined text-[#EAC231]">star_rate</span>
-                            <span>4.8</span>
-                        </span>
-                    </div>
-                </div>
-
+                @if (allTopics != null && allTopics.Count > 0)
+                {
+                    foreach (var t in allTopics.Where(x => x.Id != Model.Id))
+                    {
+                        <div class="flex flex-col rounded-xl bg-white text-black shadow-sm p-4 border border-gray-200 mt-4">
+                            <div class="flex justify-between">
+                                <h3 class="text-md font-semibold">@t.TopicName</h3>
+                                <a href="@Url.Action("TopicDetails", "AdminTopic", new { topicId = t.Id })" class="material-symbols-outlined hover-pointer">open_in_new</a>
+                            </div>
+                            <p class="text-xs">@t.Description</p>
+                            <div class="flex items-center mt-4 space-x-4">
+                                <span class="text-xs bg-[#EAC231] p-2 rounded-full font-semibold">@t.MediaCount Lessons</span>
+                                <span class="flex text-xs items-center space-x-2">
+                                    <span class="material-symbols-outlined text-[#EAC231]">star_rate</span>
+                                    <span>4.8</span>
+                                </span>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-gray-500 p-4">No other topics found for this training.</div>
+                }
             </div>
         </div>
 
