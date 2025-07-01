@@ -41,5 +41,30 @@ namespace ASI.Basecode.Data.Repositories
             UnitOfWork.SaveChanges();
             Console.WriteLine("SaveChanges called.");
         }
+
+        public void UpdateTopic(Topic topic)
+        {
+            var existingTopic = this.GetDbSet<Topic>().FirstOrDefault(x => x.Id == topic.Id);
+            if (existingTopic != null)
+            {
+                existingTopic.TopicName = topic.TopicName;
+                existingTopic.Description = topic.Description;
+                existingTopic.UpdatedTime = topic.UpdatedTime;
+                existingTopic.UpdatedBy = topic.UpdatedBy;
+                UnitOfWork.SaveChanges();
+                Console.WriteLine("SaveChanges called.");
+            }
+        }
+
+        public void DeleteTopic(Topic topic)
+        {
+            var existingTopic = this.GetDbSet<Topic>().FirstOrDefault(x => x.Id == topic.Id);
+            if (existingTopic != null)
+            {
+                this.GetDbSet<Topic>().Remove(existingTopic);
+                UnitOfWork.SaveChanges();
+                Console.WriteLine("SaveChanges called.");
+            }
+        }
     }
 }

@@ -10,17 +10,19 @@ using System.IO;
 using System.Linq;
 using static ASI.Basecode.Resources.Constants.Enums;
 
+
 namespace ASI.Basecode.Services.Services
 {
     public class TopicService : ITopicService
     {
         private readonly ITopicRepository _repository;
         private readonly IMapper _mapper;
-
+     
         public TopicService(ITopicRepository repository, IMapper mapper)
         {
             _mapper = mapper;
             _repository = repository;
+       
         }
 
         public void AddTopic(TopicViewModel model)
@@ -58,11 +60,30 @@ namespace ASI.Basecode.Services.Services
             }
         }
 
-        public List<Topic> GetAllTopicsByTrainingId(int trainingId)
+        public List<TopicViewModel> GetAllTopicsByTrainingId(int trainingId)
         {
-            Console.WriteLine($"[TopicService] Fetching all topics for TrainingId: {trainingId}");
-            var topics = _repository.GetTopics().Where(t => t.TrainingId == trainingId).ToList();
-            Console.WriteLine($"[TopicService] Found {topics.Count} topics for TrainingId: {trainingId}");
+            var topics = _repository.GetTopics().Where(t => t.TrainingId == trainingId)
+                .OrderByDescending(t => t.CreatedTime)
+                .Select(t => new TopicViewModel
+                {
+                    Id = t.Id,
+                    TopicName = t.TopicName,
+                    TrainingId = t.TrainingId,
+                    Description = t.Description,
+                    UpdatedTime = t.UpdatedTime,
+                    Media = t.TopicMedia.Select(m => new TopicMediaViewModel {
+                        Id = m.Id,
+                        TopicId = m.TopicId,
+                        MediaType = m.MediaType,
+                        Name = m.Name,
+                        MediaUrl = m.MediaUrl,
+                        AccountId = m.AccountId
+                    }).ToList(),
+                    AccountFirstName = t.Account.FirstName,
+                    AccountLastName = t.Account.LastName,
+                    MediaCount = t.TopicMedia.Count
+                }).ToList();
+
             return topics;
         }
 
@@ -83,6 +104,32 @@ namespace ASI.Basecode.Services.Services
             var topic = _repository.GetTopicWithAccountById(id);
             Console.WriteLine($"[TopicService] Found topic: {topic.TopicName}");
             return topic;
+        }
+
+        public void UpdateTopic(TopicViewModel model)
+        {
+            var topic = _repository.GetTopicWithAccountById(model.Id);
+            if (topic != null)
+            {
+                if (_repository.TopicExists(model.TopicName) && model.TopicName != topic.TopicName)
+                {
+                    Console.WriteLine($"[TopicService] ❌ Error: Topic '{model.TopicName}' already exists.");
+                    throw new InvalidDataException(Resources.Messages.Errors.TopicExists);
+                }
+                _mapper.Map(model, topic);
+                topic.UpdatedTime = DateTime.Now;
+                topic.UpdatedBy = System.Environment.UserName;
+                _repository.UpdateTopic(topic);
+            }
+        }
+
+        public void DeleteTopic(int id)
+        {
+            var topic = _repository.GetTopicWithAccountById(id);
+            if (topic != null)
+            {
+                _repository.DeleteTopic(topic);
+            }
         }
     }
 }

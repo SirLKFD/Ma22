@@ -11,5 +11,6 @@ namespace ASI.Basecode.Data.Interfaces
     {
         IQueryable<TopicMedium> GetTopicMedia();
         void AddTopicMedia(TopicMedium topicMedia);
+        void DeleteTopicMedia(int id);
     }
 }

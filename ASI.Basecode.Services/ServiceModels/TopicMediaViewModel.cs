@@ -20,4 +20,6 @@ public class TopicMediaViewModel
     [Required(ErrorMessage = "Account ID is required.")]
     public int AccountId { get; set; }
 
+    public int Id {get;set;}
+
 }

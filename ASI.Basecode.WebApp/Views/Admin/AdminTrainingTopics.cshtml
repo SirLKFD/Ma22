@@ -1,8 +1,10 @@
-﻿@model ASI.Basecode.Services.ServiceModels.TopicViewModel
+﻿@model List<ASI.Basecode.Services.ServiceModels.TopicViewModel>
+@using System.Text.Json
 
 @{
     ViewData["Title"] = "Admin Training Topics";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var training = ViewData["training"] as TrainingViewModel;
 }
 @section NoPadding {}
 
@@ -12,14 +14,14 @@
 
     <!--Cover Photo-->
     <div class="flex items-center justify-center bg-[#C6FFCD] w-full h-[150px] object-cover">
-        <h1 class="text-4xl">PLACEHOLDER FOR COVER PHOTO</h1>
+        <img src="@training.CoverPicture" alt="Cover Photo" class="w-full h-full object-cover">
     </div>
 
     <!--Title-->
     <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-10
                 bg-white w-[90%] rounded-md shadow-lg flex flex-col justify-between items-center pb-6">
         <div class="bg-[#640A16] w-full h-[10px] rounded-tl-md rounded-tr-md"></div>
-        <h2 class="text-4xl font-bold pt-2">CMSC 11: Introduction to Programming</h2>
+        <h2 class="text-4xl font-bold pt-2">@training.TrainingName</h2>
         <div class="flex items-center">
             <div class="text-yellow-500 text-xl">⭐⭐⭐⭐⭐</div>
             <div class="ml-2 text-sm text-gray-600">5.0<br />Positive Reviews</div>
@@ -28,134 +30,49 @@
     
 </div>
 
-<div class="flex mx-20 gap-4">
+<div class="flex mx-20 gap-4 mb-5">
     <!--Description-->
-    <div class="flex flex-col justify-center w-1/3 gap-2 px-4 py-2 bg-white rounded-md shadow-lg sticky top-[100px] h-fit self-start">
+    <div class="flex flex-col justify-center w-1/3 gap-2 px-4 py-4 bg-white rounded-md shadow-lg sticky top-[100px] h-fit self-start">
 
         <h2 class="text-2xl font-weight-bold align-self-center">Description</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor 
-            in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, 
-            sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
-            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip 
-            ex ea commodo consequat.
-        </p>
+        <p>@training.Description</p>
     </div>
-    <div class="flex flex-col justify-start w-2/3 bg-white rounded-md shadow-lg px-4 py-2 gap-4">
+    <div class="flex flex-col justify-start w-2/3 bg-white rounded-md shadow-lg px-4 py-4 gap-4">
         <!-- Header -->
-        <div class="flex justify-between items-center mb-5">
+        <div class="flex justify-between items-center mb-2">
             <h2 class="text-3xl font-bold">Topics</h2>
-            <button class="bg-[#EAC231] p-2 rounded-lg font-semibold" onclick="addTopic()">Add Topic +</button>
+            <button class="bg-[#EAC231] p-2 rounded-lg font-semibold" onclick="addTopic(@training.Id)">Add Topic +</button>
         </div>
 
         
 
         <!-- Topic Card -->
-        <div class="flex flex-col bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs">
-            <!-- Title and Actions -->
+        @foreach (var topic in Model){
+        <div class="flex flex-col bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs"
+          onclick="window.location.href='@Url.Action("TopicDetails", "AdminTopic", new { topicId = topic.Id })'">
+     
             <div class="flex justify-between items-center mb-2 w-full">
-                <h3 class="text-2xl font-semibold">Flowcharts</h3>
+                <h3 class="text-2xl font-semibold">@topic.TopicName</h3>
                 <div class="flex gap-2">
-                    <a href="@Url.Action("TopicDetails", "AdminTopic", new { topicId = 26 })">
-                        <span class="material-symbols-outlined !text-[20px] cursor-pointer">visibility</span>
-                    </a>
-                    <span class="material-symbols-outlined !text-[20px] cursor-pointer" onclick="editTopic()">edit</span>
-                    <span class="material-symbols-outlined !text-[20px] cursor-pointer" onclick="deleteTopic()">delete</span>
+                    <span class="material-symbols-outlined !text-[20px] cursor-pointer"
+                          onclick='event.stopPropagation(); openEditTopic(@topic.Id, @topic.TrainingId, "@topic.TopicName", "@topic.Description", @topic.MediaCount, "@topic.AccountFirstName", "@topic.AccountLastName", "@topic.UpdatedTime", @Html.Raw(JsonSerializer.Serialize(@topic.Media)))'>edit</span>
+                    <span class="material-symbols-outlined !text-[20px] cursor-pointer" onclick="event.stopPropagation(); openDeleteTopic(@topic.Id, @topic.TrainingId, '@topic.TopicName', @topic.MediaCount, '@topic.AccountFirstName', '@topic.AccountLastName', '@topic.UpdatedTime')">delete</span>
                 </div>
             </div>
 
             <!-- Meta Info -->
-            <p>Created by: John Doe</p>
-            <p>June 12, 2025</p>
+            <p>Created by: @topic.AccountFirstName @topic.AccountLastName</p>
+            <p>@topic.UpdatedTime.ToString("MMMM dd, yyyy")</p>
 
             <!-- Attachments -->
             <div class="flex items-center gap-1 mt-auto">
                 <span class="material-symbols-outlined !text-[20px]">attachment</span>
-                <span>5 Attachments</span>
+                <span>@topic.MediaCount Attachments</span>
             </div>
+           
         </div>
-        
-        <div class="flex flex-col bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs">
-            <!-- Title and Actions -->
-            <div class="flex justify-between items-center mb-2 w-full">
-                <h3 class="text-2xl font-semibold">Flowcharts</h3>
-                <div class="flex gap-2">
-                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">edit</span>
-                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">delete</span>
-                </div>
-            </div>
-
-            <!-- Meta Info -->
-            <p>Created by: John Doe</p>
-            <p>June 12, 2025</p>
-
-            <!-- Attachments -->
-            <div class="flex items-center gap-1 mt-auto">
-                <span class="material-symbols-outlined !text-[20px]">attachment</span>
-                <span>5 Attachments</span>
-            </div>
-        </div>
-        <div class="flex flex-col bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs">
-            <!-- Title and Actions -->
-            <div class="flex justify-between items-center mb-2 w-full">
-                <h3 class="text-2xl font-semibold">Flowcharts</h3>
-                <div class="flex gap-2">
-                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">edit</span>
-                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">delete</span>
-                </div>
-            </div>
-
-            <!-- Meta Info -->
-            <p>Created by: John Doe</p>
-            <p>June 12, 2025</p>
-
-            <!-- Attachments -->
-            <div class="flex items-center gap-1 mt-auto">
-                <span class="material-symbols-outlined !text-[20px]">attachment</span>
-                <span>5 Attachments</span>
-            </div>
-        </div>
-        <div class="flex flex-col bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs">
-            <!-- Title and Actions -->
-            <div class="flex justify-between items-center mb-2 w-full">
-                <h3 class="text-2xl font-semibold">Flowcharts</h3>
-                <div class="flex gap-2">
-                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">edit</span>
-                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">delete</span>
-                </div>
-            </div>
-
-            <!-- Meta Info -->
-            <p>Created by: John Doe</p>
-            <p>June 12, 2025</p>
-
-            <!-- Attachments -->
-            <div class="flex items-center gap-1 mt-auto">
-                <span class="material-symbols-outlined !text-[20px]">attachment</span>
-                <span>5 Attachments</span>
-            </div>
-        </div>
-        <div class="flex flex-col bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs">
-            <!-- Title and Actions -->
-            <div class="flex justify-between items-center mb-2 w-full">
-                <h3 class="text-2xl font-semibold">Flowcharts</h3>
-                <div class="flex gap-2">
-                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">edit</span>
-                    <span class="material-symbols-outlined !text-[20px] cursor-pointer">delete</span>
-                </div>
-            </div>
-
-            <!-- Meta Info -->
-            <p>Created by: John Doe</p>
-            <p>June 12, 2025</p>
-
-            <!-- Attachments -->
-            <div class="flex items-center gap-1 mt-auto">
-                <span class="material-symbols-outlined !text-[20px]">attachment</span>
-                <span>5 Attachments</span>
-            </div>
-        </div>
-
+        }
+    
     </div>
 
 </div>
@@ -166,90 +83,15 @@
 @await Html.PartialAsync("~/Views/Admin/DeleteTopic.cshtml", new TopicViewModel())
 
 <script type="text/javascript">
-    function addTopic(){
-        document.getElementById('addTopic').classList.remove('hidden')
-    }
     function closeAddTopic(){
         document.getElementById('addTopic').classList.add('hidden')
     }
 
-    function editTopic(){
-        document.getElementById('editTopic').classList.remove('hidden')
-    }
     function closeEditTopic(){
         document.getElementById('editTopic').classList.add('hidden')
     }
 
-    function deleteTopic(){
-        document.getElementById('deleteTopic').classList.remove('hidden')
-    }
     function closeDeleteTopic(){
         document.getElementById('deleteTopic').classList.add('hidden')
     }
 </script>
-
-@* <div class="row">
-    <!-- Left: Add Topic Form -->
-    <div class="col-md-7">
-        <h2 class="mb-4"><b>ADD NEW TOPIC</b> for @ViewBag.Training.TrainingName</h2>
-        <form asp-controller="AdminTopic" asp-action="AddTopic" method="post" enctype="multipart/form-data">
-            <input type="hidden" asp-for="TrainingId" value="@ViewBag.Training.Id" />
-            <div class="form-group">
-                <label asp-for="TopicName">Topic Name</label>
-                <input asp-for="TopicName" class="form-control" />
-                <span asp-validation-for="TopicName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description">Description</label>
-                <textarea asp-for="Description" class="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label>Upload Videos</label>
-                <input type="file" name="VideoFiles" accept="video/*" multiple class="form-control" />
-            </div>
-            <div class="form-group">
-                <label>Upload Images</label>
-                <input type="file" name="ImageFiles" accept="image/*" multiple class="form-control" />
-            </div>
-            <div class="form-group">
-                <label>Upload Documents</label>
-                <input type="file" name="DocumentFiles" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple class="form-control" />
-            </div>
-            <button type="submit" class="btn btn-warning w-100 mt-3" style="font-weight:bold;">Add Topic</button>
-        </form>
-        @if (ViewBag.Success != null)
-        {
-            <div class="alert alert-success mt-3">@ViewBag.Success</div>
-        }
-        <h3 class="mt-4">Topics</h3>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Created By</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-            @if (ViewBag.Topics != null)
-            {
-                foreach (var topic in ViewBag.Topics)
-                {
-                    <tr>
-                        <td>@topic.TopicName</td>
-                        <td>@topic.Description</td>
-                        <td>@topic.Account.FirstName @topic.Account.LastName</td>
-                        <td>
-                            <a href="@Url.Action("TopicDetails", "AdminTopic", new { topicId = topic.Id })" class="btn btn-primary btn-sm">
-                                View
-                            </a>
-                        </td>
-                    </tr>
-                }
-            }
-            </tbody>
-        </table>
-    </div>
-</div>  *@

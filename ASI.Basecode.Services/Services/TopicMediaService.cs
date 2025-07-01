@@ -51,9 +51,40 @@ namespace ASI.Basecode.Services.Services
             Console.WriteLine("[Service] AddTopicMedia called on repository.");
         }
 
-        public List<TopicMedium> GetAllTopicMediaByTopicId(int topicId) 
+        public List<TopicMediaViewModel> GetAllTopicMediaByTopicId(int topicId) 
         {
-            return _repository.GetTopicMedia().Where(t => t.TopicId == topicId).ToList();
+              var media = _repository.GetTopicMedia().Where(t => t.TopicId == topicId)
+                .OrderByDescending(t => t.CreatedTime)
+                .Select(t => new TopicMediaViewModel
+                {
+                    Id = t.Id,
+                    TopicId = t.TopicId,
+                    MediaType = t.MediaType,
+                    Name = t.Name,
+                    MediaUrl = t.MediaUrl,
+                    AccountId = t.AccountId
+                }).ToList();
+
+            return media;
+        }
+
+        public TopicMediaViewModel GetTopicMediaById(int id)
+        {
+            var media = _repository.GetTopicMedia().FirstOrDefault(m => m.Id == id);
+            if (media == null) return null;
+            return new TopicMediaViewModel
+                {
+                    TopicId = media.TopicId,
+                    MediaType = media.MediaType,
+                    Name = media.Name,
+                    MediaUrl = media.MediaUrl,
+                    AccountId = media.AccountId
+                        };
+        }
+
+        public void DeleteTopicMedia(int id)
+        {
+            _repository.DeleteTopicMedia(id);
         }
     }
 }

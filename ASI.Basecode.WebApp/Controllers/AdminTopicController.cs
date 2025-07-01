@@ -38,9 +38,9 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpPost]
         public IActionResult AddTopic(
             TopicViewModel model,
-            List<IFormFile> VideoFiles,
-            List<IFormFile> ImageFiles,
-            List<IFormFile> DocumentFiles,
+            List<IFormFile> VideoFilesAdd,
+            List<IFormFile> ImageFilesAdd,
+            List<IFormFile> DocumentFilesAdd,
             [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
 
@@ -62,7 +62,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 _topicService.AddTopic(model);
 
                 var addedTopic = _topicService.GetAllTopicsByTrainingId(model.TrainingId)
-                    .OrderByDescending(t => t.CreatedTime).FirstOrDefault(t => t.TopicName == model.TopicName);
+                    .OrderByDescending(t => t.UpdatedTime).FirstOrDefault(t => t.TopicName == model.TopicName);
                 if (addedTopic != null)
                 {
                     Console.WriteLine($"[AddTopic] Fetched added topic with ID: {addedTopic.Id}");
@@ -73,9 +73,9 @@ namespace ASI.Basecode.WebApp.Controllers
                 }
 
                 var allFiles = new List<IFormFile>();
-                if (VideoFiles != null) { allFiles.AddRange(VideoFiles); Console.WriteLine($"[AddTopic] {VideoFiles.Count} video files received."); }
-                if (ImageFiles != null) { allFiles.AddRange(ImageFiles); Console.WriteLine($"[AddTopic] {ImageFiles.Count} image files received."); }
-                if (DocumentFiles != null) { allFiles.AddRange(DocumentFiles); Console.WriteLine($"[AddTopic] {DocumentFiles.Count} document files received."); }
+                if (VideoFilesAdd != null) { allFiles.AddRange(VideoFilesAdd); Console.WriteLine($"[AddTopic] {VideoFilesAdd.Count} video files received."); }
+                if (ImageFilesAdd != null) { allFiles.AddRange(ImageFilesAdd); Console.WriteLine($"[AddTopic] {ImageFilesAdd.Count} image files received."); }
+                if (DocumentFilesAdd != null) { allFiles.AddRange(DocumentFilesAdd); Console.WriteLine($"[AddTopic] {DocumentFilesAdd.Count} document files received."); }
 
                 if (addedTopic != null && allFiles.Count > 0)
                 {
@@ -168,5 +168,145 @@ namespace ASI.Basecode.WebApp.Controllers
             ViewBag.Account = topic.Account;
             return View("~/Views/Admin/AdminTopic.cshtml");
         }
-    }
+
+          [HttpPost]
+        public IActionResult EditTopic(
+            TopicViewModel model,
+            List<IFormFile> VideoFilesEdit,
+            List<IFormFile> ImageFilesEdit,
+            List<IFormFile> DocumentFilesEdit,
+            string DeletedMediaIds,
+            [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = model.TrainingId });
+            }
+
+            try
+            {
+                Console.WriteLine(model);
+                var existingTopic = _topicService.GetTopicWithAccountById(model.Id);
+                model.AccountId = existingTopic.AccountId;
+                model.AccountFirstName = existingTopic.Account.FirstName;
+                model.AccountLastName = existingTopic.Account.LastName;
+                
+                _topicService.UpdateTopic(model);
+
+                var updatedTopic = _topicService.GetAllTopicsByTrainingId(model.TrainingId)
+                    .OrderByDescending(t => t.UpdatedTime).FirstOrDefault(t => t.TopicName == model.TopicName);
+
+                var allFiles = new List<IFormFile>();
+                if (VideoFilesEdit != null) { allFiles.AddRange(VideoFilesEdit); Console.WriteLine($"[EditTopic] {VideoFilesEdit.Count} video files received."); }
+                if (ImageFilesEdit != null) { allFiles.AddRange(ImageFilesEdit); Console.WriteLine($"[EditTopic] {ImageFilesEdit.Count} image files received."); }
+                if (DocumentFilesEdit != null) { allFiles.AddRange(DocumentFilesEdit); Console.WriteLine($"[EditTopic] {DocumentFilesEdit.Count} document files received."); }
+
+                if (updatedTopic != null && allFiles.Count > 0)
+                {
+                    Console.WriteLine($"[EditTopic] Processing {allFiles.Count} media files for topic {updatedTopic.Id}.");
+                    foreach (var file in allFiles)
+                    {
+                        if (file.Length > 0)
+                        {
+                            Console.WriteLine($"[EditTopic] Uploading file: {file.FileName} ({file.ContentType}), size: {file.Length} bytes");
+                            using var stream = file.OpenReadStream();
+                            var contentType = file.ContentType.ToLower();
+                            CloudinaryDotNet.Actions.UploadResult uploadResult = null;
+
+                            if (contentType.StartsWith("image"))
+                            {
+                                var uploadParams = new ImageUploadParams
+                                {
+                                    File = new FileDescription(file.FileName, stream),
+                                    Folder = "topic_media"
+                                };
+                                uploadResult = cloudinary.Upload(uploadParams);
+                            }
+                            else if (contentType.StartsWith("video"))
+                            {
+                                var uploadParams = new VideoUploadParams
+                                {
+                                    File = new FileDescription(file.FileName, stream),
+                                    Folder = "topic_media"
+                                };
+                                uploadResult = cloudinary.Upload(uploadParams);
+                            }
+                            else
+                            {
+                                var uploadParams = new RawUploadParams
+                                {
+                                    File = new FileDescription(file.FileName, stream),
+                                    Folder = "topic_media"
+                                };
+                                uploadResult = cloudinary.Upload(uploadParams);
+                            }
+
+                            if (uploadResult.Error != null)
+                            {
+                                Console.WriteLine($"[EditTopic] ❌ Cloudinary upload failed: {uploadResult.Error.Message}");
+                                throw new Exception("Cloudinary upload failed: " + uploadResult.Error.Message);
+                            }
+                            Console.WriteLine($"[EditTopic] ✅ Upload succeeded. Secure URL: {uploadResult.SecureUrl}");
+
+                            var topicMedia = new TopicMediaViewModel
+                            {
+                                TopicId = updatedTopic.Id,
+                                Name = file.FileName,
+                                MediaType = file.ContentType,
+                                MediaUrl = uploadResult.SecureUrl?.ToString(),
+                                AccountId = model.AccountId
+                            };
+                            _topicMediaService.AddTopicMedia(topicMedia);
+                            Console.WriteLine($"[EditTopic] Media saved for topic {updatedTopic.Id}: {uploadResult.SecureUrl}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"[EditTopic] Skipping empty file: {file.FileName}");
+                        }
+                    }
+                }
+                else if (updatedTopic != null)
+                {
+                    Console.WriteLine("[EditTopic] No media files to process.");
+                }
+
+                // Handle deletions
+                if (!string.IsNullOrEmpty(DeletedMediaIds))
+                {
+                    var idsToDelete = DeletedMediaIds.Split(',').Select(int.Parse).ToList();
+                    foreach (var mediaId in idsToDelete)
+                    {
+                        var media = _topicMediaService.GetTopicMediaById(mediaId);
+                        if (media != null)
+                        {
+                            _topicMediaService.DeleteTopicMedia(mediaId);
+                        }
+                    }
+                }
+
+                TempData["Success"] = "Topic and media updated successfully!";
+                Console.WriteLine("[AddTopic] Topic and media updated successfully!");
+                return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = model.TrainingId });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[EditTopic] Exception: {ex.Message}");
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = model.TrainingId });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult DeleteTopic(int id)
+        {
+            var topic = _topicService.GetTopicWithAccountById(id);
+            if (topic != null)
+            {
+                _topicService.DeleteTopic(id);
+                return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = topic.TrainingId });
+            }
+            return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = topic.TrainingId });
+        }
+    }   
 } 

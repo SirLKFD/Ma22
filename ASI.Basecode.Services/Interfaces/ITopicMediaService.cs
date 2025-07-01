@@ -8,6 +8,8 @@ namespace ASI.Basecode.Services.Interfaces
     public interface ITopicMediaService
     {
         void AddTopicMedia(TopicMediaViewModel model);
-        List<TopicMedium> GetAllTopicMediaByTopicId(int topicId);
+        List<TopicMediaViewModel> GetAllTopicMediaByTopicId(int topicId);
+        void DeleteTopicMedia(int mediaId);
+        TopicMediaViewModel GetTopicMediaById(int mediaId);
     }
 }

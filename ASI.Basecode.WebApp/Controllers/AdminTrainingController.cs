@@ -226,9 +226,10 @@ namespace ASI.Basecode.WebApp.Controllers
             
             var training = _trainingService.GetTrainingById(trainingId); 
             var topics = _topicService.GetAllTopicsByTrainingId(trainingId);
-            ViewBag.Training = training;
-            ViewBag.Topics = topics;
-            return View("~/Views/Admin/AdminTrainingTopics.cshtml");
+
+            ViewData["training"] = training;
+
+            return View("~/Views/Admin/AdminTrainingTopics.cshtml", topics);
         }
     }
 }
