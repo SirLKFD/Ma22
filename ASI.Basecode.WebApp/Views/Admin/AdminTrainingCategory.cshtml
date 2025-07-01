@@ -80,12 +80,15 @@
         <div class="flex justify-end mt-8">
             <nav>
                 <ul class="inline-flex gap-1 text-sm">
-                    <li>
-                        <a class="px-3 py-2 rounded-l-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 transition"
-                           href="@Url.Action("AdminTrainingCategory", new { page = Math.Max(ViewBag.CurrentPage - 1, 1), search = ViewBag.Search })">
-                            Previous
-                        </a>
-                    </li>
+                    @if (ViewBag.CurrentPage > 1)
+                    {
+                        <li>
+                            <a class="px-3 py-2 rounded-l-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 transition"
+                               href="@Url.Action("AdminTrainingCategory", new { page = Math.Max(ViewBag.CurrentPage - 1, 1), search = ViewBag.Search })">
+                                Previous
+                            </a>
+                        </li>
+                    }
                     @for (int i = 1; i <= totalPages; i++)
                     {
                         <li>
@@ -95,12 +98,15 @@
                             </a>
                         </li>
                     }
-                    <li>
-                        <a class="px-3 py-2 rounded-r-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 transition"
-                           href="@Url.Action("AdminTrainingCategory", new { page = Math.Min(ViewBag.CurrentPage + 1, totalPages), search = ViewBag.Search })">
-                            Next
-                        </a>
-                    </li>
+                    @if (ViewBag.CurrentPage < totalPages)
+                    {
+                        <li>
+                            <a class="px-3 py-2 rounded-r-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 transition"
+                               href="@Url.Action("AdminTrainingCategory", new { page = Math.Min(ViewBag.CurrentPage + 1, totalPages), search = ViewBag.Search })">
+                                Next
+                            </a>
+                        </li>
+                    }
                 </ul>
             </nav>
         </div>

@@ -147,6 +147,36 @@ namespace ASI.Basecode.Services.Services
                 _repository.DeleteTraining(training);
             }
         }
-        
+
+        public List<TrainingViewModel> GetPaginatedTrainings(string search, int page, int pageSize, out int totalCount)
+        {
+            var query = _repository.GetTrainings();
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(t => t.TrainingName.Contains(search));
+            }
+            totalCount = query.Count();
+            var paged = query
+                .OrderByDescending(t => t.CreatedTime)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(t => new TrainingViewModel
+                {
+                    Id = t.Id,
+                    Ratings = t.Ratings,
+                    AccountId = t.AccountId,
+                    TrainingName = t.TrainingName,
+                    TrainingCategoryId = t.TrainingCategoryId,
+                    SkillLevel = t.SkillLevel,
+                    Description = t.Description,
+                    CoverPicture = t.CoverPicture,
+                    Duration = t.Duration,
+                    CourseCode = t.CourseCode,
+                    UpdatedTime = t.UpdatedTime,
+                    AccountFirstName = t.Account.FirstName,
+                    AccountLastName = t.Account.LastName
+                }).ToList();
+            return paged;
+        }
     }
 }
