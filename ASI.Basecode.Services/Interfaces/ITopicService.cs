@@ -10,7 +10,7 @@ namespace ASI.Basecode.Services.Interfaces
         void AddTopic(TopicViewModel model);
         List<TopicViewModel> GetAllTopicsByTrainingId(int trainingId);
         Topic GetTopicById(int id);
-        Topic GetTopicWithAccountById(int id);
+        TopicViewModel GetTopicWithAccountById(int id);
         void UpdateTopic(TopicViewModel model);
         void DeleteTopic(int id);
     }

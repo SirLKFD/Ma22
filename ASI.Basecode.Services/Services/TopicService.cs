@@ -98,11 +98,31 @@ namespace ASI.Basecode.Services.Services
             return topic;
         }
 
-        public Topic GetTopicWithAccountById(int id)
+        public TopicViewModel GetTopicWithAccountById(int id)
         {
-            Console.WriteLine($"[TopicService] Fetching topic with account by Id: {id}");
-            var topic = _repository.GetTopicWithAccountById(id);
-            Console.WriteLine($"[TopicService] Found topic: {topic.TopicName}");
+            var topic = _repository.GetTopics()
+                .Where(t => t.Id == id)
+                .Select(t => new TopicViewModel
+                {
+                    Id = t.Id,
+                    TopicName = t.TopicName,
+                    TrainingId = t.TrainingId,
+                    Description = t.Description,
+                    UpdatedTime = t.UpdatedTime,
+                    Media = t.TopicMedia.Select(m => new TopicMediaViewModel {
+                        Id = m.Id,
+                        TopicId = m.TopicId,
+                        MediaType = m.MediaType,
+                        Name = m.Name,
+                        MediaUrl = m.MediaUrl,
+                        AccountId = m.AccountId
+                    }).ToList(),
+                    AccountFirstName = t.Account.FirstName,
+                    AccountLastName = t.Account.LastName,
+                    MediaCount = t.TopicMedia.Count
+                })
+                .FirstOrDefault();
+
             return topic;
         }
 
