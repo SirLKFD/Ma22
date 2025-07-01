@@ -162,13 +162,9 @@ namespace ASI.Basecode.WebApp.Controllers
         public IActionResult TopicDetails(int topicId)
         {
             var topic = _topicService.GetTopicWithAccountById(topicId);
-            var media = _topicMediaService.GetAllTopicMediaByTopicId(topicId);
             var allTopics = _topicService.GetAllTopicsByTrainingId(topic.TrainingId);
-            ViewBag.Topic = topic;
-            ViewBag.TopicMedia = media;
-            ViewBag.Account = topic.Account;
             ViewBag.AllTopics = allTopics;
-            return View("~/Views/Admin/AdminTopic.cshtml");
+            return View("~/Views/Admin/AdminTopic.cshtml", topic);
         }
 
           [HttpPost]
@@ -191,8 +187,8 @@ namespace ASI.Basecode.WebApp.Controllers
                 Console.WriteLine(model);
                 var existingTopic = _topicService.GetTopicWithAccountById(model.Id);
                 model.AccountId = existingTopic.AccountId;
-                model.AccountFirstName = existingTopic.Account.FirstName;
-                model.AccountLastName = existingTopic.Account.LastName;
+                model.AccountFirstName = existingTopic.AccountFirstName;
+                model.AccountLastName = existingTopic.AccountLastName;
                 
                 _topicService.UpdateTopic(model);
 
