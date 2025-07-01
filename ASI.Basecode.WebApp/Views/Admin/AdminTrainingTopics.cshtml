@@ -48,27 +48,23 @@
 
         <!-- Topic Card -->
         @foreach (var topic in Model){
-        <div class="flex flex-col bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs">
-            <!-- Title and Actions -->
+        <div class="flex flex-col bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs hover:cursor-pointer"
+             onclick="window.location.href='@Url.Action("TopicDetails", "AdminTopic", new { topicId = topic.Id })'">
             <div class="flex justify-between items-center mb-2 w-full">
                 <h3 class="text-2xl font-semibold">@topic.TopicName</h3>
                 <div class="flex gap-2">
                     <span class="material-symbols-outlined !text-[20px] cursor-pointer"
-                          onclick='openEditTopic(@topic.Id, @topic.TrainingId, "@topic.TopicName", "@topic.Description", @topic.MediaCount, "@topic.AccountFirstName", "@topic.AccountLastName", "@topic.UpdatedTime", @Html.Raw(JsonSerializer.Serialize(@topic.Media)))'>edit</span>
-                    <span class="material-symbols-outlined !text-[20px] cursor-pointer" onclick="openDeleteTopic(@topic.Id, @topic.TrainingId, '@topic.TopicName', @topic.MediaCount, '@topic.AccountFirstName', '@topic.AccountLastName', '@topic.UpdatedTime')">delete</span>
+                          onclick="event.stopPropagation(); openEditTopic(@topic.Id, @topic.TrainingId, '@topic.TopicName', '@topic.Description', @topic.MediaCount, '@topic.AccountFirstName', '@topic.AccountLastName', '@topic.UpdatedTime', @Html.Raw(JsonSerializer.Serialize(@topic.Media)))">edit</span>
+                    <span class="material-symbols-outlined !text-[20px] cursor-pointer"
+                          onclick="event.stopPropagation(); openDeleteTopic(@topic.Id, @topic.TrainingId, '@topic.TopicName', @topic.MediaCount, '@topic.AccountFirstName', '@topic.AccountLastName', '@topic.UpdatedTime')">delete</span>
                 </div>
             </div>
-
-            <!-- Meta Info -->
             <p>Created by: @topic.AccountFirstName @topic.AccountLastName</p>
             <p>@topic.UpdatedTime.ToString("MMMM dd, yyyy")</p>
-
-            <!-- Attachments -->
             <div class="flex items-center gap-1 mt-auto">
                 <span class="material-symbols-outlined !text-[20px]">attachment</span>
                 <span>@topic.MediaCount Attachments</span>
             </div>
-           
         </div>
         }
     
