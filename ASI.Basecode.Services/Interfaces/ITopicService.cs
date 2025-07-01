@@ -8,8 +8,10 @@ namespace ASI.Basecode.Services.Interfaces
     public interface ITopicService
     {
         void AddTopic(TopicViewModel model);
-        List<Topic> GetAllTopicsByTrainingId(int trainingId);
+        List<TopicViewModel> GetAllTopicsByTrainingId(int trainingId);
         Topic GetTopicById(int id);
         Topic GetTopicWithAccountById(int id);
+        void UpdateTopic(TopicViewModel model);
+        void DeleteTopic(int id);
     }
 }

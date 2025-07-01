@@ -29,5 +29,17 @@ namespace ASI.Basecode.Data.Repositories
             UnitOfWork.SaveChanges();
             Console.WriteLine("SaveChanges called.");
         }
+
+        public void DeleteTopicMedia(int id)
+        {
+            var media = this.GetDbSet<TopicMedium>().FirstOrDefault(m => m.Id == id);
+            if (media != null)
+            {
+                this.GetDbSet<TopicMedium>().Remove(media);
+                UnitOfWork.SaveChanges();
+            }
+        }
+
+        
     }
 }

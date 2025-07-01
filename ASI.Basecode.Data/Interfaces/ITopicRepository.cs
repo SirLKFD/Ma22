@@ -12,6 +12,8 @@ namespace ASI.Basecode.Data.Interfaces
         IQueryable<Topic> GetTopics();
         bool TopicExists(string name);
         void AddTopic(Topic topic);
+        void UpdateTopic(Topic topic);
+        void DeleteTopic(Topic topic);
         Topic GetTopicWithAccountById(int id);
     }
 }

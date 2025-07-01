@@ -258,7 +258,7 @@ namespace ASI.Basecode.Data
                 entity.HasKey(e => e.Id).HasName("PK_Table_2");
 
                 entity.Property(e => e.Name)
-                    .HasMaxLength(50)
+                    .HasMaxLength(255)
                     .IsUnicode(false);
 
                 entity.Property(e => e.CreatedBy)

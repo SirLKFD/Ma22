@@ -16,25 +16,22 @@
 
         <div class="flex justify-between bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs mb-5">
             <!-- Left Side: Title + Meta -->
+            
             <div class="flex flex-col justify-between">
                 <div>
-                    <h3 class="text-2xl font-semibold">Flowcharts</h3>
+                    <h3 class="text-2xl font-semibold" id="DeleteTopicTitle">Flowcharts</h3>
                 </div>
                 <div>
-                    <p>Created by: John Doe</p>
-                    <p>June 12, 2025</p>
+                    <p>Created by: <span id="DeleteTopicBy">John Doe</span></p>
+                    <p>Modified: <span id="DeleteTopicModified">June 12, 2025</span></p>
                 </div>
                 <div class="flex items-center gap-1 mt-auto">
                     <span class="material-symbols-outlined !text-[20px]">attachment</span>
-                    <span>5 Attachments</span>
+                    <span id="DeleteTopicAttachmentCount">5 Attachments</span>
                 </div>
             </div>
 
-            <!-- Right Side: Icon + Creator Label -->
-            <div class="flex flex-col items-center justify-center">
-                <span class="material-symbols-outlined text-[60px] text-white">account_circle</span>
-                <span class="text-white text-xs mt-1">Created by: John Doe</span>
-            </div>
+            
         </div>
 
 
@@ -43,10 +40,25 @@
             <p>WARNING! Deleting this will also remove all resources under this topic.</p>
         </div>
 
-        <button class="bg-[#FFE9C6] w-[450px] text-black align-self-center py-2 rounded-xl font-weight-bold ">
-            Confirm
-        </button>
+        <form asp-action="DeleteTopic" asp-controller="AdminTopic" method="post" class="align-self-center">
+            <input type="hidden" name="id" id="topicIdToDelete" />
+            <button class="bg-[#FFE9C6] w-[450px] text-black py-2 rounded-xl font-weight-bold ">
+                Confirm
+            </button>
+        </form>
 
     </div>
 
 </div>
+
+<script>
+    function openDeleteTopic(Id, TrainingId, TopicName, MediaCount, AccountFirstName, AccountLastName, UpdatedTime){
+        document.getElementById('deleteTopic').classList.remove('hidden');
+        document.getElementById("topicIdToDelete").value = Id;
+        document.getElementById('DeleteTopicTitle').textContent = TopicName;
+        document.getElementById('DeleteTopicBy').textContent = AccountFirstName + ' ' + AccountLastName;
+        const date = new Date(UpdatedTime);
+        document.getElementById('DeleteTopicModified').textContent = date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+        document.getElementById('DeleteTopicAttachmentCount').textContent = MediaCount + ' Attachments';
+    }
+</script>
