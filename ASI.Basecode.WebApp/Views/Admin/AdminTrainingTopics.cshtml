@@ -48,12 +48,17 @@
             <button class="bg-[#EAC231] p-2 rounded-lg font-semibold" onclick="addTopic()">Add Topic +</button>
         </div>
 
+        
+
         <!-- Topic Card -->
         <div class="flex flex-col bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs">
             <!-- Title and Actions -->
             <div class="flex justify-between items-center mb-2 w-full">
                 <h3 class="text-2xl font-semibold">Flowcharts</h3>
                 <div class="flex gap-2">
+                    <a href="@Url.Action("TopicDetails", "AdminTopic", new { topicId = 26 })">
+                        <span class="material-symbols-outlined !text-[20px] cursor-pointer">visibility</span>
+                    </a>
                     <span class="material-symbols-outlined !text-[20px] cursor-pointer" onclick="editTopic()">edit</span>
                     <span class="material-symbols-outlined !text-[20px] cursor-pointer" onclick="deleteTopic()">delete</span>
                 </div>
@@ -69,6 +74,7 @@
                 <span>5 Attachments</span>
             </div>
         </div>
+        
         <div class="flex flex-col bg-[#640A16] rounded-md text-white h-[120px] px-4 py-3 text-xs">
             <!-- Title and Actions -->
             <div class="flex justify-between items-center mb-2 w-full">
