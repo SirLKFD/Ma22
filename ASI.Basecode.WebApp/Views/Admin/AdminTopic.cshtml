@@ -7,8 +7,8 @@
 }
 
 
-<div class="flex w-full space-x-8">
-    <div class="flex flex-col w-2/3 gap-8">
+<div class="flex w-full space-x-8 min-w-0">
+    <div class="flex flex-col w-2/3 gap-8 min-w-0">
 
         <div class="flex flex-col bg-white w-full rounded-xl shadow-md p-4 gap-4">
             <h1 class="text-5xl uppercase font-semibold mb-2">@Model.TopicName</h1>
@@ -44,15 +44,15 @@
                 {
                     foreach (var video in mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")))
                     {
-                        <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
-                            <div class="flex w-full h-[120px] items-center justify-center ">
-                                <video width="100%" height="100%" controls>
+                        <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 transition-transform duration-200 ease-in-out transform hover:scale-105 hover:shadow-2xl cursor-pointer">
+                            <div class="flex w-full h-[150px] items-center justify-center overflow-hidden">
+                                <video class="w-full h-full object-cover" controls>
                                     <source src="@video.MediaUrl" type="@video.MediaType">
                                     Your browser does not support the video tag.
                                 </video>
                             </div>
-                            <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
-                                <p class="font-semibold">@video.Name</p>
+                            <div class="bg-[#640A16] h-[70px] text-white p-2 space-y-2">
+                                <p class="font-semibold">@(video.Name != null && video.Name.Length > 20 ? video.Name.Substring(0, 20) + "..." : video.Name)</p>
                                 <p class="text-xs">Uploaded by @Model.AccountFirstName @Model.AccountLastName</p>
                             </div>
                         </div>
@@ -65,7 +65,7 @@
             </div>
 
         </div>
-        <div class="flex flex-col bg-white w-full overflow-x-auto whitespace-nowrap rounded-lg shadow-sm p-4">
+        <div class="flex flex-col bg-white w-full  whitespace-nowrap rounded-lg shadow-sm p-4">
             <div class="flex space-x-2">
                 <span class="material-symbols-outlined !text-[25px] bg-green-100 p-2 rounded-xl">docs</span>
                 <div class="flex flex-col">
@@ -77,17 +77,17 @@
             {
                 foreach (var doc in mediaList.Where(m => m.MediaType != null && (m.MediaType.ToLower().Contains("pdf") || m.MediaType.ToLower().Contains("word"))))
                 {
-                    <div class="flex items-center justify-between w-full h-[100px] bg-white rounded-xl shadow-sm p-4 border border-gray-200 m-2 ">
+                    <div class="flex items-center justify-between w-full h-[100px] bg-white rounded-xl shadow-sm p-4 border border-gray-200 m-2 transition-transform duration-200 ease-in-out transform hover:scale-[102%] hover:shadow-2xl cursor-pointer">
                         <div class="flex space-x-2">
                             <span class="material-symbols-outlined !text-[25px] bg-red-100 p-2 rounded-xl">docs</span>
                             <div class="flex flex-col">
-                                <h2 class="text-lg font-semibold">@doc.Name</h2>
-                                <p class="text-xs">Uploaded by @Model.AccountFirstName @Model.AccountLastName</p>
+                                <h2 class="text-lg font-semibold">@(doc.Name != null && doc.Name.Length > 40 ? doc.Name.Substring(0, 40) + "..." : doc.Name)</h2>
+                                <p class="text-xs">Document Resource</p>
                             </div>
                         </div>
                         <div class="flex items-center space-x-2 hover:cursor-pointer hover:bg-[#EAC231] p-2 rounded-lg">
                             <span class="material-symbols-outlined">download</span>
-                            <a href="@doc.MediaUrl" target="_blank" download>Download</a>
+                            <a href="@doc.MediaUrl" target="_blank">Download</a>
                         </div>
                     </div>
                 }
@@ -106,25 +106,25 @@
                 </div>
             </div>
 
-            <div class="flex overflow-x-auto whitespace-nowrap mt-2 ">
+            <div class="flex overflow-x-auto whitespace-nowrap mt-2 w-full max-w-full min-w-0">
                 @if (mediaList != null && mediaList.Any(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")))
                 {
-                    foreach (var img in mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")))
+                    foreach (var media in mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")))
                     {
-                        <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 ">
-                            <div class="flex w-full h-[120px] items-center justify-center ">
-                                <img src="@img.MediaUrl" alt="@img.Name" class="object-contain max-h-[120px] max-w-full" />
+                        <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 transition-transform duration-200 ease-in-out transform hover:scale-105 hover:shadow-2xl cursor-pointer">
+                            <div class="flex w-full h-[120px] items-center justify-center overflow-hidden">
+                                <img src="@media.MediaUrl" alt="@media.Name" class="w-full h-full object-cover cursor-pointer" onclick="openImageModal('@media.MediaUrl')" />
                             </div>
                             <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
-                                <p class="font-semibold">@img.Name</p>
-                                <p class="text-xs">Uploaded by @Model.AccountFirstName @Model.AccountLastName</p>
+                                <p class="font-semibold">@(media.Name != null && media.Name.Length > 15 ? media.Name.Substring(0, 15) + "..." : media.Name)</p>
+                                <p class="text-xs">Image Resource</p>
                             </div>
                         </div>
                     }
                 }
                 else
                 {
-                    <div class="text-gray-500 p-4">No images uploaded for this topic.</div>
+                    <div class="flex items-center text-gray-400 ml-4">No image resources.</div>
                 }
             </div>
 
@@ -173,6 +173,26 @@
         </div>
     </div>
 </div>
+
+<!-- Image Preview Modal -->
+<div id="imageModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
+    <span class="absolute top-4 right-8 text-white text-4xl cursor-pointer select-none" onclick="closeImageModal()">&times;</span>
+    <img id="modalImage" src="" alt="Preview" class="max-h-[80vh] max-w-[90vw] rounded shadow-lg" />
+</div>
+
+<script>
+function openImageModal(url) {
+    document.getElementById('modalImage').src = url;
+    document.getElementById('imageModal').classList.remove('hidden');
+}
+function closeImageModal() {
+    document.getElementById('imageModal').classList.add('hidden');
+    document.getElementById('modalImage').src = '';
+}
+document.getElementById('imageModal').addEventListener('click', function(e) {
+    if (e.target === this) closeImageModal();
+});
+</script>
 
 
 
