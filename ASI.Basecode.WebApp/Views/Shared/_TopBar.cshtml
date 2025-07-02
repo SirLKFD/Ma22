@@ -1,22 +1,23 @@
-﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-
 
 <div class="flex w-screen items-center h-[10vh] bg-[#640A16] text-white px-10">
     <div class="absolute left-10 w-14 h-14">
         <img src="~/img/Logo.png" alt="MA22 Logo" class="w-full h-full object-contain" />
     </div> 
+
     <div class="flex flex-1 font-semibold justify-center gap-40">
-        <a href="/User/UserDashboard" class="hover:text-[#EAC231]">
+        <a asp-controller="User" asp-action="UserDashboard" class="hover:text-[#EAC231]">
             Home
         </a>
-        <a href="#" class="hover:text-[#EAC231]">
+        <a asp-controller="User" asp-action="UserTrainingCategory" class="hover:text-[#EAC231]">
             Browse Trainings
         </a>
-        <a href="#" class="hover:text-[#EAC231]">
+        <a asp-controller="User" asp-action="UserTrainings" class="hover:text-[#EAC231]">
             My Trainings
         </a>
     </div>
+
     <div class="absolute right-10">
         <div class="flex items-center gap-1 cursor-pointer" onclick="toggleDropDown()">
             <span class="block">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</span>
@@ -31,13 +32,11 @@
             </ul>
         </div>
     </div> 
-    
 </div>
 
-
 <script>
-    function toggleDropDown(){
-        const menu = document.getElementById("dropdownMenu")
+    function toggleDropDown() {
+        const menu = document.getElementById("dropdownMenu");
         menu.classList.toggle("hidden");
     }
 </script>

@@ -1,4 +1,4 @@
-﻿using ASI.Basecode.Services.Interfaces;
+using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.ServiceModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -12,6 +12,13 @@ namespace ASI.Basecode.WebApp.Controllers
         public UserTrainingCategoryController(ITrainingCategoryService trainingCategoryService)
         {
             _trainingCategoryService = trainingCategoryService;
+        }
+
+        [HttpGet]
+        public IActionResult UserTrainingCategory()
+        {
+            // You may choose to keep this action for navigation purposes
+            return View();
         }
 
         [HttpGet]

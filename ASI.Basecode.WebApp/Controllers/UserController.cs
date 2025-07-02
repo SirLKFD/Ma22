@@ -11,5 +11,21 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             return View();
         }
+
+        public IActionResult UserTopics()
+        {
+            return View();
+        }
+
+        public IActionResult UserTrainingCategory()
+        {
+            return View();
+        }
+
+        public IActionResult UserTrainings()
+        {
+            return View();
+        }
+
     }
 }
