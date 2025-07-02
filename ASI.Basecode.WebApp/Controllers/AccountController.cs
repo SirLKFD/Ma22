@@ -136,6 +136,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 _session.SetString("UserName", $"{account.FirstName} {account.LastName}");
                 _session.SetString("UserEmail", account.EmailId);
                 _session.SetInt32("AccountId", account.Id);
+                _session.SetString("ProfilePicture", account.ProfilePicture ?? "");
 
                 // Redirect based on role
                 switch ((RoleType)account.Role)
