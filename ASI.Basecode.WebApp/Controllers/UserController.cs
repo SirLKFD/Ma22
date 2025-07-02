@@ -1,31 +1,50 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ASI.Basecode.Services.Interfaces;
+using ASI.Basecode.Services.ServiceModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
     public class UserController : Controller
     {
-        [Authorize(Roles = "1")]
+        private readonly ITrainingService _trainingService;
+        private readonly ITrainingCategoryService _trainingCategoryService;
+        private readonly ITopicService _topicService;
 
+        public UserController(
+            ITrainingService trainingService,
+            ITrainingCategoryService trainingCategoryService,
+            ITopicService topicService)
+        {
+            _trainingService = trainingService;
+            _trainingCategoryService = trainingCategoryService;
+            _topicService = topicService;
+        }
+
+        [Authorize(Roles = "1")]
         public IActionResult UserDashboard()
         {
-            return View();
-        }
-
-        public IActionResult UserTopics()
-        {
-            return View();
-        }
-
-        public IActionResult UserTrainingCategory()
-        {
-            return View();
+            var trainings = _trainingService.GetAllTrainings();
+            return View("UserDashboard", trainings);
         }
 
         public IActionResult UserTrainings()
         {
-            return View();
+            var trainings = _trainingService.GetAllTrainings();
+            return View("UserTrainings", trainings);
         }
 
+        public IActionResult UserTrainingCategory()
+        {
+            var categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+            return View("UserTrainingCategory", categories);
+        }
+
+        public IActionResult UserTopics(int trainingId)
+        {
+            var topics = _topicService.GetAllTopicsByTrainingId(trainingId);
+            return View("UserTopics", topics);
+        }
     }
 }
