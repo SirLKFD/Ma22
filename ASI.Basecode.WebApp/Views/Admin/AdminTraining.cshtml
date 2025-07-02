@@ -1,9 +1,20 @@
 @model List<ASI.Basecode.Services.ServiceModels.TrainingViewModel>
+@using static ASI.Basecode.Resources.Constants.Enums
+
 @{
     var pageTitle = "Trainings";
     var isCategory = ViewBag.CategoryId != null;
     var categoryId = ViewBag.CategoryId;
     var search = ViewBag.Search ?? "";
+    var skillLevelId = ViewBag.SelectedSkillLevelId;
+    var selectedCategoryId = ViewBag.SelectedCategoryId;
+    var trainingCategories = ViewData["categories"] as List<ASI.Basecode.Services.ServiceModels.TrainingCategoryViewModel>;
+
+    var skillLevels = new Dictionary<int, string> {
+        { 1, "Beginner" }, { 2, "Intermediate" }, { 3, "Advanced" }
+    };
+
+
     if (ViewBag.CategoryName != null)
     {
         pageTitle = ViewBag.CategoryName;
@@ -14,35 +25,77 @@
 
 <div class="flex flex-col gap-8 mx-20 mt-12 mb-16">
     <h1 class="text-4xl uppercase font-weight-bold align-self-center ">@pageTitle</h1>
-    @if (isCategory)
-    {
-        <form method="get" action="/admin/TrainingCategoryDetails" class="relative w-full sm:w-[500px] align-self-center mb-8">
-            <input type="hidden" name="categoryId" value="@categoryId" />
-            <input type="search" name="search" id="default-search"
+    <!-- SEARCH BAR -->
+    <form method="get" asp-action="AdminTraining" class="relative w-full sm:w-[500px] align-self-center mb-4" autocomplete="off">
+        <div id="search-wrapper" class="relative transition-all duration-300">
+            <input type="search" name="search" id="search-input"
+                   placeholder="Search Trainings..."
                    class="w-full h-12 rounded-full border border-gray-300 px-5 pr-[180px] text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231] transition"
-                   placeholder="Search Trainings..." value="@search" />
-            <div class="absolute top-1/2 right-2 -translate-y-1/2 flex items-center gap-2">
+                   value="@search" />
+
+            <!-- Search Button -->
+            <div class="absolute top-1/2 right-2 -translate-y-1/2 flex items-center gap-2 z-10">
                 <button type="submit"
                         class="rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black hover:bg-[#cfa221] transition">
                     Search
                 </button>
             </div>
-        </form>
-    }
-    else
-    {
-        <form method="get" asp-action="AdminTraining" class="relative w-full sm:w-[500px] align-self-center mb-8">
-            <input type="search" name="search" id="default-search"
-                   class="w-full h-12 rounded-full border border-gray-300 px-5 pr-[180px] text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231] transition"
-                   placeholder="Search Trainings..." value="@search" />
-            <div class="absolute top-1/2 right-2 -translate-y-1/2 flex items-center gap-2">
-                <button type="submit"
-                        class="rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black hover:bg-[#cfa221] transition">
-                    Search
-                </button>
+
+            <!-- FILTER PILLS -->
+            <div id="filter-pills-inside" class="hidden bg-white p-4 absolute left-0 right-0 z-0 shadow-lg border border-gray-300 rounded-xl mt-2">
+                @if (trainingCategories != null)
+                {
+                    <div class="mb-2 font-semibold text-xs text-gray-500">Categories</div>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        @foreach (var category in trainingCategories)
+                        {
+                            <a href="@Url.Action("AdminTraining", new { search = search, categoryId = category.Id, skillLevelId = skillLevelId })"
+                               class="px-3 py-1 rounded-full border text-xs border-gray-400 text-gray-700 hover:bg-gray-100 @(selectedCategoryId == category.Id ? "bg-blue-200 text-blue-800" : "")">
+                                @category.CategoryName
+                            </a>
+                        }
+                    </div>
+                }
+
+                <div class="mb-2 font-semibold text-xs text-gray-500">Skill Levels</div>
+                <div class="flex flex-wrap gap-2">
+                    @foreach (var level in skillLevels)
+                    {
+                        <a href="@Url.Action("AdminTraining", new { search = search, categoryId = selectedCategoryId, skillLevelId = level.Key })"
+                           class="px-3 py-1 rounded-full border text-xs border-gray-400 text-gray-700 hover:bg-gray-100 @(skillLevelId == level.Key ? "bg-blue-200 text-blue-800" : "")">
+                            @level.Value
+                        </a>
+                    }
+                </div>
             </div>
-        </form>
-    }
+        </div>
+
+        <!-- ACTIVE FILTER TAGS ABOVE SEARCH BAR -->
+        @if (selectedCategoryId != null || skillLevelId != null)
+        {
+            <div class="mt-3 flex flex-wrap gap-2 justify-center">
+                @if (selectedCategoryId != null && trainingCategories != null)
+                {
+                    var selectedCat = trainingCategories.FirstOrDefault(c => c.Id == selectedCategoryId);
+                    if (selectedCat != null)
+                    {
+                        <span class="bg-green-200 text-green-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-2">
+                            Category: @selectedCat.CategoryName
+                            <a href="@Url.Action("AdminTraining", new { search = search, skillLevelId = skillLevelId })" class="ml-1 text-green-800 hover:text-green-900">&times;</a>
+                        </span>
+                    }
+                }
+                @if (skillLevelId != null)
+                {
+                    <span class="bg-green-200 text-green-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-2">
+                        Skill Level: @skillLevels[skillLevelId]
+                        <a href="@Url.Action("AdminTraining", new { search = search, categoryId = selectedCategoryId })" class="ml-1 text-green-800 hover:text-green-900">&times;</a>
+                    </span>
+                }
+            </div>
+        }
+    </form>
+
     <button class="align-self-end rounded-full bg-[#EAC231] py-2 w-[100px] text-sm font-semibold text-black shadow-md hover:bg-[#cfa221] transition" onclick="addTraining()">
         Add+
     </button>
@@ -138,4 +191,17 @@
     }
 </script>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('search-input');
+        const filterBox = document.getElementById('filter-pills-inside');
 
+        searchInput.addEventListener('focus', () => {
+            filterBox.classList.remove('hidden');
+        });
+
+        searchInput.addEventListener('blur', () => {
+            setTimeout(() => filterBox.classList.add('hidden'), 200);
+        });
+    });
+</script>

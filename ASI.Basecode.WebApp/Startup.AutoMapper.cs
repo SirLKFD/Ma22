@@ -30,6 +30,11 @@ namespace ASI.Basecode.WebApp
                 CreateMap<UserEditViewModel, Account>();
                 CreateMap<TrainingCategoryViewModel, TrainingCategory>();
                 CreateMap<TrainingViewModel, Training>();
+
+                CreateMap<Training, TrainingViewModel>()
+                    .ForMember(dest => dest.AccountFirstName, opt => opt.MapFrom(src => src.Account.FirstName))
+                    .ForMember(dest => dest.AccountLastName, opt => opt.MapFrom(src => src.Account.LastName));
+
                 CreateMap<TopicViewModel, Topic>();
                 CreateMap<TopicMediaViewModel, TopicMedium>();
             }

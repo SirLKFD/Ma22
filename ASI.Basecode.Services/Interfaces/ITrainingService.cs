@@ -15,5 +15,6 @@ namespace ASI.Basecode.Services.Interfaces
         void DeleteTraining(int id);
         // Pagination for trainings
         List<TrainingViewModel> GetPaginatedTrainings(string search, int page, int pageSize, out int totalCount);
+        List<TrainingViewModel> GetFilteredTrainings(string search, int? categoryId, int? skillLevelId, int page, int pageSize, out int totalCount);
     }
 }
