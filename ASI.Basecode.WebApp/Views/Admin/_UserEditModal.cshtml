@@ -12,14 +12,14 @@
                     <span class="material-symbols-outlined text-[50px]">arrow_circle_left</span>
                 </a>
             </div>
-            
+
             <label for="editProfilePictureInput" class="cursor-pointer block w-[250px] h-[250px] mt-[-50px] mb-3">
                 <div id="editProfileImageContainer" class="flex items-center justify-center bg-[#FFE9C6] w-full h-full rounded-full">
                     <h1 id="editProfilePlaceholder" class="text-5xl">+</h1>
                     <img id="editProfileImage" src="" alt="Profile" class="hidden h-full w-full rounded-full object-cover" />
                 </div>
             </label>
-            
+
             <div class="flex flex-col items-center gap-1">
                 <h1 id="editUserName" class="uppercase text-2xl">User Name</h1>
                 <h2 id="editUserId" class="text-sm">ID: </h2>
@@ -27,15 +27,15 @@
                 <h2 id="editUserEmail" class="text-sm">user@email.com</h2>
             </div>
         </div>
-        
+
         <div class="p-5 flex-1">
             <h2 class="text-2xl font-bold mb-4 text-white uppercase">Edit Profile Details</h2>
 
             <form id="editUserForm" asp-action="UpdateUser" method="post" enctype="multipart/form-data" class="space-y-4">
                 <input type="hidden" id="editUserIdInput" name="Id" value="0" />
-                
+
                 <input type="hidden" id="editExistingProfilePicture" name="ExistingProfilePicture" value="" />
-                
+
                 <input id="editProfilePictureInput"
                        name="ProfilePicture"
                        type="file"
@@ -118,7 +118,7 @@
                 const img = document.getElementById('editProfileImage');
                 const placeholder = document.getElementById('editProfilePlaceholder');
                 const container = document.getElementById('editProfileImageContainer');
-                
+
                 img.src = e.target.result;
                 img.classList.remove('hidden');
                 placeholder.classList.add('hidden');
@@ -134,7 +134,7 @@
         console.log('User ID:', document.getElementById('editUserIdInput').value);
         console.log('Profile Picture File:', document.getElementById('editProfilePictureInput').files[0]);
         console.log('Existing Profile Picture:', document.getElementById('editExistingProfilePicture').value);
-        
+
         // Don't prevent default - let the form submit normally
     });
 </script>

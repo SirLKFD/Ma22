@@ -109,7 +109,7 @@ namespace ASI.Basecode.Services.Services
         public List<TrainingCategoryViewModel> GetAllTrainingCategoryViewModels()
         {
             var categories = _repository.GetTrainingCategories()
-                .OrderByDescending(c => c.CreatedTime)
+                .OrderByDescending(c => c.UpdatedTime)
                 .Select(c => new TrainingCategoryViewModel
                 {
                     Id = c.Id,
@@ -136,7 +136,7 @@ namespace ASI.Basecode.Services.Services
             totalCount = query.Count();
 
             var paged = query
-                .OrderByDescending(c => c.CreatedTime)
+                .OrderByDescending(c => c.UpdatedTime)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(c => new TrainingCategoryViewModel

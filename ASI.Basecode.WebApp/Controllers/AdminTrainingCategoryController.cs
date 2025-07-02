@@ -12,6 +12,7 @@ using CloudinaryDotNet.Actions;
 using System.IO;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -244,16 +245,31 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult TrainingCategoryDetails(int categoryId)
+        public IActionResult TrainingCategoryDetails(int categoryId, string search = "", int page = 1)
         {
-            List<TrainingViewModel> trainings = _trainingService.GetAllTrainingsByCategoryId(categoryId);
-            List<TrainingCategoryViewModel> trainingCategories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+            const int pageSize = 6;
+            int totalCount;
+            // Get paginated and filtered trainings by category
+            var trainings = string.IsNullOrEmpty(search)
+                ? _trainingService.GetAllTrainingsByCategoryId(categoryId)
+                : _trainingService.GetAllTrainingsByCategoryId(categoryId).FindAll(t => t.TrainingName.Contains(search, StringComparison.OrdinalIgnoreCase));
+            // Manual pagination for filtered results
+            totalCount = trainings.Count;
+            var pagedTrainings = trainings.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-            Console.WriteLine($"Found {trainings?.Count ?? 0} trainings in category {categoryId}"); 
-            
+            var trainingCategories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+            var category = trainingCategories.Find(c => c.Id == categoryId);
+            if (category != null)
+            {
+                ViewBag.CategoryName = category.CategoryName;
+            }
+            ViewBag.TotalCount = totalCount;
+            ViewBag.PageSize = pageSize;
+            ViewBag.CurrentPage = page;
+            ViewBag.Search = search;
+            ViewBag.CategoryId = categoryId;
             ViewData["categories"] = trainingCategories;
-            
-            return View("~/Views/Admin/AdminTraining.cshtml", trainings);
+            return View("~/Views/Admin/AdminTraining.cshtml", pagedTrainings);
         }
     }
 }

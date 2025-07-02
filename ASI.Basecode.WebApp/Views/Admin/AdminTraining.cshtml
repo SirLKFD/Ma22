@@ -1,6 +1,9 @@
 @model List<ASI.Basecode.Services.ServiceModels.TrainingViewModel>
 @{
     var pageTitle = "Trainings";
+    var isCategory = ViewBag.CategoryId != null;
+    var categoryId = ViewBag.CategoryId;
+    var search = ViewBag.Search ?? "";
     if (ViewBag.CategoryName != null)
     {
         pageTitle = ViewBag.CategoryName;
@@ -11,17 +14,35 @@
 
 <div class="flex flex-col gap-8 mx-20 mt-12 mb-16">
     <h1 class="text-4xl uppercase font-weight-bold align-self-center ">@pageTitle</h1>
-    <form method="get" asp-action="AdminTraining" class="relative w-full sm:w-[500px] align-self-center mb-8">
-        <input type="search" name="search" id="default-search"
-               class="w-full h-12 rounded-full border border-gray-300 px-5 pr-[180px] text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231] transition"
-               placeholder="Search Trainings..." value="@ViewBag.Search" />
-        <div class="absolute top-1/2 right-2 -translate-y-1/2 flex items-center gap-2">
-            <button type="submit"
-                    class="rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black hover:bg-[#cfa221] transition">
-                Search
-            </button>
-        </div>
-    </form>
+    @if (isCategory)
+    {
+        <form method="get" action="/admin/TrainingCategoryDetails" class="relative w-full sm:w-[500px] align-self-center mb-8">
+            <input type="hidden" name="categoryId" value="@categoryId" />
+            <input type="search" name="search" id="default-search"
+                   class="w-full h-12 rounded-full border border-gray-300 px-5 pr-[180px] text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231] transition"
+                   placeholder="Search Trainings..." value="@search" />
+            <div class="absolute top-1/2 right-2 -translate-y-1/2 flex items-center gap-2">
+                <button type="submit"
+                        class="rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black hover:bg-[#cfa221] transition">
+                    Search
+                </button>
+            </div>
+        </form>
+    }
+    else
+    {
+        <form method="get" asp-action="AdminTraining" class="relative w-full sm:w-[500px] align-self-center mb-8">
+            <input type="search" name="search" id="default-search"
+                   class="w-full h-12 rounded-full border border-gray-300 px-5 pr-[180px] text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231] transition"
+                   placeholder="Search Trainings..." value="@search" />
+            <div class="absolute top-1/2 right-2 -translate-y-1/2 flex items-center gap-2">
+                <button type="submit"
+                        class="rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black hover:bg-[#cfa221] transition">
+                    Search
+                </button>
+            </div>
+        </form>
+    }
     <button class="align-self-end rounded-full bg-[#EAC231] py-2 w-[100px] text-sm font-semibold text-black shadow-md hover:bg-[#cfa221] transition" onclick="addTraining()">
         Add+
     </button>
@@ -71,7 +92,7 @@
                     {
                         <li>
                             <a class="px-3 py-2 rounded-l-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 transition"
-                               href="@Url.Action("AdminTraining", new { page = Math.Max(ViewBag.CurrentPage - 1, 1), search = ViewBag.Search })">
+                               href="@(isCategory ? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = Math.Max(ViewBag.CurrentPage - 1, 1), search = search }) : Url.Action("AdminTraining", new { page = Math.Max(ViewBag.CurrentPage - 1, 1), search = search }))">
                                 Previous
                             </a>
                         </li>
@@ -80,7 +101,7 @@
                     {
                         <li>
                             <a class="px-3 py-2 border border-gray-300 @(i == ViewBag.CurrentPage ? "bg-blue-50 text-blue-600" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") rounded-md transition"
-                               href="@Url.Action("AdminTraining", new { page = i, search = ViewBag.Search })">
+                               href="@(isCategory ? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = i, search = search }) : Url.Action("AdminTraining", new { page = i, search = search }))">
                                 @i
                             </a>
                         </li>
@@ -89,7 +110,7 @@
                     {
                         <li>
                             <a class="px-3 py-2 rounded-r-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 transition"
-                               href="@Url.Action("AdminTraining", new { page = Math.Min(ViewBag.CurrentPage + 1, totalPages), search = ViewBag.Search })">
+                               href="@(isCategory ? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = Math.Min(ViewBag.CurrentPage + 1, totalPages), search = search }) : Url.Action("AdminTraining", new { page = Math.Min(ViewBag.CurrentPage + 1, totalPages), search = search }))">
                                 Next
                             </a>
                         </li>

@@ -23,6 +23,7 @@ public class TrainingViewModel
     [Required(ErrorMessage = "Skill level is required.")]
     public int SkillLevel { get; set; }
 
+    [Required(ErrorMessage = "Description is required.")]
     public string? Description { get; set; }
 
     public string? CoverPicture { get; set; }
