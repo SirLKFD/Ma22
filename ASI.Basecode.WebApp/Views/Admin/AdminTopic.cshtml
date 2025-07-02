@@ -40,14 +40,14 @@
                 {
                     foreach (var video in mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")))
                     {
-                        <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 transition-transform duration-200 ease-in-out transform hover:scale-105 hover:shadow-2xl cursor-pointer">
-                            <div class="flex w-full h-[150px] items-center justify-center overflow-hidden">
-                                <video class="w-full h-full object-cover" controls>
+                        <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 transition-transform duration-200 ease-in-out transform hover:scale-105 hover:shadow-2xl cursor-pointer" onclick="openMediaModal('video', '@video.MediaUrl', '@video.MediaType')">
+                            <div class="flex w-full h-[154px] items-center justify-center overflow-hidden">
+                                <video class="w-full h-full object-cover pointer-events-none">
                                     <source src="@video.MediaUrl" type="@video.MediaType">
                                     Your browser does not support the video tag.
                                 </video>
                             </div>
-                            <div class="bg-[#640A16] h-[70px] text-white p-2 space-y-2">
+                            <div class="bg-[#640A16] text-white p-2 space-y-2 h-[66px]">
                                 <p class="font-semibold">@(video.Name != null && video.Name.Length > 20 ? video.Name.Substring(0, 20) + "..." : video.Name)</p>
                                 <p class="text-xs">Uploaded by @Model.AccountFirstName @Model.AccountLastName</p>
                             </div>
@@ -73,7 +73,7 @@
             {
                 foreach (var doc in mediaList.Where(m => m.MediaType != null && (m.MediaType.ToLower().Contains("pdf") || m.MediaType.ToLower().Contains("word"))))
                 {
-                    <div class="flex items-center justify-between w-full h-[100px] bg-white rounded-xl shadow-sm p-4 border border-gray-200 m-2 transition-transform duration-200 ease-in-out transform hover:scale-[102%] hover:shadow-2xl cursor-pointer">
+                    <div class="flex items-center justify-between w-full h-[100px] bg-white rounded-xl shadow-sm p-4 border border-gray-200 m-2 transition-transform duration-200 ease-in-out transform hover:scale-[102%] hover:shadow-2xl cursor-pointer" onclick="openMediaModal('document', '@doc.MediaUrl', '@doc.MediaType')">
                         <div class="flex space-x-2">
                             <span class="material-symbols-outlined !text-[25px] bg-red-100 p-2 rounded-xl">docs</span>
                             <div class="flex flex-col">
@@ -172,6 +172,12 @@
     <img id="modalImage" src="" alt="Preview" class="max-h-[80vh] max-w-[90vw] rounded shadow-lg" />
 </div>
 
+<!-- Media Preview Modal -->
+<div id="mediaModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
+    <span class="absolute top-4 right-8 text-white text-4xl cursor-pointer select-none" onclick="closeMediaModal()">&times;</span>
+    <div id="modalContent" class="max-h-[80vh] max-w-[90vw] rounded shadow-lg bg-transparent flex items-center justify-center p-4"></div>
+</div>
+
 <script>
 function openImageModal(url) {
     document.getElementById('modalImage').src = url;
@@ -183,6 +189,28 @@ function closeImageModal() {
 }
 document.getElementById('imageModal').addEventListener('click', function(e) {
     if (e.target === this) closeImageModal();
+});
+
+function openMediaModal(type, url, mediaType) {
+    const modal = document.getElementById('mediaModal');
+    const content = document.getElementById('modalContent');
+    if (type === 'video') {
+        content.innerHTML = `<video controls autoplay class="max-h-[70vh] max-w-[80vw] rounded"><source src='${url}' type='${mediaType}'></video>`;
+    } else if (type === 'document') {
+        if (mediaType && mediaType.toLowerCase().includes('pdf')) {
+            content.innerHTML = `<iframe src='${url}' class='w-[60vw] h-[90vh] rounded' frameborder='0'></iframe>`;
+        } else {
+            content.innerHTML = `<a href='${url}' target='_blank' class='text-blue-600 underline text-lg'>Open Document</a>`;
+        }
+    }
+    modal.classList.remove('hidden');
+}
+function closeMediaModal() {
+    document.getElementById('mediaModal').classList.add('hidden');
+    document.getElementById('modalContent').innerHTML = '';
+}
+document.getElementById('mediaModal').addEventListener('click', function(e) {
+    if (e.target === this) closeMediaModal();
 });
 </script>
 
