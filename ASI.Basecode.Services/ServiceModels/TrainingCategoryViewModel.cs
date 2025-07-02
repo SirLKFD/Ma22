@@ -12,6 +12,7 @@ public class TrainingCategoryViewModel
     [Required(ErrorMessage = "Account ID is required.")]
     public int AccountId { get; set; }
 
+    [Required(ErrorMessage = "Description is required.")]
     public string? Description { get; set; }
 
     public string? CoverPicture { get; set; }
