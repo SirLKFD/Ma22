@@ -29,7 +29,7 @@ namespace ASI.Basecode.Services.Services
             var training = new Training();
             if (!_repository.TrainingExists(model.TrainingName))
             {
-               try
+                try
                 {
                     Console.WriteLine("✅ Mapping Training");
                     _mapper.Map(model, training);
@@ -81,7 +81,7 @@ namespace ASI.Basecode.Services.Services
         {
             var training = _repository.GetTrainings().FirstOrDefault(t => t.Id == id);
             if (training == null) return null;
-            
+
             return new TrainingViewModel
             {
                 Id = training.Id,
@@ -177,6 +177,54 @@ namespace ASI.Basecode.Services.Services
                     AccountLastName = t.Account.LastName
                 }).ToList();
             return paged;
+        }
+        public List<TrainingViewModel> GetFilteredTrainings(string search, int? categoryId, int? skillLevelId, int page, int pageSize, out int totalCount)
+        {
+            var query = _repository.GetTrainings().AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(t => t.TrainingName.Contains(search));
+                Console.WriteLine($"[Service] Filtering by search: '{search}'");
+            }
+
+            if (categoryId.HasValue)
+            {
+                query = query.Where(t => t.TrainingCategoryId == categoryId.Value);
+                Console.WriteLine($"[Service] Filtering by CategoryId: {categoryId.Value}");
+            }
+
+            if (skillLevelId.HasValue)
+            {
+                query = query.Where(t => t.SkillLevel == skillLevelId.Value);
+                Console.WriteLine($"[Service] Filtering by SkillLevelId: {skillLevelId.Value}");
+            }
+
+            totalCount = query.Count();
+
+            var paged = query.OrderByDescending(t => t.CreatedTime)
+                              .Skip((page - 1) * pageSize)
+                              .Take(pageSize)
+                              .ToList();
+
+            Console.WriteLine($"[Service] Filtered and paginated trainings fetched: Page {page}, Count {paged.Count}, TotalCount {totalCount}");
+
+            return paged.Select(training => new TrainingViewModel
+            {
+                Id = training.Id,
+                Ratings = training.Ratings,
+                AccountId = training.AccountId,
+                TrainingName = training.TrainingName,
+                TrainingCategoryId = training.TrainingCategoryId,
+                SkillLevel = training.SkillLevel,
+                Description = training.Description,
+                CoverPicture = training.CoverPicture,
+                Duration = training.Duration,
+                CourseCode = training.CourseCode,
+                UpdatedTime = training.UpdatedTime,
+                AccountFirstName = training.Account.FirstName,
+                AccountLastName = training.Account.LastName,
+            }).ToList();
         }
     }
 }

@@ -1,17 +1,18 @@
+using ASI.Basecode.Data.Models;
+using ASI.Basecode.Services.Interfaces;
+using ASI.Basecode.Services.ServiceModels;
 using ASI.Basecode.WebApp.Mvc;
 using AutoMapper;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using ASI.Basecode.Services.ServiceModels;
-using CloudinaryDotNet.Actions;
-using CloudinaryDotNet;
 using System;
-using ASI.Basecode.Services.Interfaces;
 using System.Collections.Generic;
-using ASI.Basecode.Data.Models;
+using System.Linq;
 
 
 namespace ASI.Basecode.WebApp.Controllers
@@ -52,19 +53,33 @@ namespace ASI.Basecode.WebApp.Controllers
         /// Returns Admin Training View.
         /// </summary>
         /// <returns> Admin Training View </returns>
-        public IActionResult AdminTraining(string search, int page = 1)
+        public IActionResult AdminTraining(string search, int? categoryId, int? skillLevelId, int page = 1)
         {
             const int pageSize = 6;
             int totalCount;
-            var trainings = _trainingService.GetPaginatedTrainings(search, page, pageSize, out totalCount);
+            var trainings = _trainingService.GetFilteredTrainings(search, categoryId, skillLevelId, page, pageSize, out totalCount);
+
+            var skillLevels = trainings
+                .Select(t => t.SkillLevel)
+                .Distinct()
+                .OrderBy(sl => sl)
+                .ToList();
+            ViewBag.SkillLevels = skillLevels;
+
+
             List<TrainingCategoryViewModel> trainingCategories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
             ViewData["categories"] = trainingCategories;
+
             ViewBag.TotalCount = totalCount;
             ViewBag.PageSize = pageSize;
             ViewBag.CurrentPage = page;
             ViewBag.Search = search;
+            ViewBag.SelectedCategoryId = categoryId;
+            ViewBag.SelectedSkillLevelId = skillLevelId;
+
             return View("~/Views/Admin/AdminTraining.cshtml", trainings);
         }
+
 
         [HttpPost]
         public IActionResult AddTraining(
