@@ -1,0 +1,43 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+
+<div class="flex w-screen items-center h-[10vh] bg-[#640A16] text-white px-10">
+    <div class="absolute left-10 w-14 h-14">
+        <img src="~/img/Logo.png" alt="MA22 Logo" class="w-full h-full object-contain" />
+    </div> 
+    <div class="flex flex-1 font-semibold justify-center gap-40">
+        <a href="#" class="hover:text-[#EAC231]">
+            Home
+        </a>
+        <a href="#" class="hover:text-[#EAC231]">
+            Browse Trainings
+        </a>
+        <a href="#" class="hover:text-[#EAC231]">
+            My Trainings
+        </a>
+    </div>
+    <div class="absolute right-10">
+        <div class="flex items-center gap-1 cursor-pointer" onclick="toggleDropDown()">
+            <span class="block">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</span>
+            <span class="material-symbols-outlined hover:text-[#EAC231]">arrow_drop_down</span>
+        </div>
+
+        <!-- Dropdown Menu -->
+        <div id="dropdownMenu" class="absolute right-0 top-full mt-2 hidden bg-white text-black rounded shadow-md min-w-[140px] z-50">
+            <ul class="flex flex-col py-2 text-sm">
+                <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">My Account</a></li>
+                <li><a href="/Account/SignOutUser" class="block px-4 py-2 hover:bg-gray-100">Log Out</a></li>
+            </ul>
+        </div>
+    </div> 
+    
+</div>
+
+
+<script>
+    function toggleDropDown(){
+        const menu = document.getElementById("dropdownMenu")
+        menu.classList.toggle("hidden");
+    }
+</script>
