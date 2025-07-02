@@ -41,7 +41,16 @@
             <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col min-h-[400px]">
                 <!-- Image -->
                 <div class="h-[180px]">
-                    <img class="w-full h-full object-cover outline outline-1 outline-black" src="@category.CoverPicture" alt="Cover Image" />
+                    @if (!string.IsNullOrEmpty(category.CoverPicture))
+                    {
+                        <img class="w-full h-full object-cover outline outline-1 outline-black" src="@category.CoverPicture" alt="Cover Image" />
+                    }
+                    else
+                    {
+                        <div class="flex items-center justify-center w-full h-full outline outline-1 outline-black">
+                            <span class="font-bold text-center w-full">No Image Provided</span>
+                        </div>
+                    }
                 </div>
 
                 <!-- Content -->

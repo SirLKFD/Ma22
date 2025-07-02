@@ -35,10 +35,19 @@
 
     <!-- Bottom Section -->
     <div class="mb-10 px-2">
-            <a href="javascript:void(0)" onclick="toggleDropDown()" class="flex justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline">
-            <span class="material-symbols-outlined text-[25px]">person</span>
+        <a href="javascript:void(0)" onclick="toggleDropDown()" class="flex items-center justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline">
+            @{
+                var profilePicture = HttpContextAccessor.HttpContext.Session.GetString("ProfilePicture");
+            }
+            @if (!string.IsNullOrEmpty(profilePicture))
+            {
+                <img src="@profilePicture" alt="Profile" class="w-8 h-8 rounded-full object-cover" />
+            }
+            else
+            {
+                <span class="material-symbols-outlined text-[25px]">person</span>
+            }
             <span class="hidden text-sm group-hover:inline">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</span>
-
         </a>
     </div>
 

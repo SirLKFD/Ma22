@@ -14,7 +14,16 @@
 
     <!--Cover Photo-->
     <div class="flex items-center justify-center bg-[#C6FFCD] w-full h-[150px] object-cover">
-        <img src="@training.CoverPicture" alt="Cover Photo" class="w-full h-full object-cover">
+        @if (!string.IsNullOrEmpty(training.CoverPicture))
+        {
+            <img src="@training.CoverPicture" alt="Cover Photo" class="w-full h-full object-cover">
+        }
+        else
+        {
+            <div class="flex items-center justify-center w-full h-full">
+                <span class="font-bold text-center w-full">No Image Provided</span>
+            </div>
+        }
     </div>
 
     <!--Title-->
