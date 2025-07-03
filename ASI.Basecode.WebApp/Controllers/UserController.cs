@@ -31,8 +31,14 @@ namespace ASI.Basecode.WebApp.Controllers
 
         public IActionResult UserTrainings()
         {
+            var categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
             var trainings = _trainingService.GetAllTrainings();
-            return View("UserTrainings", trainings);
+            var viewModel = new BrowseTrainingsViewModel
+            {
+                Categories = categories,
+                Trainings = trainings
+            };
+            return View("UserTrainings", viewModel);
         }
 
         public IActionResult BrowseTrainings()
