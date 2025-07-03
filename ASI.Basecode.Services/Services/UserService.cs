@@ -39,6 +39,25 @@ namespace ASI.Basecode.Services.Services
             return _repository.GetUsers().FirstOrDefault(x => x.EmailId == emailId);
         }
 
+        public UserProfileViewModel GetUserByEmailId(string emailId){
+            var user = _repository.GetUsers().FirstOrDefault(x => x.EmailId == emailId);
+            if (user == null) return null;
+
+            return new UserProfileViewModel
+            {
+                Id = user.Id,
+                EmailId = user.EmailId,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Contact = user.Contact,
+                Birthdate = user.Birthdate,
+                ProfilePicture = user.ProfilePicture,
+                CreatedTime = user.CreatedTime
+            };
+        }
+
+
+
         public List<UserListViewModel> GetAllUsers()
         {
             var users = _repository.GetUsers()
@@ -139,6 +158,29 @@ namespace ASI.Basecode.Services.Services
 
             _repository.UpdateUser(user);
         }
+
+         public void UpdateUser(UserProfileEditViewModel model)
+        {
+            var user = new Account();
+            
+            // Check if email exists for other users (excluding current user)
+            if (_repository.UserExists(model.EmailId, model.Id))
+            {
+                throw new InvalidDataException(Resources.Messages.Errors.UserExists);
+            }
+            user.Role = 1;
+            user.UpdatedTime = DateTime.Now;
+            _mapper.Map(model, user);
+            
+            // Only encrypt password if provided
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                user.Password = PasswordManager.EncryptPassword(model.Password);
+            }
+
+            _repository.UpdateUser(user);
+        }
+
         public void DeleteUser(int userId)
         {
             var user = _repository.GetUserById(userId);
