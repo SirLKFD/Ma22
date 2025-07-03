@@ -1,5 +1,13 @@
 ﻿@using static ASI.Basecode.Resources.Views.Screen
 
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var marginClass = (currentController == "User" && currentAction == "UserProfile")
+        ? ""
+        : "mx-20 my-20";
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +50,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 mx-20 my-20">
+        <div class="flex-1 flex  @(marginClass)">
             <main>
                 @RenderBody()
             </main>

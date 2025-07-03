@@ -12,7 +12,9 @@ namespace ASI.Basecode.Services.Interfaces
         void AddUser(AdminCreateUserViewModel model);
         List<UserListViewModel> GetAllUsers();
         UserEditViewModel GetUserById(int id);
+        UserProfileViewModel GetUserByEmailId(string emailId);
         void UpdateUser(UserEditViewModel model);
+        void UpdateUser(UserProfileEditViewModel model);
         Account GetUserByEmail(string emailId);
         void DeleteUser(int userId);
 
