@@ -22,7 +22,7 @@
                 <div class="text-gray-500 text-sm">@Model.EmailId</div>
             </div>
             <span class="bg-yellow-300 text-black px-4 py-1 rounded-full mt-2 text-xs font-semibold">Guest</span>
-            <button class="bg-[#800000] text-white px-8 py-2 rounded-lg mt-6 flex items-center gap-2 hover:bg-[#a83232] transition">
+            <button type="button" class="bg-[#800000] text-white px-8 py-2 rounded-lg mt-6 flex items-center gap-2 hover:bg-[#a83232] transition" onclick="openDeleteUserModal(@Model.Id, '@Model.FirstName @Model.LastName', '@Model.ProfilePicture')">
                 <span>⚠️</span> Delete Account
             </button>
         </div>
@@ -94,6 +94,8 @@
     </div>
 </div>
 
+@await Html.PartialAsync("DeleteUser", Model)
+
 <script>
     function toggleEdit(isEdit) {
         document.getElementById('profile-view').classList.toggle('hidden', isEdit);
@@ -119,8 +121,9 @@
         var placeholder = document.getElementById('file-input-placeholder');
         if (placeholder && fileInput && !placeholder.contains(fileInput)) {
             placeholder.appendChild(fileInput);
-             console.log("File input moved into form.");
+            console.log("File input moved into form.");
         }
-         return true;
+        return true;
     }
+   
 </script>
