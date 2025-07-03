@@ -151,5 +151,23 @@ namespace ASI.Basecode.WebApp.Controllers
             TempData["FormError"] = "Validation failed. Please check your inputs.";
             return RedirectToAction("UserProfile");
         }
+        
+
+       
+        [HttpPost]
+        public IActionResult DeleteUser(int idToDelete)
+        {
+              if (!ModelState.IsValid)
+            {
+                Console.WriteLine($"Failed to Delete {idToDelete}");
+                return RedirectToAction("UserProfile");
+            }
+
+            _userService.DeleteUser(idToDelete);
+           
+            HttpContext.Session.Clear();
+
+            return RedirectToAction("SignOutUser","Account");
+        }
     }
 }
