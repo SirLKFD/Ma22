@@ -36,15 +36,15 @@
     </div>
 </div>
 
-<div class="flex flex-col gap-2">
+<div class="flex flex-col gap-2 mb-10">
     <h1 class="text-4xl font-weight-bold">Trainings to get you started</h1>
     <p>Learn new skills or improve existing ones at your own pace.</p>
 </div>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
     @if (Model != null && Model.Any())
     {
-        foreach (var training in Model)
+        foreach (var training in Model.Take(6))
         {
             <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col min-h-[400px]">
                 <div class="h-[180px]">
@@ -72,6 +72,13 @@
     {
         <div class="col-span-3 text-center text-gray-500 py-8">No trainings found.</div>
     }
+</div>
+
+<div class="flex items-center justify-center">
+
+    <a asp-controller="User" asp-action="BrowseTrainings" class="bg-[#640A16] px-16 py-2 text-white rounded-lg">
+        Explore More
+    </a>
 </div>
 
 <script>
