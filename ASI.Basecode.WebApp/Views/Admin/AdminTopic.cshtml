@@ -4,6 +4,7 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var allTopics = ViewBag.AllTopics as List<ASI.Basecode.Services.ServiceModels.TopicViewModel> ?? new List<ASI.Basecode.Services.ServiceModels.TopicViewModel>();
     var mediaList = Model.Media;
+    var hasAnyFiles = mediaList != null && mediaList.Any();
 }
 
 @functions {
@@ -36,11 +37,11 @@
         if (mediaType != null)
         {
             var type = mediaType.ToLower();
-            if (type.Contains("pdf") || 
-                type.Contains("word") || 
-                type.Contains("excel") || 
-                type.Contains("powerpoint") || 
-                type.Contains("spreadsheet") || 
+            if (type.Contains("pdf") ||
+                type.Contains("word") ||
+                type.Contains("excel") ||
+                type.Contains("powerpoint") ||
+                type.Contains("spreadsheet") ||
                 type.Contains("presentation") ||
                 type.Contains("msword") ||
                 type.Contains("vnd.openxmlformats") ||
@@ -49,20 +50,20 @@
                 return true;
             }
         }
-        
+
         // Check by file extension as fallback
         if (fileName != null)
         {
             var ext = fileName.ToLower();
-            return ext.EndsWith(".pdf") || 
-                   ext.EndsWith(".doc") || 
-                   ext.EndsWith(".docx") || 
-                   ext.EndsWith(".xls") || 
-                   ext.EndsWith(".xlsx") || 
-                   ext.EndsWith(".ppt") || 
+            return ext.EndsWith(".pdf") ||
+                   ext.EndsWith(".doc") ||
+                   ext.EndsWith(".docx") ||
+                   ext.EndsWith(".xls") ||
+                   ext.EndsWith(".xlsx") ||
+                   ext.EndsWith(".ppt") ||
                    ext.EndsWith(".pptx");
         }
-        
+
         return false;
     }
 }
@@ -91,10 +92,20 @@
                     </div>
                 </div>
                 <div class="ml-4">
-                    <button onclick="openDownloadModal()" class="flex items-center gap-2 rounded-xl bg-[#640A16] px-4 py-2 text-white transition-colors hover:bg-[#4a0810] focus:outline-none focus:ring-2 focus:ring-[#640A16]">
-                        <span class="material-symbols-outlined">download</span>
-                        <span>Download Options</span>
-                    </button>
+                    @if (hasAnyFiles)
+                    {
+                        <button onclick="openDownloadModal()" class="flex items-center gap-2 rounded-xl bg-[#640A16] px-4 py-2 text-white transition-colors hover:bg-[#4a0810] focus:outline-none focus:ring-2 focus:ring-[#640A16]">
+                            <span class="material-symbols-outlined">download</span>
+                            <span>Download Options</span>
+                        </button>
+                    }
+                    else
+                    {
+                        <button disabled class="flex cursor-not-allowed items-center gap-2 rounded-xl bg-gray-400 px-4 py-2 text-gray-600">
+                            <span class="material-symbols-outlined">download</span>
+                            <span>Download Options</span>
+                        </button>
+                    }
                 </div>
             </div>
         </div>
@@ -271,143 +282,164 @@
             </button>
         </div>
 
-        <div class="space-y-4">
-            <!-- Download All Content -->
-            <div class="rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50">
-                <div class="flex items-start space-x-3">
-                    <input type="radio" id="downloadAll" name="downloadOption" value="all" class="mt-1" checked>
-                    <label for="downloadAll" class="flex-1 cursor-pointer">
-                        <div class="flex items-center space-x-2">
-                            <span class="material-symbols-outlined text-[#640A16]">folder_zip</span>
-                            <h3 class="font-semibold text-gray-800">Download All Content</h3>
-                        </div>
-                        <p class="mt-1 text-sm text-gray-600">Download all videos, documents, and images in a single ZIP file</p>
-                        <div class="mt-2 text-xs text-gray-500">
-                            @{
-                                var totalVideos = mediaList?.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")).Count() ?? 0;
-                                var totalDocs = mediaList?.Where(m => IsDocumentFile(m.MediaType, m.Name)).Count() ?? 0;
-                                var totalImages = mediaList?.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")).Count() ?? 0;
-                            }
-                            Includes: @totalVideos video(s), @totalDocs document(s), @totalImages image(s)
-                        </div>
-                    </label>
-                </div>
+        @if (!hasAnyFiles)
+        {
+            <div class="flex flex-col items-center justify-center py-8 text-center">
+                <span class="material-symbols-outlined mb-4 text-6xl text-gray-400">folder_off</span>
+                <h3 class="mb-2 text-lg font-semibold text-gray-600">No Files Available</h3>
+                <p class="text-sm text-gray-500">There are no media files available for download in this topic.</p>
             </div>
+        }
+        else
+        {
+            <div class="space-y-4">
+                <!-- Download All Content -->
+                <div class="rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50">
+                    <div class="flex items-start space-x-3">
+                        <input type="radio" id="downloadAll" name="downloadOption" value="all" class="mt-1" checked>
+                        <label for="downloadAll" class="flex-1 cursor-pointer">
+                            <div class="flex items-center space-x-2">
+                                <span class="material-symbols-outlined text-[#640A16]">folder_zip</span>
+                                <h3 class="font-semibold text-gray-800">Download All Content</h3>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-600">Download all videos, documents, and images in a single ZIP file</p>
+                            <div class="mt-2 text-xs text-gray-500">
+                                @{
+                                    var totalVideos = mediaList?.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")).Count() ?? 0;
+                                    var totalDocs = mediaList?.Where(m => IsDocumentFile(m.MediaType, m.Name)).Count() ?? 0;
+                                    var totalImages = mediaList?.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")).Count() ?? 0;
+                                }
+                                Includes: @totalVideos video(s), @totalDocs document(s), @totalImages image(s)
+                            </div>
+                        </label>
+                    </div>
+                </div>
 
-            <!-- Download Media Only -->
-            <div class="rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50">
-                <div class="flex items-start space-x-3">
-                    <input type="radio" id="downloadMedia" name="downloadOption" value="mediaonly" class="mt-1">
-                    <label for="downloadMedia" class="flex-1 cursor-pointer">
+                <!-- Download Media Only -->
+                <div class="rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50">
+                    <div class="flex items-start space-x-3">
+                        <input type="radio" id="downloadMedia" name="downloadOption" value="mediaonly" class="mt-1">
+                        <label for="downloadMedia" class="flex-1 cursor-pointer">
+                            <div class="flex items-center space-x-2">
+                                <span class="material-symbols-outlined text-[#640A16]">video_library</span>
+                                <h3 class="font-semibold text-gray-800">Download Media Only</h3>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-600">Choose specific media types to download</p>
+                        </label>
+                    </div>
+
+                    <!-- Nested Media Type Options -->
+                    <div id="mediaTypeOptions" class="ml-6 mt-3 hidden space-y-2">
                         <div class="flex items-center space-x-2">
-                            <span class="material-symbols-outlined text-[#640A16]">video_library</span>
-                            <h3 class="font-semibold text-gray-800">Download Media Only</h3>
-                        </div>
-                        <p class="mt-1 text-sm text-gray-600">Choose specific media types to download</p>
-                    </label>
-                </div>
-
-                <!-- Nested Media Type Options -->
-                <div id="mediaTypeOptions" class="ml-6 mt-3 hidden space-y-2">
-                    <div class="flex items-center space-x-2">
-                        <input type="radio" id="downloadVideos" name="mediaTypeOption" value="videos" class="text-[#640A16]">
-                        <label for="downloadVideos" class="flex-1 cursor-pointer text-sm">
-                            <div class="flex items-center space-x-2">
-                                <span class="material-symbols-outlined text-red-500 !text-[16px]">movie</span>
-                                <span class="font-medium">Videos Only</span>
-                                <span class="text-xs text-gray-500">@totalVideos video(s)</span>
-                            </div>
-                            <p class="ml-6 text-xs text-gray-500">Download only video files</p>
-                        </label>
-                    </div>
-
-                    <div class="flex items-center space-x-2">
-                        <input type="radio" id="downloadDocuments" name="mediaTypeOption" value="documents" class="text-[#640A16]">
-                        <label for="downloadDocuments" class="flex-1 cursor-pointer text-sm">
-                            <div class="flex items-center space-x-2">
-                                <span class="material-symbols-outlined text-green-500 !text-[16px]">docs</span>
-                                <span class="font-medium">Documents Only</span>
-                                <span class="text-xs text-gray-500">@totalDocs document(s)</span>
-                            </div>
-                            <p class="ml-6 text-xs text-gray-500">Download only office documents</p>
-                        </label>
-                    </div>
-
-                    <div class="flex items-center space-x-2">
-                        <input type="radio" id="downloadImages" name="mediaTypeOption" value="images" class="text-[#640A16]">
-                        <label for="downloadImages" class="flex-1 cursor-pointer text-sm">
-                            <div class="flex items-center space-x-2">
-                                <span class="material-symbols-outlined text-purple-500 !text-[16px]">image</span>
-                                <span class="font-medium">Images Only</span>
-                                <span class="text-xs text-gray-500">@totalImages image(s)</span>
-                            </div>
-                            <p class="ml-6 text-xs text-gray-500">Download only image files</p>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Download Selected Content -->
-            <div class="rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50">
-                <div class="flex items-start space-x-3">
-                    <input type="radio" id="downloadSelected" name="downloadOption" value="selected" class="mt-1">
-                    <label for="downloadSelected" class="flex-1 cursor-pointer">
-                        <div class="flex items-center space-x-2">
-                            <span class="material-symbols-outlined text-[#640A16]">checklist</span>
-                            <h3 class="font-semibold text-gray-800">Download Selected Content</h3>
-                        </div>
-                        <p class="mt-1 text-sm text-gray-600">Choose specific files to download</p>
-                    </label>
-                </div>
-
-                <!-- Selected Content List -->
-                <div id="selectedContentList" class="mt-3 hidden max-h-60 overflow-y-auto">
-                    @if (mediaList != null && mediaList.Any())
-                    {
-                        <div class="space-y-2">
-                            @foreach (var media in mediaList)
-                            {
-                                <div class="flex items-center space-x-2 rounded border border-gray-100 p-2">
-                                    <input type="checkbox" id="media_@media.Id" name="selectedMedia" value="@media.Id" class="rounded">
-                                    <div class="flex-1">
-                                        <div class="flex items-center space-x-2">
-                                            @if (media.MediaType != null && media.MediaType.ToLower().Contains("video"))
-                                            {
-                                                <span class="material-symbols-outlined text-red-500 !text-[16px]">movie</span>
-                                            }
-                                            else if (IsDocumentFile(media.MediaType, media.Name))
-                                            {
-                                                <span class="material-symbols-outlined text-green-500 !text-[16px]">docs</span>
-                                            }
-                                            else if (media.MediaType != null && media.MediaType.ToLower().Contains("image"))
-                                            {
-                                                <span class="material-symbols-outlined text-purple-500 !text-[16px]">image</span>
-                                            }
-                                            <span class="text-sm font-medium">@(media.Name?.Length > 30 ? media.Name.Substring(0, 30) + "..." : media.Name)</span>
-                                        </div>
-                                        <p class="text-xs text-gray-500">@media.MediaType</p>
-                                    </div>
+                            <input type="radio" id="downloadVideos" name="mediaTypeOption" value="videos" class="text-[#640A16]" @(totalVideos == 0 ? "disabled" : "")>
+                            <label for="downloadVideos" class="flex-1 cursor-pointer text-sm @(totalVideos == 0 ? "text-gray-400" : "")">
+                                <div class="flex items-center space-x-2">
+                                    <span class="material-symbols-outlined @(totalVideos == 0 ? "text-gray-400" : "text-red-500") !text-[16px]">movie</span>
+                                    <span class="font-medium">Videos Only</span>
+                                    <span class="text-xs text-gray-500">@totalVideos video(s)</span>
                                 </div>
-                            }
+                                <p class="ml-6 text-xs text-gray-500">@(totalVideos == 0 ? "No videos available" : "Download only video files")</p>
+                            </label>
                         </div>
-                    }
-                    else
-                    {
-                        <p class="text-sm text-gray-500">No media files available for selection.</p>
-                    }
+
+                        <div class="flex items-center space-x-2">
+                            <input type="radio" id="downloadDocuments" name="mediaTypeOption" value="documents" class="text-[#640A16]" @(totalDocs == 0 ? "disabled" : "")>
+                            <label for="downloadDocuments" class="flex-1 cursor-pointer text-sm @(totalDocs == 0 ? "text-gray-400" : "")">
+                                <div class="flex items-center space-x-2">
+                                    <span class="material-symbols-outlined @(totalDocs == 0 ? "text-gray-400" : "text-green-500") !text-[16px]">docs</span>
+                                    <span class="font-medium">Documents Only</span>
+                                    <span class="text-xs text-gray-500">@totalDocs document(s)</span>
+                                </div>
+                                <p class="ml-6 text-xs text-gray-500">@(totalDocs == 0 ? "No documents available" : "Download only office documents")</p>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center space-x-2">
+                            <input type="radio" id="downloadImages" name="mediaTypeOption" value="images" class="text-[#640A16]" @(totalImages == 0 ? "disabled" : "")>
+                            <label for="downloadImages" class="flex-1 cursor-pointer text-sm @(totalImages == 0 ? "text-gray-400" : "")">
+                                <div class="flex items-center space-x-2">
+                                    <span class="material-symbols-outlined @(totalImages == 0 ? "text-gray-400" : "text-purple-500") !text-[16px]">image</span>
+                                    <span class="font-medium">Images Only</span>
+                                    <span class="text-xs text-gray-500">@totalImages image(s)</span>
+                                </div>
+                                <p class="ml-6 text-xs text-gray-500">@(totalImages == 0 ? "No images available" : "Download only image files")</p>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Download Selected Content -->
+                <div class="rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50">
+                    <div class="flex items-start space-x-3">
+                        <input type="radio" id="downloadSelected" name="downloadOption" value="selected" class="mt-1">
+                        <label for="downloadSelected" class="flex-1 cursor-pointer">
+                            <div class="flex items-center space-x-2">
+                                <span class="material-symbols-outlined text-[#640A16]">checklist</span>
+                                <h3 class="font-semibold text-gray-800">Download Selected Content</h3>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-600">Choose specific files to download</p>
+                        </label>
+                    </div>
+
+                    <!-- Selected Content List -->
+                    <div id="selectedContentList" class="mt-3 hidden max-h-60 overflow-y-auto">
+                        @if (mediaList != null && mediaList.Any())
+                        {
+                            <div class="space-y-2">
+                                @foreach (var media in mediaList)
+                                {
+                                    <div class="flex items-center space-x-2 rounded border border-gray-100 p-2">
+                                        <input type="checkbox" id="media_@media.Id" name="selectedMedia" value="@media.Id" class="rounded">
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-2">
+                                                @if (media.MediaType != null && media.MediaType.ToLower().Contains("video"))
+                                                {
+                                                    <span class="material-symbols-outlined text-red-500 !text-[16px]">movie</span>
+                                                }
+                                                else if (IsDocumentFile(media.MediaType, media.Name))
+                                                {
+                                                    <span class="material-symbols-outlined text-green-500 !text-[16px]">docs</span>
+                                                }
+                                                else if (media.MediaType != null && media.MediaType.ToLower().Contains("image"))
+                                                {
+                                                    <span class="material-symbols-outlined text-purple-500 !text-[16px]">image</span>
+                                                }
+                                                <span class="text-sm font-medium">@(media.Name?.Length > 30 ? media.Name.Substring(0, 30) + "..." : media.Name)</span>
+                                            </div>
+                                            <p class="text-xs text-gray-500">@media.MediaType</p>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-sm text-gray-500">No media files available for selection.</p>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
+        }
 
         <!-- Action Buttons -->
         <div class="mt-6 flex justify-end space-x-3">
             <button onclick="closeDownloadModal()" class="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200">
                 Cancel
             </button>
-            <button onclick="processDownload()" class="flex items-center space-x-2 rounded-lg bg-[#640A16] px-4 py-2 text-white transition-colors hover:bg-[#4a0810] focus:outline-none focus:ring-2 focus:ring-[#640A16]">
-                <span class="material-symbols-outlined !text-[18px]">download</span>
-                <span>Download</span>
-            </button>
+            @if (hasAnyFiles)
+            {
+                <button onclick="processDownload()" class="flex items-center space-x-2 rounded-lg bg-[#640A16] px-4 py-2 text-white transition-colors hover:bg-[#4a0810] focus:outline-none focus:ring-2 focus:ring-[#640A16]">
+                    <span class="material-symbols-outlined !text-[18px]">download</span>
+                    <span>Download</span>
+                </button>
+            }
+            else
+            {
+                <button disabled class="flex cursor-not-allowed items-center space-x-2 rounded-lg bg-gray-400 px-4 py-2 text-gray-600">
+                    <span class="material-symbols-outlined !text-[18px]">download</span>
+                    <span>Download</span>
+                </button>
+            }
         </div>
     </div>
 </div>
@@ -467,13 +499,24 @@
 
     // Download Modal Functions
     function openDownloadModal() {
-        document.getElementById('downloadModal').classList.remove('hidden');
+        @if (hasAnyFiles)
+        {
+                <text>document.getElementById('downloadModal').classList.remove('hidden');</text>
+        }
+        else
+        {
+                <text>
+                // Show a tooltip or alert when no files are available
+                alert('No files are available for download in this topic.');
+                </text>
+        }
     }
 
     function closeDownloadModal() {
         document.getElementById('downloadModal').classList.add('hidden');
         // Reset form
-        document.querySelector('input[name="downloadOption"][value="all"]').checked = true;
+        const allRadio = document.querySelector('input[name="downloadOption"][value="all"]');
+        if (allRadio) allRadio.checked = true;
         document.getElementById('selectedContentList').classList.add('hidden');
         document.getElementById('mediaTypeOptions').classList.add('hidden');
         const checkboxes = document.querySelectorAll('input[name="selectedMedia"]');
@@ -516,8 +559,12 @@
             const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
             downloadFiles(topicId, selectedOption, selectedIds);
         } else if (selectedOption === 'mediaonly') {
-            const mediaTypeOption = document.querySelector('input[name="mediaTypeOption"]:checked').value;
-            downloadFiles(topicId, mediaTypeOption);
+            const mediaTypeOption = document.querySelector('input[name="mediaTypeOption"]:checked');
+            if (!mediaTypeOption) {
+                alert('Please select a media type to download.');
+                return;
+            }
+            downloadFiles(topicId, mediaTypeOption.value);
         } else {
             downloadFiles(topicId, selectedOption);
         }
