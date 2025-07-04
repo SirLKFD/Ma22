@@ -1,7 +1,158 @@
-﻿
+﻿@model List<ASI.Basecode.Services.ServiceModels.TopicViewModel>
 @{
     ViewData["Title"] = "UserTopics";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
 
-<h1>UserTopics</h1>
+
+<!--Placeholder for cover photo-->
+<div class="flex items-center justify-center bg-blue-900 w-screen h-[250px] -mx-20 -my-20 ">
+    <h1 class="text-white text-4xl uppercase">Placeholder for Image</h1>
+</div>
+<div class="flex w-full gap-10">
+    <div class="flex flex-col w-2/3 gap-10">
+        <div class="flex flex-col bg-white p-4 gap-5 rounded-lg shadow-md">
+            <div class="bg-[#EAC231] max-w-fit px-2 py-1 rounded-full text-xs">Topic</div>
+            <h1 class="text-4xl w-3/4 font-weight-bold">CMSC 11: Introduction to Programming (Dummy Title)</h1>
+            <p class="w-3/4">Master the fundamentals of programming with this comprehensive course. Learn essential concepts, problem-solving techniques, and practical skills that form the foundation of computer science. Perfect for beginners looking to start their programming journey.</p>
+            <div class="flex items-center gap-6 text-sm text-slate-500">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>2,847 students enrolled</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined">import_contacts</span>
+                    <span>59 lessons</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined">schedule</span>
+                    <span>25h 30m total</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col bg-white w-full p-4 gap-2 rounded-lg shadow-md">
+            <div class="flex items-center space-x-4">
+                <span class="material-symbols-outlined bg-[#EAC231] p-2 rounded-lg">import_contacts</span>
+                <h2 class="text-2xl font-weight-bold">Course Topics</h2>
+            </div>
+            <p class="text-sm">Explore the comprehensive curriculum designed to build your programming skills step by step</p>
+            <div class="flex w-full gap-10">
+                <div class="flex flex-col w-1/2 gap-5">
+                    <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
+                        <p class="text-xl font-semibold">Flowcharts</p>
+                        <p class="text-sm">Learn visual programming logic and flowchart design principles</p>   
+                    </div>
+                    <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
+                        <p class="text-xl font-semibold">Flowcharts</p>
+                        <p class="text-sm">Learn visual programming logic and flowchart design principles</p>
+                    </div>
+                    <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
+                        <p class="text-xl font-semibold">Flowcharts</p>
+                        <p class="text-sm">Learn visual programming logic and flowchart design principles</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col w-1/2 gap-5">
+                    <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
+                        <p class="text-xl font-semibold">Flowcharts</p>
+                        <p class="text-sm">Learn visual programming logic and flowchart design principles</p>
+                    </div>
+                    <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
+                        <p class="text-xl font-semibold">Flowcharts</p>
+                        <p class="text-sm">Learn visual programming logic and flowchart design principles</p>
+                    </div>
+                    <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
+                        <p class="text-xl font-semibold">Flowcharts</p>
+                        <p class="text-sm">Learn visual programming logic and flowchart design principles</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col bg-white w-full p-4 gap-2 rounded-lg shadow-md">
+            <div class="flex justify-between">
+                <div class="flex items-center space-x-4">
+                    <span class="material-symbols-outlined bg-[#EAC231] p-2 rounded-lg">star</span>
+                    <h2 class="text-2xl font-weight-bold">Ratings and Reviews</h2>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <p class="text-2xl font-semibold">4.8</p>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-[#EAC231]" viewBox="0 0 24 24">
+                        <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-[#EAC231]" viewBox="0 0 24 24">
+                        <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-[#EAC231]" viewBox="0 0 24 24">
+                        <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-[#EAC231]" viewBox="0 0 24 24">
+                        <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-[#EAC231]" viewBox="0 0 24 24">
+                        <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
+                    </svg>
+                </div>
+            </div>
+            <p>See what other students are saying about this course</p>
+            <div class="flex flex-col gap-10">
+                <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
+                    <p class="text-xl font-semibold">John Doe</p>
+                    <p class="text-sm">huwaw</p>
+
+                </div>
+                <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
+                    <p class="text-xl font-semibold">John Doe</p>
+                    <p class="text-sm">huwaw</p>
+                </div>
+                <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
+                    <p class="text-xl font-semibold">John Doe</p>
+                    <p class="text-sm">huwaw</p>
+                </div>
+                <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
+                    <p class="text-xl font-semibold">John Doe</p>
+                    <p class="text-sm">huwaw</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-col w-1/3 gap-10">
+        <div class="flex flex-col p-4 shadow-md bg-white max-h-fit rounded-lg">
+            <div class="flex flex-col items-center gap-2 mb-4">
+                <h1 class="uppercase text-4xl font-weight-bold">Free</h1>
+                <p class="mb-2">Full Access to all Content</p>
+                <button class="bg-[#EAC231] px-32 py-2 rounded-lg font-semibold">Enroll Now</button>
+            </div>
+            <hr class="mb-2"/>
+            <div class="space-y-3">
+                <div class="flex justify-between">
+                    <p>Skill Level</p>
+                    <p class="bg-[#C6FFCD] max-w-fit px-2 py-1 rounded-full text-xs">Beginner</p>
+                </div>
+                <div class="flex justify-between">
+                    <p>Category</p>
+                    <p class="bg-[#FFE9C6] max-w-fit px-2 py-1 rounded-full text-xs">Programming</p>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col bg-white max-h-fit rounded-lg shadow-md p-4 items-center gap-4">
+            <p class="font-semibold text-xl">Your Instructor</p>
+            <div class="flex ">
+                @{
+                    var profilePicture = HttpContextAccessor.HttpContext.Session.GetString("ProfilePicture");
+                }
+                @if (!string.IsNullOrEmpty(profilePicture))
+                {
+                    <img src="@profilePicture" alt="Profile" class="w-[50px] h-[50px] rounded-full object-cover" />
+                }
+                else
+                {
+                    <span class="material-symbols-outlined !text-[50px]">person</span>
+                }
+            </div>
+            <span>@HttpContextAccessor.HttpContext.Session.GetString("UserName")</span>
+           
+        </div>
+
+    </div>
+</div>
 

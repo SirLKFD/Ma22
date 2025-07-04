@@ -60,7 +60,7 @@
                             <p><strong>Modified:</strong> @training.UpdatedTime.ToString("MMM dd, yyyy")</p>
                             <p><strong>By:</strong> @training.AccountFirstName @training.AccountLastName</p>
                         </div>
-                        <a href="#" class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
+                        <a href="@Url.Action("Topics","UserTopic", new { trainingId = training.Id })" class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
                             Access
                         </a>
                     </div>

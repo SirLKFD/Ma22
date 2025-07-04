@@ -19,7 +19,20 @@
     </div>
 
     <div class="absolute right-10">
-        <div class="flex items-center gap-1 cursor-pointer" onclick="toggleDropDown()">
+        <div class="flex items-center justify-center gap-4 cursor-pointer" onclick="toggleDropDown()">
+            <span >
+                @{
+                    var profilePicture = HttpContextAccessor.HttpContext.Session.GetString("ProfilePicture");
+                }
+                @if (!string.IsNullOrEmpty(profilePicture))
+                {
+                    <img src="@profilePicture" alt="Profile" class="w-[20px] h-[20px] rounded-full object-cover" />
+                }
+                else
+                {
+                    <span class="material-symbols-outlined !text-[30px]">person</span>
+                }
+            </span>
             <span class="block">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</span>
             <span class="material-symbols-outlined hover:text-[#EAC231]">arrow_drop_down</span>
         </div>
