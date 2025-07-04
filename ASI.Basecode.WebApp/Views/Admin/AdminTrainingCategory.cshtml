@@ -1,79 +1,79 @@
 ﻿@model List<ASI.Basecode.Services.ServiceModels.TrainingCategoryViewModel>
-
 @{
     ViewData["Title"] = "Admin Training Category";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-
 }
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-<div class="mx-20 mt-12 mb-16 flex flex-col gap-8">
-    <!-- Header and Action Row -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 class="text-4xl font-bold text-[#222] tracking-tight uppercase">Training Categories</h1>
 
-        <div class="flex flex-col sm:flex-row gap-4">
-            <!-- Search Field -->
+<!-- Title Section -->
+<div class="mx-auto mt-10 w-[95%] max-w-7xl">
+    <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+            <h1 class="text-4xl font-bold uppercase tracking-tight text-[#222]">Training Categories</h1>
+        </div>
+
+        <!-- Search + Add -->
+        <div class="flex flex-col gap-4 sm:flex-row">
             <form method="get" asp-action="AdminTrainingCategory" class="relative w-full sm:w-[400px]">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">
-                    search
-                </span>
-                <input type="search" name="search" value="@ViewBag.Search"
-                       placeholder="Search Category..."
-                       class="w-full h-12 pl-10 pr-[100px] rounded-full border border-gray-300 bg-white text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
-
+                <span class="material-symbols-outlined -translate-y-1/2 absolute left-3 top-1/2 text-gray-400">search</span>
+                <input type="search" name="search" value="@ViewBag.Search" placeholder="Search Category..."
+                       class="h-12 w-full rounded-full border border-gray-300 bg-white pl-10 pr-[100px] text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
                 <button type="submit"
-                        class="absolute right-2 top-[6px] rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black hover:bg-[#cfa221] transition">
+                        class="absolute right-2 top-[6px] rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#cfa221]">
                     Search
                 </button>
             </form>
 
-            <!-- Add Button -->
-            <button class="rounded-full bg-[#EAC231] px-6 py-2 text-sm font-semibold text-black shadow-md hover:bg-[#cfa221] transition" onclick="addTrainingCategory()">
+            <button class="rounded-full bg-[#EAC231] px-6 py-2 text-sm font-semibold text-black shadow-md transition hover:bg-[#cfa221]"
+                    onclick="addTrainingCategory()">
                 Add+
             </button>
         </div>
     </div>
 
-    <!-- Cards Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <!-- Grid of Category Cards -->
+    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
         @foreach (var category in Model)
         {
-            <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col min-h-[400px]">
-                <!-- Image -->
+            <div class="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md transition hover:shadow-xl">
+                <!-- Cover Image -->
                 <div class="h-[180px]">
                     @if (!string.IsNullOrEmpty(category.CoverPicture))
                     {
-                        <img class="w-full h-full object-cover outline outline-1 outline-black" src="@category.CoverPicture" alt="Cover Image" />
+                        <img class="h-full w-full object-cover" src="@category.CoverPicture" alt="Cover Image" />
                     }
                     else
                     {
-                        <div class="flex items-center justify-center w-full h-full outline outline-1 outline-black">
-                            <span class="font-bold text-center w-full">No Image Provided</span>
+                        <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#640A16] via-[#8B1538] to-[#640A16] text-center text-sm font-medium text-white">
+                            <span class="material-symbols-outlined text-4xl opacity-50">image</span>
+                            <p class="ml-2">No Cover Image</p>
                         </div>
                     }
                 </div>
 
-                <!-- Content -->
-                <div class="p-4 flex flex-col flex-grow">
-                    <!-- Title and Actions -->
-                    <div class="flex justify-between items-center mb-2">
-                        <h2 class="text-xl font-semibold text-gray-800">@category.CategoryName</h2>
+                <!-- Details -->
+                <div class="flex flex-grow flex-col p-4">
+                    <!-- Header -->
+                    <div class="mb-2 flex items-center justify-between">
+                        <h2 class="text-xl font-bold text-[#222]">@category.CategoryName</h2>
                         <div class="flex gap-2 text-gray-600">
-                            <span class="material-symbols-outlined cursor-pointer hover:text-black" onclick="openEditTrainingCategory('@category.Id', '@category.CoverPicture', '@category.CategoryName', '@category.Description')">edit</span>
-                            <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700" onclick="openDeleteTrainingCategory('@category.Id', '@category.CoverPicture', '@category.CategoryName', '@category.Description', '@category.UpdatedTime', '@category.AccountFirstName', '@category.AccountLastName')">delete</span>
+                            <span class="material-symbols-outlined cursor-pointer hover:text-black"
+                                  onclick="openEditTrainingCategory('@category.Id', '@category.CoverPicture', '@category.CategoryName', '@category.Description')">edit</span>
+                            <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700"
+                                  onclick="openDeleteTrainingCategory('@category.Id', '@category.CoverPicture', '@category.CategoryName', '@category.Description', '@category.UpdatedTime', '@category.AccountFirstName', '@category.AccountLastName')">delete</span>
                         </div>
                     </div>
 
-                    <!-- Description -->
-                    <p class="text-sm text-gray-600 line-clamp-3">@category.Description</p>
+                    <p class="line-clamp-4 text-sm text-gray-600">@category.Description</p>
 
                     <!-- Footer -->
-                    <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
+                    <div class="mt-auto flex items-end justify-between pt-4 text-xs text-gray-500">
                         <div>
                             <p><strong>Modified:</strong> @category.UpdatedTime.ToString("MMM dd, yyyy")</p>
                             <p><strong>By:</strong> @category.AccountFirstName @category.AccountLastName</p>
                         </div>
-                        <a href="@Url.Action("TrainingCategoryDetails", "AdminTrainingCategory", new { categoryId = category.Id })" class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
+                        <a href="@Url.Action("TrainingCategoryDetails", "AdminTrainingCategory", new { categoryId = category.Id })"
+                           class="rounded-full bg-[#640A16] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#4e0712]">
                             Access
                         </a>
                     </div>
@@ -86,14 +86,14 @@
     @if (ViewBag.TotalCount > ViewBag.PageSize)
     {
         var totalPages = (int)Math.Ceiling((decimal)ViewBag.TotalCount / ViewBag.PageSize);
-        <div class="flex justify-end mt-8">
+        <div class="mt-10 flex justify-end">
             <nav>
                 <ul class="inline-flex gap-1 text-sm">
                     @if (ViewBag.CurrentPage > 1)
                     {
                         <li>
-                            <a class="px-3 py-2 rounded-l-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 transition"
-                               href="@Url.Action("AdminTrainingCategory", new { page = Math.Max(ViewBag.CurrentPage - 1, 1), search = ViewBag.Search })">
+                            <a class="rounded-l-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100"
+                               href="@Url.Action("AdminTrainingCategory", new { page = ViewBag.CurrentPage - 1, search = ViewBag.Search })">
                                 Previous
                             </a>
                         </li>
@@ -101,7 +101,7 @@
                     @for (int i = 1; i <= totalPages; i++)
                     {
                         <li>
-                            <a class="px-3 py-2 border border-gray-300 @(i == ViewBag.CurrentPage ? "bg-blue-50 text-blue-600" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") rounded-md transition"
+                            <a class="rounded-md border border-gray-300 px-3 @(i == ViewBag.CurrentPage ? "bg-blue-50 text-blue-600" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") py-2 transition"
                                href="@Url.Action("AdminTrainingCategory", new { page = i, search = ViewBag.Search })">
                                 @i
                             </a>
@@ -110,8 +110,8 @@
                     @if (ViewBag.CurrentPage < totalPages)
                     {
                         <li>
-                            <a class="px-3 py-2 rounded-r-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 transition"
-                               href="@Url.Action("AdminTrainingCategory", new { page = Math.Min(ViewBag.CurrentPage + 1, totalPages), search = ViewBag.Search })">
+                            <a class="rounded-r-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100"
+                               href="@Url.Action("AdminTrainingCategory", new { page = ViewBag.CurrentPage + 1, search = ViewBag.Search })">
                                 Next
                             </a>
                         </li>
@@ -122,28 +122,22 @@
     }
 </div>
 
+<!-- Modals -->
 @await Html.PartialAsync("~/Views/Admin/AdminAddTrainingCategory.cshtml", new TrainingCategoryViewModel())
 @await Html.PartialAsync("~/Views/Admin/AdminEditTrainingCategory.cshtml", new TrainingCategoryViewModel())
 @await Html.PartialAsync("~/Views/Admin/AdminDelTrainingCategory.cshtml", new TrainingCategoryViewModel())
-@* @await Html.PartialAsync("~/Views/Admin/TCTrainingView.cshtml", new TrainingCategoryViewModel()) *@
 
- <script type="text/javascript">
-        function addTrainingCategory(){
-            document.getElementById('addTrainingCategory').classList.remove('hidden');
-        }
-
-        function closeTrainingCategory(){
-            document.getElementById('addTrainingCategory').classList.add('hidden');
-        }
-
-        function closeEditTrainingCategory(){
-            document.getElementById('editTrainingCategory').classList.add('hidden');
-        }
-
-        function closeDeleteTrainingCategory(){
-                document.getElementById('deleteTrainingCategory').classList.add('hidden');
-        }
-
-        
+<script type="text/javascript">
+    function addTrainingCategory(){
+        document.getElementById('addTrainingCategory').classList.remove('hidden');
+    }
+    function closeTrainingCategory(){
+        document.getElementById('addTrainingCategory').classList.add('hidden');
+    }
+    function closeEditTrainingCategory(){
+        document.getElementById('editTrainingCategory').classList.add('hidden');
+    }
+    function closeDeleteTrainingCategory(){
+        document.getElementById('deleteTrainingCategory').classList.add('hidden');
+    }
 </script>
-
