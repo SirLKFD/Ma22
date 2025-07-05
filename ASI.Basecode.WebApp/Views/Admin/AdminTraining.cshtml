@@ -1,8 +1,11 @@
-@model List<ASI.Basecode.Services.ServiceModels.TrainingViewModel>
+﻿@model List<ASI.Basecode.Services.ServiceModels.TrainingViewModel>
 @using static ASI.Basecode.Resources.Constants.Enums
 
 @{
-    var pageTitle = "Trainings";
+    var pageTitle = ViewBag.CategoryName ?? "Trainings";
+    ViewData["Title"] = pageTitle;
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
     var isCategory = ViewBag.CategoryId != null;
     var categoryId = ViewBag.CategoryId;
     var search = ViewBag.Search ?? "";
@@ -13,125 +16,98 @@
     var skillLevels = new Dictionary<int, string> {
         { 1, "Beginner" }, { 2, "Intermediate" }, { 3, "Advanced" }
     };
-
-
-    if (ViewBag.CategoryName != null)
-    {
-        pageTitle = ViewBag.CategoryName;
-    }
-    ViewData["Title"] = pageTitle;
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-<div class="flex flex-col gap-8 mx-20 mt-12 mb-16">
-    <h1 class="text-4xl uppercase font-weight-bold align-self-center ">@pageTitle</h1>
-    <!-- SEARCH BAR -->
-    <form method="get" asp-action="AdminTraining" class="relative w-full sm:w-[500px] align-self-center mb-4" autocomplete="off">
-        <div id="search-wrapper" class="relative transition-all duration-300">
-            <input type="search" name="search" id="search-input"
-                   placeholder="Search Trainings..."
-                   class="w-full h-12 rounded-full border border-gray-300 px-5 pr-[180px] text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231] transition"
-                   value="@search" />
+<div class="mx-auto mb-16 mt-10 flex w-[95%] max-w-7xl flex-col gap-10">
 
-            <!-- Search Button -->
-            <div class="absolute top-1/2 right-2 -translate-y-1/2 flex items-center gap-2 z-10">
+    <!-- Page Header -->
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <h1 class="text-4xl font-bold uppercase text-[#222]">@pageTitle</h1>
+
+        <div class="flex flex-col gap-4 sm:flex-row">
+            <form method="get" asp-action="AdminTraining" class="relative w-full sm:w-[400px]">
+                <input type="search" name="search" value="@search"
+                       placeholder="Search Trainings..."
+                       class="h-12 w-full rounded-full border border-gray-300 pl-5 pr-[140px] text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
+
                 <button type="submit"
-                        class="rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black hover:bg-[#cfa221] transition">
+                        class="absolute right-2 top-[6px] rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#cfa221]">
                     Search
                 </button>
-            </div>
+            </form>
 
-            <!-- FILTER PILLS -->
-            <div id="filter-pills-inside" class="hidden bg-white p-4 absolute left-0 right-0 z-0 shadow-lg border border-gray-300 rounded-xl mt-2">
-                @if (trainingCategories != null)
-                {
-                    <div class="mb-2 font-semibold text-xs text-gray-500">Categories</div>
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        @foreach (var category in trainingCategories)
-                        {
-                            <a href="@Url.Action("AdminTraining", new { search = search, categoryId = category.Id, skillLevelId = skillLevelId })"
-                               class="px-3 py-1 rounded-full border text-xs border-gray-400 text-gray-700 hover:bg-gray-100 @(selectedCategoryId == category.Id ? "bg-blue-200 text-blue-800" : "")">
-                                @category.CategoryName
-                            </a>
-                        }
-                    </div>
-                }
-
-                <div class="mb-2 font-semibold text-xs text-gray-500">Skill Levels</div>
-                <div class="flex flex-wrap gap-2">
-                    @foreach (var level in skillLevels)
-                    {
-                        <a href="@Url.Action("AdminTraining", new { search = search, categoryId = selectedCategoryId, skillLevelId = level.Key })"
-                           class="px-3 py-1 rounded-full border text-xs border-gray-400 text-gray-700 hover:bg-gray-100 @(skillLevelId == level.Key ? "bg-blue-200 text-blue-800" : "")">
-                            @level.Value
-                        </a>
-                    }
-                </div>
-            </div>
+            <button class="rounded-full bg-[#EAC231] px-6 py-2 text-sm font-semibold text-black shadow-md transition hover:bg-[#cfa221]"
+                    onclick="addTraining()">
+                Add+
+            </button>
         </div>
+    </div>
 
-        <!-- ACTIVE FILTER TAGS ABOVE SEARCH BAR -->
-        @if (selectedCategoryId != null || skillLevelId != null)
-        {
-            <div class="mt-3 flex flex-wrap gap-2 justify-center">
-                @if (selectedCategoryId != null && trainingCategories != null)
+    <!-- Active Filters -->
+    @if (selectedCategoryId != null || skillLevelId != null)
+    {
+        <div class="flex flex-wrap gap-2">
+            @if (selectedCategoryId != null && trainingCategories != null)
+            {
+                var selectedCat = trainingCategories.FirstOrDefault(c => c.Id == selectedCategoryId);
+                if (selectedCat != null)
                 {
-                    var selectedCat = trainingCategories.FirstOrDefault(c => c.Id == selectedCategoryId);
-                    if (selectedCat != null)
-                    {
-                        <span class="bg-green-200 text-green-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-2">
-                            Category: @selectedCat.CategoryName
-                            <a href="@Url.Action("AdminTraining", new { search = search, skillLevelId = skillLevelId })" class="ml-1 text-green-800 hover:text-green-900">&times;</a>
-                        </span>
-                    }
-                }
-                @if (skillLevelId != null)
-                {
-                    <span class="bg-green-200 text-green-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-2">
-                        Skill Level: @skillLevels[skillLevelId]
-                        <a href="@Url.Action("AdminTraining", new { search = search, categoryId = selectedCategoryId })" class="ml-1 text-green-800 hover:text-green-900">&times;</a>
+                    <span class="flex items-center gap-2 rounded-full bg-green-200 px-3 py-1 text-xs font-semibold text-green-800">
+                        Category: @selectedCat.CategoryName
+                        <a href="@Url.Action("AdminTraining", new { search = search, skillLevelId = skillLevelId })" class="hover:text-green-900">&times;</a>
                     </span>
                 }
-            </div>
-        }
-    </form>
+            }
+            @if (skillLevelId != null)
+            {
+                <span class="flex items-center gap-2 rounded-full bg-green-200 px-3 py-1 text-xs font-semibold text-green-800">
+                    Skill Level: @skillLevels[skillLevelId]
+                    <a href="@Url.Action("AdminTraining", new { search = search, categoryId = selectedCategoryId })" class="hover:text-green-900">&times;</a>
+                </span>
+            }
+        </div>
+    }
 
-    <button class="align-self-end rounded-full bg-[#EAC231] py-2 w-[100px] text-sm font-semibold text-black shadow-md hover:bg-[#cfa221] transition" onclick="addTraining()">
-        Add+
-    </button>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <!-- Grid of Training Cards -->
+    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
         @if (Model != null && Model.Any())
         {
             foreach (var training in Model)
             {
-                <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col min-h-[400px]">
+                <div class="flex min-h-[400px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md transition hover:shadow-xl">
                     <div class="h-[180px]">
                         @if (!string.IsNullOrEmpty(training.CoverPicture))
                         {
-                            <img class="w-full h-full object-cover outline outline-1 outline-black" src="@training.CoverPicture" alt="Cover Image" />
+                            <img class="h-full w-full object-cover" src="@training.CoverPicture" alt="Cover" />
                         }
                         else
                         {
-                            <div class="flex items-center justify-center w-full h-full outline outline-1 outline-black">
-                                <span class="font-bold text-center w-full">No Image Provided</span>
+                            <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#640A16] via-[#8B1538] to-[#640A16] text-white">
+                                <span class="material-symbols-outlined text-4xl opacity-50">image</span>
+                                <span class="ml-2 text-sm font-semibold">No Image</span>
                             </div>
                         }
                     </div>
-                    <div class="p-4 flex flex-col flex-grow">
-                        <div class="flex justify-between items-center mb-2">
-                            <h2 class="text-xl font-semibold text-gray-800">@training.TrainingName</h2>
+
+                    <div class="flex flex-grow flex-col p-4">
+                        <div class="mb-2 flex items-center justify-between">
+                            <h2 class="text-xl font-bold text-gray-800">@training.TrainingName</h2>
                             <div class="flex gap-2 text-gray-600">
-                                <span class="material-symbols-outlined cursor-pointer hover:text-black" onclick="openEditTraining('@training.Id', '@training.TrainingName', '@training.TrainingCategoryId', '@training.SkillLevel', '@training.Duration', '@training.CourseCode', '@training.Description', '@training.CoverPicture')">edit</span>
-                                <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700" onclick="openDeleteTraining('@training.Id', '@training.TrainingName', '@training.TrainingCategoryId', '@training.SkillLevel', '@training.CourseCode', '@training.Description', '@training.CoverPicture', '@training.UpdatedTime', '@training.AccountFirstName', '@training.AccountLastName')">delete</span>
+                                <span class="material-symbols-outlined cursor-pointer hover:text-black"
+                                      onclick="openEditTraining('@training.Id', '@training.TrainingName', '@training.TrainingCategoryId', '@training.SkillLevel', '@training.Duration', '@training.CourseCode', '@training.Description', '@training.CoverPicture')">edit</span>
+                                <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700"
+                                      onclick="openDeleteTraining('@training.Id', '@training.TrainingName', '@training.TrainingCategoryId', '@training.SkillLevel', '@training.CourseCode', '@training.Description', '@training.CoverPicture', '@training.UpdatedTime', '@training.AccountFirstName', '@training.AccountLastName')">delete</span>
                             </div>
                         </div>
-                        <p class="text-sm text-gray-600 line-clamp-3">@training.Description</p>
-                        <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
+                        <p class="line-clamp-3 text-sm text-gray-600">@training.Description</p>
+                        <div class="mt-auto flex items-end justify-between pt-4 text-xs text-gray-500">
                             <div>
                                 <p><strong>Modified:</strong> @training.UpdatedTime.ToString("MMM dd, yyyy")</p>
                                 <p><strong>By:</strong> @training.AccountFirstName @training.AccountLastName</p>
                             </div>
-                            <a href="@Url.Action("AdminTrainingTopics", "AdminTraining", new { trainingId = training.Id })" class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
+                            <a href="@Url.Action("AdminTrainingTopics", "AdminTraining", new { trainingId = training.Id })"
+                               class="rounded-full bg-[#640A16] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#4e0712]">
                                 Access
                             </a>
                         </div>
@@ -141,20 +117,22 @@
         }
         else
         {
-            <div class="col-span-3 text-center text-gray-500 py-8">No trainings found.</div>
+            <div class="col-span-3 py-8 text-center text-gray-500">No trainings found.</div>
         }
     </div>
+
+    <!-- Pagination -->
     @if (ViewBag.TotalCount > ViewBag.PageSize)
     {
         var totalPages = (int)Math.Ceiling((decimal)ViewBag.TotalCount / ViewBag.PageSize);
-        <div class="flex justify-end mt-8">
+        <div class="mt-10 flex justify-end">
             <nav>
                 <ul class="inline-flex gap-1 text-sm">
                     @if (ViewBag.CurrentPage > 1)
                     {
                         <li>
-                            <a class="px-3 py-2 rounded-l-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 transition"
-                               href="@(isCategory ? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = Math.Max(ViewBag.CurrentPage - 1, 1), search = search }) : Url.Action("AdminTraining", new { page = Math.Max(ViewBag.CurrentPage - 1, 1), search = search }))">
+                            <a class="rounded-l-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100"
+                               href="@(isCategory? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = ViewBag.CurrentPage - 1, search = search }) : Url.Action("AdminTraining", new { page = ViewBag.CurrentPage - 1, search = search }))">
                                 Previous
                             </a>
                         </li>
@@ -162,8 +140,8 @@
                     @for (int i = 1; i <= totalPages; i++)
                     {
                         <li>
-                            <a class="px-3 py-2 border border-gray-300 @(i == ViewBag.CurrentPage ? "bg-blue-50 text-blue-600" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") rounded-md transition"
-                               href="@(isCategory ? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = i, search = search }) : Url.Action("AdminTraining", new { page = i, search = search }))">
+                            <a class="rounded-md border border-gray-300 px-3 @(i == ViewBag.CurrentPage ? "bg-blue-50 text-blue-600" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") py-2 transition"
+                               href="@(isCategory? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = i, search = search }) : Url.Action("AdminTraining", new { page = i, search = search }))">
                                 @i
                             </a>
                         </li>
@@ -171,8 +149,8 @@
                     @if (ViewBag.CurrentPage < totalPages)
                     {
                         <li>
-                            <a class="px-3 py-2 rounded-r-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 transition"
-                               href="@(isCategory ? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = Math.Min(ViewBag.CurrentPage + 1, totalPages), search = search }) : Url.Action("AdminTraining", new { page = Math.Min(ViewBag.CurrentPage + 1, totalPages), search = search }))">
+                            <a class="rounded-r-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100"
+                               href="@(isCategory? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = ViewBag.CurrentPage + 1, search = search }) : Url.Action("AdminTraining", new { page = ViewBag.CurrentPage + 1, search = search }))">
                                 Next
                             </a>
                         </li>
@@ -182,9 +160,12 @@
         </div>
     }
 </div>
+
+<!-- Modals -->
 @await Html.PartialAsync("~/Views/Admin/AddTraining.cshtml", new TrainingViewModel())
 @await Html.PartialAsync("~/Views/Admin/EditTraining.cshtml", new TrainingViewModel())
 @await Html.PartialAsync("~/Views/Admin/DeleteTraining.cshtml", new TrainingViewModel())
+
 <script>
     function addTraining() {
         document.getElementById('addTraining').classList.remove('hidden');
@@ -198,19 +179,4 @@
     function closeDeleteTraining() {
         document.getElementById('deleteTraining').classList.add('hidden');
     }
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const searchInput = document.getElementById('search-input');
-        const filterBox = document.getElementById('filter-pills-inside');
-
-        searchInput.addEventListener('focus', () => {
-            filterBox.classList.remove('hidden');
-        });
-
-        searchInput.addEventListener('blur', () => {
-            setTimeout(() => filterBox.classList.add('hidden'), 200);
-        });
-    });
 </script>

@@ -1,12 +1,22 @@
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-<div class="flex w-screen items-center h-[10vh] bg-[#640A16] text-white px-10">
-    <div class="absolute left-10 w-14 h-14">
-        <img src="~/img/Logo.png" alt="MA22 Logo" class="w-full h-full object-contain" />
+<style>
+    .glassmorphism-topbar {
+        background: rgba(100, 10, 22, 0.85);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(100, 10, 22, 0.5);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<div id="topbar" class="glassmorphism-topbar fixed left-0 top-0 z-50 flex h-[10vh] w-screen items-center px-10 text-white transition-transform duration-300 ease-in-out">
+    <div class="absolute left-10 h-14 w-14">
+        <img src="~/img/Logo.png" alt="MA22 Logo" class="h-full w-full object-contain" />
     </div> 
 
-    <div class="flex flex-1 font-semibold justify-center gap-40">
+    <div class="flex flex-1 justify-center gap-40 font-semibold">
         <a asp-controller="User" asp-action="UserDashboard" class="hover:text-[#EAC231]">
             Home
         </a>
@@ -19,14 +29,14 @@
     </div>
 
     <div class="absolute right-10">
-        <div class="flex items-center justify-center gap-4 cursor-pointer" onclick="toggleDropDown()">
+        <div class="flex cursor-pointer items-center justify-center gap-4" onclick="toggleDropDown()">
             <span >
                 @{
                     var profilePicture = HttpContextAccessor.HttpContext.Session.GetString("ProfilePicture");
                 }
                 @if (!string.IsNullOrEmpty(profilePicture))
                 {
-                    <img src="@profilePicture" alt="Profile" class="w-[20px] h-[20px] rounded-full object-cover" />
+                    <img src="@profilePicture" alt="Profile" class="h-[40px] w-[40px] rounded-full object-cover" />
                 }
                 else
                 {
@@ -38,7 +48,7 @@
         </div>
 
         <!-- Dropdown Menu -->
-        <div id="dropdownMenu" class="absolute right-0 top-full mt-2 hidden bg-white text-black rounded shadow-md min-w-[140px] z-50">
+        <div id="dropdownMenu" class="absolute right-0 top-full z-50 mt-2 hidden min-w-[140px] rounded bg-white text-black shadow-md">
             <ul class="flex flex-col py-2 text-sm">
                 <li><a asp-controller="User" asp-action="UserProfile"  class="block px-4 py-2 hover:bg-gray-100">My Account</a></li>
                 <li><a href="/Account/SignOutUser" class="block px-4 py-2 hover:bg-gray-100">Log Out</a></li>
@@ -52,4 +62,34 @@
         const menu = document.getElementById("dropdownMenu");
         menu.classList.toggle("hidden");
     }
+
+    // Scroll behavior for topbar
+    let lastScrollTop = 0;
+    const topbar = document.getElementById('topbar');
+    let ticking = false;
+
+    function updateTopbarVisibility() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (scrollTop > lastScrollTop && scrollTop > 100) {
+            // Scrolling down and past threshold - hide topbar
+            topbar.style.transform = 'translateY(-100%)';
+        } else {
+            // Scrolling up or at top - show topbar
+            topbar.style.transform = 'translateY(0)';
+        }
+        
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
+        ticking = false;
+    }
+
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(updateTopbarVisibility);
+            ticking = true;
+        }
+    }
+
+    // Add scroll event listener
+    window.addEventListener('scroll', requestTick, { passive: true });
 </script>

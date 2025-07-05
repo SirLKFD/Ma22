@@ -4,50 +4,135 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var allTopics = ViewBag.AllTopics as List<ASI.Basecode.Services.ServiceModels.TopicViewModel> ?? new List<ASI.Basecode.Services.ServiceModels.TopicViewModel>();
     var mediaList = Model.Media;
+    var hasAnyFiles = mediaList != null && mediaList.Any();
 }
 
+@functions {
+    string GetFileExtension(string fileName)
+    {
+        return fileName != null && fileName.Contains(".") ? fileName.Split('.').Last().ToUpper() : "";
+    }
 
-<div class="flex w-full space-x-8 min-w-0">
-    <div class="flex flex-col w-2/3 gap-8 min-w-0">
+    string GetFileExtensionColor(string extension)
+    {
+        return extension.ToLower() switch
+        {
+            "pdf" => "bg-red-500",
+            "doc" or "docx" => "bg-blue-500",
+            "xls" or "xlsx" => "bg-green-500",
+            "ppt" or "pptx" => "bg-orange-500",
+            _ => "bg-gray-500"
+        };
+    }
 
-        <div class="flex flex-col bg-white w-full rounded-xl shadow-md p-4 gap-4">
-            <h1 class="text-5xl uppercase font-semibold mb-2">@Model.TopicName</h1>
-            <p>@Model.Description</p>
-            <div class="flex items-center justify-start gap-6 text-sm text-slate-500">
-                <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined">group</span>
-                    <span>
-                        Created by <strong class="text-slate-700">@Model.AccountFirstName @Model.AccountLastName</strong>
-                    </span>
+    bool IsPdfFile(string mediaType, string fileName)
+    {
+        return (mediaType != null && mediaType.ToLower().Contains("pdf")) ||
+               (fileName != null && fileName.ToLower().EndsWith(".pdf"));
+    }
+
+    bool IsDocumentFile(string mediaType, string fileName)
+    {
+        // Check by MIME type first
+        if (mediaType != null)
+        {
+            var type = mediaType.ToLower();
+            if (type.Contains("pdf") ||
+                type.Contains("word") ||
+                type.Contains("excel") ||
+                type.Contains("powerpoint") ||
+                type.Contains("spreadsheet") ||
+                type.Contains("presentation") ||
+                type.Contains("msword") ||
+                type.Contains("vnd.openxmlformats") ||
+                type.Contains("vnd.ms-"))
+            {
+                return true;
+            }
+        }
+
+        // Check by file extension as fallback
+        if (fileName != null)
+        {
+            var ext = fileName.ToLower();
+            return ext.EndsWith(".pdf") ||
+                   ext.EndsWith(".doc") ||
+                   ext.EndsWith(".docx") ||
+                   ext.EndsWith(".xls") ||
+                   ext.EndsWith(".xlsx") ||
+                   ext.EndsWith(".ppt") ||
+                   ext.EndsWith(".pptx");
+        }
+
+        return false;
+    }
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<div class="flex w-full min-w-0 space-x-8">
+    <div class="flex w-2/3 min-w-0 flex-col gap-8">
+
+        <div class="flex w-full flex-col gap-4 rounded-xl bg-white p-4 shadow-md">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <h1 class="mb-2 text-5xl font-semibold uppercase">@Model.TopicName</h1>
+                    <p>@Model.Description</p>
+                    <div class="flex items-center justify-start gap-6 text-sm text-slate-500">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined">group</span>
+                            <span>
+                                Created by <strong class="text-slate-700">@Model.AccountFirstName @Model.AccountLastName</strong>
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined">schedule</span>
+                            <span>Last updated: @Model.UpdatedTime</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined">schedule</span>
-                    <span>Last updated: @Model.UpdatedTime</span>
+                <div class="ml-4">
+                    @if (hasAnyFiles)
+                    {
+                        <button onclick="openDownloadModal()" class="flex items-center gap-2 rounded-xl bg-[#640A16] px-4 py-2 text-white transition-colors hover:bg-[#4a0810] focus:outline-none focus:ring-2 focus:ring-[#640A16]">
+                            <span class="material-symbols-outlined">download</span>
+                            <span>Download Options</span>
+                        </button>
+                    }
+                    else
+                    {
+                        <button disabled class="flex cursor-not-allowed items-center gap-2 rounded-xl bg-gray-400 px-4 py-2 text-gray-600">
+                            <span class="material-symbols-outlined">download</span>
+                            <span>Download Options</span>
+                        </button>
+                    }
                 </div>
             </div>
         </div>
-        <div class="flex flex-col bg-white w-full rounded-lg shadow-sm p-4">
+
+        <!-- Video Section -->
+        <div class="flex w-full flex-col rounded-lg bg-white p-4 shadow-sm">
             <div class="flex space-x-2">
-                <span class="material-symbols-outlined !text-[25px] bg-red-100 p-2 rounded-xl">movie</span>
+                <span class="material-symbols-outlined rounded-xl bg-red-100 p-2 !text-[25px]">movie</span>
                 <div class="flex flex-col">
                     <h2 class="text-xl font-semibold">Video Lessons</h2>
                     <p class="text-sm">@((mediaList?.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")).Count() ?? 0) + " video(s)")</p>
-                </div> 
+                </div>
             </div>
-            
-            <div class="flex overflow-x-auto whitespace-nowrap mt-2 ">
+
+            <div class="mt-2 flex overflow-x-auto whitespace-nowrap">
                 @if (mediaList != null && mediaList.Any(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")))
                 {
                     foreach (var video in mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")))
                     {
-                        <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 transition-transform duration-200 ease-in-out transform hover:scale-105 hover:shadow-2xl cursor-pointer" onclick="openMediaModal('video', '@video.MediaUrl', '@video.MediaType')">
-                            <div class="flex w-full h-[154px] items-center justify-center overflow-hidden">
-                                <video class="w-full h-full object-cover pointer-events-none">
+                        <div class="m-2 flex h-[220px] w-[300px] flex-shrink-0 transform cursor-pointer flex-col outline outline-2 outline-black transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-2xl" onclick="openMediaModal('video', '@video.MediaUrl', '@video.MediaType')">
+                            <div class="flex h-[154px] w-full items-center justify-center overflow-hidden">
+                                <video class="pointer-events-none h-full w-full object-cover">
                                     <source src="@video.MediaUrl" type="@video.MediaType">
                                     Your browser does not support the video tag.
                                 </video>
                             </div>
-                            <div class="bg-[#640A16] text-white p-2 space-y-2 h-[66px]">
+                            <div class="h-[66px] space-y-2 bg-[#640A16] p-2 text-white">
                                 <p class="font-semibold">@(video.Name != null && video.Name.Length > 20 ? video.Name.Substring(0, 20) + "..." : video.Name)</p>
                                 <p class="text-xs">Uploaded by @Model.AccountFirstName @Model.AccountLastName</p>
                             </div>
@@ -56,32 +141,51 @@
                 }
                 else
                 {
-                    <div class="text-gray-500 p-4">No videos uploaded for this topic.</div>
+                    <div class="p-4 text-gray-500">No videos uploaded for this topic.</div>
                 }
             </div>
-
         </div>
-        <div class="flex flex-col bg-white w-full  whitespace-nowrap rounded-lg shadow-sm p-4">
+
+        <!-- Documents Section -->
+        <div class="flex w-full flex-col whitespace-nowrap rounded-lg bg-white p-4 shadow-sm">
             <div class="flex space-x-2">
-                <span class="material-symbols-outlined !text-[25px] bg-green-100 p-2 rounded-xl">docs</span>
+                <span class="material-symbols-outlined rounded-xl bg-green-100 p-2 !text-[25px]">docs</span>
                 <div class="flex flex-col">
                     <h2 class="text-xl font-semibold">Documents</h2>
-                    <p class="text-sm">@((mediaList?.Where(m => m.MediaType != null && (m.MediaType.ToLower().Contains("pdf") || m.MediaType.ToLower().Contains("word"))).Count() ?? 0) + " document(s)")</p>
+                    <p class="text-sm">@((mediaList?.Where(m => IsDocumentFile(m.MediaType, m.Name)).Count() ?? 0) + " document(s)")</p>
                 </div>
             </div>
-            @if (mediaList != null && mediaList.Any(m => m.MediaType != null && (m.MediaType.ToLower().Contains("pdf") || m.MediaType.ToLower().Contains("word"))))
+            @if (mediaList != null && mediaList.Any(m => IsDocumentFile(m.MediaType, m.Name)))
             {
-                foreach (var doc in mediaList.Where(m => m.MediaType != null && (m.MediaType.ToLower().Contains("pdf") || m.MediaType.ToLower().Contains("word"))))
+                foreach (var doc in mediaList.Where(m => IsDocumentFile(m.MediaType, m.Name)))
                 {
-                    <div class="flex items-center justify-between w-full h-[100px] bg-white rounded-xl shadow-sm p-4 border border-gray-200 m-2 transition-transform duration-200 ease-in-out transform hover:scale-[102%] hover:shadow-2xl cursor-pointer" onclick="openMediaModal('document', '@doc.MediaUrl', '@doc.MediaType')">
-                        <div class="flex space-x-2">
-                            <span class="material-symbols-outlined !text-[25px] bg-red-100 p-2 rounded-xl">docs</span>
+                    var fileExtension = GetFileExtension(doc.Name);
+                    var extensionColor = GetFileExtensionColor(fileExtension);
+                    var isPdf = IsPdfFile(doc.MediaType, doc.Name);
+
+                    <div class="m-2 flex h-[100px] w-full transform cursor-pointer items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-transform duration-200 ease-in-out hover:scale-[102%] hover:shadow-2xl" onclick="openMediaModal('document', '@doc.MediaUrl', '@doc.MediaType', '@isPdf.ToString().ToLower()')">
+                        <div class="flex space-x-3">
+                            <div class="flex flex-col items-center">
+                                <span class="material-symbols-outlined rounded-xl bg-green-100 p-2 !text-[25px]">docs</span>
+                                @if (!string.IsNullOrEmpty(fileExtension))
+                                {
+                                    <span class="mt-1 rounded px-2 py-1 text-xs font-bold text-white @extensionColor">@fileExtension</span>
+                                }
+                            </div>
                             <div class="flex flex-col">
                                 <h2 class="text-lg font-semibold">@(doc.Name != null && doc.Name.Length > 40 ? doc.Name.Substring(0, 40) + "..." : doc.Name)</h2>
-                                <p class="text-xs">Document Resource</p>
+                                <p class="text-xs text-gray-600">Document Resource</p>
+                                @if (isPdf)
+                                {
+                                    <p class="text-xs font-medium text-green-600">• Can be previewed in browser</p>
+                                }
+                                else
+                                {
+                                    <p class="text-xs font-medium text-orange-600">• Download to view</p>
+                                }
                             </div>
                         </div>
-                        <div class="flex items-center space-x-2 hover:cursor-pointer hover:bg-[#EAC231] p-2 rounded-lg">
+                        <div class="flex items-center space-x-2 rounded-lg p-2 hover:cursor-pointer hover:bg-[#EAC231]">
                             <span class="material-symbols-outlined">download</span>
                             <a href="@doc.MediaUrl" target="_blank">Download</a>
                         </div>
@@ -90,28 +194,30 @@
             }
             else
             {
-                <div class="text-gray-500 p-4">No documents uploaded for this topic.</div>
+                <div class="p-4 text-gray-500">No documents uploaded for this topic.</div>
             }
         </div>
-        <div class="flex flex-col bg-white w-full rounded-lg shadow-sm p-4">
+
+        <!-- Images Section -->
+        <div class="flex w-full flex-col rounded-lg bg-white p-4 shadow-sm">
             <div class="flex space-x-2">
-                <span class="material-symbols-outlined !text-[25px] bg-purple-100 p-2 rounded-xl">image</span>
+                <span class="material-symbols-outlined rounded-xl bg-purple-100 p-2 !text-[25px]">image</span>
                 <div class="flex flex-col">
                     <h2 class="text-xl font-semibold">Visual Examples</h2>
                     <p class="text-sm">@((mediaList?.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")).Count() ?? 0) + " image(s)")</p>
                 </div>
             </div>
 
-            <div class="flex overflow-x-auto whitespace-nowrap mt-2 w-full max-w-full min-w-0">
+            <div class="mt-2 flex w-full min-w-0 max-w-full overflow-x-auto whitespace-nowrap">
                 @if (mediaList != null && mediaList.Any(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")))
                 {
                     foreach (var media in mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")))
                     {
-                        <div class="flex flex-col flex-shrink-0 w-[300px] h-[220px] outline outline-2 outline-black m-2 transition-transform duration-200 ease-in-out transform hover:scale-105 hover:shadow-2xl cursor-pointer">
-                            <div class="flex w-full h-[120px] items-center justify-center overflow-hidden">
-                                <img src="@media.MediaUrl" alt="@media.Name" class="w-full h-full object-cover cursor-pointer" onclick="openImageModal('@media.MediaUrl')" />
+                        <div class="m-2 flex h-[220px] w-[300px] flex-shrink-0 transform cursor-pointer flex-col outline outline-2 outline-black transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-2xl">
+                            <div class="flex h-[120px] w-full items-center justify-center overflow-hidden">
+                                <img src="@media.MediaUrl" alt="@media.Name" class="h-full w-full cursor-pointer object-cover" onclick="openImageModal('@media.MediaUrl')" />
                             </div>
-                            <div class="bg-[#640A16] h-[100px] text-white p-2 space-y-2">
+                            <div class="h-[100px] space-y-2 bg-[#640A16] p-2 text-white">
                                 <p class="font-semibold">@(media.Name != null && media.Name.Length > 15 ? media.Name.Substring(0, 15) + "..." : media.Name)</p>
                                 <p class="text-xs">Image Resource</p>
                             </div>
@@ -120,16 +226,16 @@
                 }
                 else
                 {
-                    <div class="flex items-center text-gray-400 ml-4">No image resources.</div>
+                    <div class="ml-4 flex items-center text-gray-400">No image resources.</div>
                 }
             </div>
-
         </div>
     </div>
-    <div class="flex-1">
 
-        <div class="bg-[#640A16] text-white max-h-fit flex flex-col rounded-xl shadow-md p-4">
-            <div class="flex items-center space-x-2 justify-center">
+    <!-- Right Sidebar -->
+    <div class="flex-1">
+        <div class="flex max-h-fit flex-col rounded-xl bg-[#640A16] p-4 text-white shadow-md">
+            <div class="flex items-center justify-center space-x-2">
                 <span class="material-symbols-outlined !text-[40px]">import_contacts</span>
                 <h2 class="text-3xl font-semibold">Other Topics</h2>
             </div>
@@ -138,119 +244,382 @@
                 {
                     foreach (var t in allTopics.Where(x => x.Id != Model.Id))
                     {
-                        <div class="flex flex-col rounded-xl bg-white text-black shadow-sm p-4 border border-gray-200 mt-4">
+                        <div class="mt-4 flex flex-col rounded-xl border border-gray-200 bg-white p-4 text-black shadow-sm">
                             <div class="flex justify-between">
                                 <h3 class="text-md font-semibold">@t.TopicName</h3>
                                 <a href="@Url.Action("TopicDetails", "AdminTopic", new { topicId = t.Id })" class="material-symbols-outlined hover-pointer">open_in_new</a>
                             </div>
                             <p class="text-xs">@t.Description</p>
-                            <div class="flex items-center mt-4 space-x-4">
-                                <span class="text-xs bg-[#EAC231] p-2 rounded-full font-semibold">@t.MediaCount Lessons</span>
+                            <div class="mt-4 flex items-center space-x-4">
+                                <span class="rounded-full bg-[#EAC231] p-2 text-xs font-semibold">@t.MediaCount Lessons</span>
                             </div>
                         </div>
                     }
                 }
                 else
                 {
-                    <div class="text-gray-500 p-4">No other topics found for this training.</div>
+                    <div class="p-4 text-gray-500">No other topics found for this training.</div>
                 }
             </div>
         </div>
 
         <!--Ratings Portion-->
-        <div class="flex flex-col align-items-center justify-center mt-10 gap-4">
-            <span class="material-symbols-outlined bg-[#EAC231] !text-[50px] text-white rounded-full p-3">star</span>
+        <div class="align-items-center mt-10 flex flex-col justify-center gap-4">
+            <span class="material-symbols-outlined rounded-full bg-[#EAC231] p-3 !text-[50px] text-white">star</span>
             <p class="font-weight-bold">What Users think of this Training</p>
-            <button class="bg-[#EAC231] hover:bg-[#640A16] hover:text-white p-2 text-black rounded-xl font-semibold">View User Reviews</button>
+            <button class="rounded-xl bg-[#EAC231] p-2 font-semibold text-black hover:bg-[#640A16] hover:text-white">View User Reviews</button>
+        </div>
+    </div>
+</div>
+
+<!-- Download Options Modal -->
+<div id="downloadModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-60">
+    <div class="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6 shadow-2xl">
+        <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-2xl font-semibold text-gray-800">Download Options</h2>
+            <button onclick="closeDownloadModal()" class="text-gray-500 hover:text-gray-700">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+
+        @if (!hasAnyFiles)
+        {
+            <div class="flex flex-col items-center justify-center py-8 text-center">
+                <span class="material-symbols-outlined mb-4 text-6xl text-gray-400">folder_off</span>
+                <h3 class="mb-2 text-lg font-semibold text-gray-600">No Files Available</h3>
+                <p class="text-sm text-gray-500">There are no media files available for download in this topic.</p>
+            </div>
+        }
+        else
+        {
+            <div class="space-y-4">
+                <!-- Download All Content -->
+                <div class="rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50">
+                    <div class="flex items-start space-x-3">
+                        <input type="radio" id="downloadAll" name="downloadOption" value="all" class="mt-1" checked>
+                        <label for="downloadAll" class="flex-1 cursor-pointer">
+                            <div class="flex items-center space-x-2">
+                                <span class="material-symbols-outlined text-[#640A16]">folder_zip</span>
+                                <h3 class="font-semibold text-gray-800">Download All Content</h3>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-600">Download all videos, documents, and images in a single ZIP file</p>
+                            <div class="mt-2 text-xs text-gray-500">
+                                @{
+                                    var totalVideos = mediaList?.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")).Count() ?? 0;
+                                    var totalDocs = mediaList?.Where(m => IsDocumentFile(m.MediaType, m.Name)).Count() ?? 0;
+                                    var totalImages = mediaList?.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")).Count() ?? 0;
+                                }
+                                Includes: @totalVideos video(s), @totalDocs document(s), @totalImages image(s)
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Download Media Only -->
+                <div class="rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50">
+                    <div class="flex items-start space-x-3">
+                        <input type="radio" id="downloadMedia" name="downloadOption" value="mediaonly" class="mt-1">
+                        <label for="downloadMedia" class="flex-1 cursor-pointer">
+                            <div class="flex items-center space-x-2">
+                                <span class="material-symbols-outlined text-[#640A16]">video_library</span>
+                                <h3 class="font-semibold text-gray-800">Download Media Only</h3>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-600">Choose specific media types to download</p>
+                        </label>
+                    </div>
+
+                    <!-- Nested Media Type Options -->
+                    <div id="mediaTypeOptions" class="ml-6 mt-3 hidden space-y-2">
+                        <div class="flex items-center space-x-2">
+                            <input type="radio" id="downloadVideos" name="mediaTypeOption" value="videos" class="text-[#640A16]" @(totalVideos == 0 ? "disabled" : "")>
+                            <label for="downloadVideos" class="flex-1 cursor-pointer text-sm @(totalVideos == 0 ? "text-gray-400" : "")">
+                                <div class="flex items-center space-x-2">
+                                    <span class="material-symbols-outlined @(totalVideos == 0 ? "text-gray-400" : "text-red-500") !text-[16px]">movie</span>
+                                    <span class="font-medium">Videos Only</span>
+                                    <span class="text-xs text-gray-500">@totalVideos video(s)</span>
+                                </div>
+                                <p class="ml-6 text-xs text-gray-500">@(totalVideos == 0 ? "No videos available" : "Download only video files")</p>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center space-x-2">
+                            <input type="radio" id="downloadDocuments" name="mediaTypeOption" value="documents" class="text-[#640A16]" @(totalDocs == 0 ? "disabled" : "")>
+                            <label for="downloadDocuments" class="flex-1 cursor-pointer text-sm @(totalDocs == 0 ? "text-gray-400" : "")">
+                                <div class="flex items-center space-x-2">
+                                    <span class="material-symbols-outlined @(totalDocs == 0 ? "text-gray-400" : "text-green-500") !text-[16px]">docs</span>
+                                    <span class="font-medium">Documents Only</span>
+                                    <span class="text-xs text-gray-500">@totalDocs document(s)</span>
+                                </div>
+                                <p class="ml-6 text-xs text-gray-500">@(totalDocs == 0 ? "No documents available" : "Download only office documents")</p>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center space-x-2">
+                            <input type="radio" id="downloadImages" name="mediaTypeOption" value="images" class="text-[#640A16]" @(totalImages == 0 ? "disabled" : "")>
+                            <label for="downloadImages" class="flex-1 cursor-pointer text-sm @(totalImages == 0 ? "text-gray-400" : "")">
+                                <div class="flex items-center space-x-2">
+                                    <span class="material-symbols-outlined @(totalImages == 0 ? "text-gray-400" : "text-purple-500") !text-[16px]">image</span>
+                                    <span class="font-medium">Images Only</span>
+                                    <span class="text-xs text-gray-500">@totalImages image(s)</span>
+                                </div>
+                                <p class="ml-6 text-xs text-gray-500">@(totalImages == 0 ? "No images available" : "Download only image files")</p>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Download Selected Content -->
+                <div class="rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50">
+                    <div class="flex items-start space-x-3">
+                        <input type="radio" id="downloadSelected" name="downloadOption" value="selected" class="mt-1">
+                        <label for="downloadSelected" class="flex-1 cursor-pointer">
+                            <div class="flex items-center space-x-2">
+                                <span class="material-symbols-outlined text-[#640A16]">checklist</span>
+                                <h3 class="font-semibold text-gray-800">Download Selected Content</h3>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-600">Choose specific files to download</p>
+                        </label>
+                    </div>
+
+                    <!-- Selected Content List -->
+                    <div id="selectedContentList" class="mt-3 hidden max-h-60 overflow-y-auto">
+                        @if (mediaList != null && mediaList.Any())
+                        {
+                            <div class="space-y-2">
+                                @foreach (var media in mediaList)
+                                {
+                                    <div class="flex items-center space-x-2 rounded border border-gray-100 p-2">
+                                        <input type="checkbox" id="media_@media.Id" name="selectedMedia" value="@media.Id" class="rounded">
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-2">
+                                                @if (media.MediaType != null && media.MediaType.ToLower().Contains("video"))
+                                                {
+                                                    <span class="material-symbols-outlined text-red-500 !text-[16px]">movie</span>
+                                                }
+                                                else if (IsDocumentFile(media.MediaType, media.Name))
+                                                {
+                                                    <span class="material-symbols-outlined text-green-500 !text-[16px]">docs</span>
+                                                }
+                                                else if (media.MediaType != null && media.MediaType.ToLower().Contains("image"))
+                                                {
+                                                    <span class="material-symbols-outlined text-purple-500 !text-[16px]">image</span>
+                                                }
+                                                <span class="text-sm font-medium">@(media.Name?.Length > 30 ? media.Name.Substring(0, 30) + "..." : media.Name)</span>
+                                            </div>
+                                            <p class="text-xs text-gray-500">@media.MediaType</p>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-sm text-gray-500">No media files available for selection.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Action Buttons -->
+        <div class="mt-6 flex justify-end space-x-3">
+            <button onclick="closeDownloadModal()" class="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200">
+                Cancel
+            </button>
+            @if (hasAnyFiles)
+            {
+                <button onclick="processDownload()" class="flex items-center space-x-2 rounded-lg bg-[#640A16] px-4 py-2 text-white transition-colors hover:bg-[#4a0810] focus:outline-none focus:ring-2 focus:ring-[#640A16]">
+                    <span class="material-symbols-outlined !text-[18px]">download</span>
+                    <span>Download</span>
+                </button>
+            }
+            else
+            {
+                <button disabled class="flex cursor-not-allowed items-center space-x-2 rounded-lg bg-gray-400 px-4 py-2 text-gray-600">
+                    <span class="material-symbols-outlined !text-[18px]">download</span>
+                    <span>Download</span>
+                </button>
+            }
         </div>
     </div>
 </div>
 
 <!-- Image Preview Modal -->
-<div id="imageModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
-    <span class="absolute top-4 right-8 text-white text-4xl cursor-pointer select-none" onclick="closeImageModal()">&times;</span>
+<div id="imageModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-60">
+    <span class="absolute right-8 top-4 cursor-pointer select-none text-4xl text-white" onclick="closeImageModal()">&times;</span>
     <img id="modalImage" src="" alt="Preview" class="max-h-[80vh] max-w-[90vw] rounded shadow-lg" />
 </div>
 
 <!-- Media Preview Modal -->
-<div id="mediaModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
-    <span class="absolute top-4 right-8 text-white text-4xl cursor-pointer select-none" onclick="closeMediaModal()">&times;</span>
-    <div id="modalContent" class="max-h-[80vh] max-w-[90vw] rounded shadow-lg bg-transparent flex items-center justify-center p-4"></div>
+<div id="mediaModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-60">
+    <span class="absolute right-8 top-4 cursor-pointer select-none text-4xl text-white" onclick="closeMediaModal()">&times;</span>
+    <div id="modalContent" class="flex max-h-[80vh] max-w-[90vw] items-center justify-center rounded bg-transparent p-4 shadow-lg"></div>
 </div>
 
 <script>
-function openImageModal(url) {
-    document.getElementById('modalImage').src = url;
-    document.getElementById('imageModal').classList.remove('hidden');
-}
-function closeImageModal() {
-    document.getElementById('imageModal').classList.add('hidden');
-    document.getElementById('modalImage').src = '';
-}
-document.getElementById('imageModal').addEventListener('click', function(e) {
-    if (e.target === this) closeImageModal();
-});
-
-function openMediaModal(type, url, mediaType) {
-    const modal = document.getElementById('mediaModal');
-    const content = document.getElementById('modalContent');
-    if (type === 'video') {
-        content.innerHTML = `<video controls autoplay class="max-h-[70vh] max-w-[80vw] rounded"><source src='${url}' type='${mediaType}'></video>`;
-    } else if (type === 'document') {
-        if (mediaType && mediaType.toLowerCase().includes('pdf')) {
-            content.innerHTML = `<iframe src='${url}' class='w-[60vw] h-[90vh] rounded' frameborder='0'></iframe>`;
-        } else {
-            content.innerHTML = `<a href='${url}' target='_blank' class='text-blue-600 underline text-lg'>Open Document</a>`;
-        }
+    function openImageModal(url) {
+        document.getElementById('modalImage').src = url;
+        document.getElementById('imageModal').classList.remove('hidden');
     }
-    modal.classList.remove('hidden');
-}
-function closeMediaModal() {
-    document.getElementById('mediaModal').classList.add('hidden');
-    document.getElementById('modalContent').innerHTML = '';
-}
-document.getElementById('mediaModal').addEventListener('click', function(e) {
-    if (e.target === this) closeMediaModal();
-});
-</script>
+    function closeImageModal() {
+        document.getElementById('imageModal').classList.add('hidden');
+        document.getElementById('modalImage').src = '';
+    }
+    document.getElementById('imageModal').addEventListener('click', function(e) {
+        if (e.target === this) closeImageModal();
+    });
 
+    function openMediaModal(type, url, mediaType, isPdf = 'false') {
+        const modal = document.getElementById('mediaModal');
+        const content = document.getElementById('modalContent');
+        if (type === 'video') {
+            content.innerHTML = `<video controls autoplay class="max-h-[70vh] max-w-[80vw] rounded"><source src='${url}' type='${mediaType}'></video>`;
+        } else if (type === 'document') {
+            if (isPdf === 'true') {
+                content.innerHTML = `<iframe src='${url}' class='h-[90vh] w-[60vw] rounded' frameborder='0'></iframe>`;
+            } else {
+                content.innerHTML = `
+                    <div class='flex flex-col items-center space-y-4 text-white'>
+                        <span class='material-symbols-outlined text-6xl'>description</span>
+                        <p class='text-lg'>This document cannot be previewed in the browser.</p>
+                        <p class='text-sm text-gray-300'>Only PDF files can be previewed directly.</p>
+                        <a href='${url}' target='_blank' class='rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700'>Download to View</a>
+                    </div>`;
+            }
+        }
+        modal.classList.remove('hidden');
+    }
+    function closeMediaModal() {
+        document.getElementById('mediaModal').classList.add('hidden');
+        document.getElementById('modalContent').innerHTML = '';
+    }
+    document.getElementById('mediaModal').addEventListener('click', function(e) {
+        if (e.target === this) closeMediaModal();
+    });
 
-
-
-
-
-
-
-
-@* <h2>Topic Details</h2>
-@if (topic != null)
-{
-    <div class="card mb-4">
-        <div class="card-body">
-            <h4>@topic.TopicName</h4>
-            <p><b>Description:</b> @topic.Description</p>
-            <p><b>Created By:</b> @ViewBag.Account.FirstName @ViewBag.Account.LastName</p>
-            <p><b>Created Time:</b> @topic.CreatedTime</p>
-        </div>
-    </div>
-    <h4>Media</h4>
-    <ul>
-    @if (mediaList != null && mediaList.Count > 0)
-    {
-        foreach (var media in mediaList)
+    // Download Modal Functions
+    function openDownloadModal() {
+        @if (hasAnyFiles)
         {
-            <li>
-                <a href="@media.MediaUrl" target="_blank">@media.Name</a>
-            </li>
+                <text>document.getElementById('downloadModal').classList.remove('hidden');</text>
+        }
+        else
+        {
+                <text>
+                // Show a tooltip or alert when no files are available
+                alert('No files are available for download in this topic.');
+                </text>
         }
     }
-    else
-    {
-        <li>No media uploaded for this topic.</li>
+
+    function closeDownloadModal() {
+        document.getElementById('downloadModal').classList.add('hidden');
+        // Reset form
+        const allRadio = document.querySelector('input[name="downloadOption"][value="all"]');
+        if (allRadio) allRadio.checked = true;
+        document.getElementById('selectedContentList').classList.add('hidden');
+        document.getElementById('mediaTypeOptions').classList.add('hidden');
+        const checkboxes = document.querySelectorAll('input[name="selectedMedia"]');
+        checkboxes.forEach(cb => cb.checked = false);
     }
-    </ul>
-}
-else
-{
-    <div class="alert alert-warning">Topic not found.</div>
-}  *@
+
+    // Show/hide content sections based on radio selection
+    document.addEventListener('DOMContentLoaded', function() {
+        const radioButtons = document.querySelectorAll('input[name="downloadOption"]');
+        const selectedContentList = document.getElementById('selectedContentList');
+        const mediaTypeOptions = document.getElementById('mediaTypeOptions');
+
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'selected') {
+                    selectedContentList.classList.remove('hidden');
+                    mediaTypeOptions.classList.add('hidden');
+                } else if (this.value === 'mediaonly') {
+                    selectedContentList.classList.add('hidden');
+                    mediaTypeOptions.classList.remove('hidden');
+                } else {
+                    selectedContentList.classList.add('hidden');
+                    mediaTypeOptions.classList.add('hidden');
+                }
+            });
+        });
+    });
+
+    function processDownload() {
+        const selectedOption = document.querySelector('input[name="downloadOption"]:checked').value;
+        const topicId = @Model.Id;
+
+        if (selectedOption === 'selected') {
+            const selectedCheckboxes = document.querySelectorAll('input[name="selectedMedia"]:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert('Please select at least one file to download.');
+                return;
+            }
+
+            const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+            downloadFiles(topicId, selectedOption, selectedIds);
+        } else if (selectedOption === 'mediaonly') {
+            const mediaTypeOption = document.querySelector('input[name="mediaTypeOption"]:checked');
+            if (!mediaTypeOption) {
+                alert('Please select a media type to download.');
+                return;
+            }
+            downloadFiles(topicId, mediaTypeOption.value);
+        } else {
+            downloadFiles(topicId, selectedOption);
+        }
+    }
+
+    function downloadFiles(topicId, mode, selectedMediaIds = null) {
+        // Create a form to submit the download request
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '@Url.Action("DownloadMediaZip", "AdminTopic")';
+
+        // Add topicId
+        const topicInput = document.createElement('input');
+        topicInput.type = 'hidden';
+        topicInput.name = 'topicId';
+        topicInput.value = topicId;
+        form.appendChild(topicInput);
+
+        // Add mode
+        const modeInput = document.createElement('input');
+        modeInput.type = 'hidden';
+        modeInput.name = 'mode';
+        modeInput.value = mode;
+        form.appendChild(modeInput);
+
+        // Add selected media IDs if provided
+        if (selectedMediaIds && selectedMediaIds.length > 0) {
+            selectedMediaIds.forEach(id => {
+                const idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.name = 'selectedMediaIds';
+                idInput.value = id;
+                form.appendChild(idInput);
+            });
+        }
+
+        // Add CSRF token
+        const token = document.querySelector('input[name="__RequestVerificationToken"]');
+        if (token) {
+            const tokenInput = document.createElement('input');
+            tokenInput.type = 'hidden';
+            tokenInput.name = '__RequestVerificationToken';
+            tokenInput.value = token.value;
+            form.appendChild(tokenInput);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+
+        closeDownloadModal();
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('downloadModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDownloadModal();
+    });
+</script>

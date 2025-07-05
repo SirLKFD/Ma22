@@ -1,123 +1,185 @@
 ﻿@model TopicViewModel
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-
-<div id="editTopic" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm hidden">
-    <div class="flex w-full max-w-5xl max-h-[90vh] flex-col rounded-xl bg-white text-black shadow-lg p-6">
+<div id="editTopic" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+    <div class="flex max-h-[90vh] w-full max-w-5xl flex-col rounded-xl bg-white p-6 text-black shadow-lg">
 
         <div class="flex">
             <a onclick="closeEditTopic()" class="hover-pointer">
                 <span class="material-symbols-outlined text-[50px]">arrow_circle_left</span>
             </a>
         </div>
-        <div class="flex align-items-center justify-start w-full my-3 mx-5">
-            <h1 class="uppercase text-2xl font-weight-bold">Edit Topic</h1>
+        <div class="align-items-center mx-5 my-3 flex w-full justify-start">
+            <h1 class="font-weight-bold text-2xl uppercase">Edit Topic</h1>
         </div>
         <form asp-controller="AdminTopic" asp-action="EditTopic" method="post" enctype="multipart/form-data">
             <input type="hidden" id="TopicIdEdit" name="Id" />
             <input type="hidden" id="TrainingIdEdit" name="TrainingId" />
-            <input type="hidden" id="DeletedMediaIds" name="DeletedMediaIds"/>
+            <input type="hidden" id="DeletedMediaIds" name="DeletedMediaIds" />
             <div class="flex">
                 <!-- Left side with form fields -->
-                <div class="flex flex-col w-1/2">
+                <div class="flex w-1/2 flex-col">
                     <div class="mx-5 mt-2">
-                        <label asp-for="TopicName" class="block text-sm font-medium text-black mb-2">Topic Name</label>
-                        <input asp-for="TopicName" id="TopicNameEdit" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black" />
+                        <label asp-for="TopicName" class="mb-2 block text-sm font-medium text-black">Topic Name</label>
+                        <input asp-for="TopicName" id="TopicNameEdit" class="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
                         <span asp-validation-for="TopicName" class="text-danger"></span>
                     </div>
 
                     <div class="mx-5 mt-2">
-                        <label asp-for="Description" class="block text-sm font-medium text-black mb-2">Description</label>
-                        <textarea asp-for="Description" id="DescriptionEdit" rows="12" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black"></textarea>
+                        <label asp-for="Description" class="mb-2 block text-sm font-medium text-black">Description</label>
+                        <textarea asp-for="Description" id="DescriptionEdit" rows="12" class="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]"></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
 
-                    <button class="bg-[#FFE9C6] mx-5 mt-4 rounded-lg px-4 py-2 font-semibold">Save Changes</button>
+                    <button class="mx-5 mt-4 rounded-lg bg-[#FFE9C6] px-4 py-2 font-semibold">Save Changes</button>
                 </div>
 
                 <!-- Right side content -->
-                    <div class="flex flex-col w-1/2 bg-[#640A16] rounded-lg p-4 text-white gap-2">
-                        <h2 class="text-2xl font-semibold">Resources</h2>
-                        
-                        <div class="flex flex-1 gap-2 flex-col ">
-                            <!-- Videos -->
-                            <div class="flex-1 flex flex-col">
-                                <div class="flex justify-between">
-                                    <p class="text-lg">Videos</p>
-                                    <label for="VideoFilesEdit"  class="cursor-pointer">
-                                    <input type="file"
-                                        name="VideoFilesEdit"
-                                        id="VideoFilesEdit"
-                                        accept="video/*"
-                                        multiple
-                                        class="hidden" />
-                                    <div class="flex items-center text-white">
-                                        <span class="material-symbols-outlined ">add_photo_alternate</span>
-                                        <h1 class="uppercase font-semibold">Upload</h1>
-                                    </div>
-                                    </label>
-                                </div>
-                                <div class="flex flex-1 flex-col bg-white w-full rounded-xl p-2 items-center">
-                                    <div id="VideoPreview" class="flex w-full h-full text-black gap-2 overflow-x-auto items-center"> 
-                                    </div>
-                                 </div>  
-                            </div>
+                <div class="flex w-1/2 flex-col gap-2 rounded-lg bg-[#640A16] p-4 text-white">
+                    <h2 class="text-2xl font-semibold">Resources</h2>
 
-                            <!-- Images -->
-                            <div class="flex-1 flex flex-col">
-                                <div class="flex justify-between">
-                                    <p class="text-lg">Images</p>
-                                    <label for="ImageFilesEdit"  class="cursor-pointer">
+                    <div class="flex flex-1 flex-col gap-2">
+                        <!-- Videos -->
+                        <div class="flex flex-1 flex-col">
+                            <div class="flex justify-between">
+                                <p class="text-lg">Videos</p>
+                                <label for="VideoFilesEdit" class="cursor-pointer">
                                     <input type="file"
-                                        name="ImageFilesEdit"
-                                        id="ImageFilesEdit"
-                                        accept="image/*"
-                                        multiple
-                                        class="hidden" />
+                                           name="VideoFilesEdit"
+                                           id="VideoFilesEdit"
+                                           accept="video/*"
+                                           multiple
+                                           class="hidden" />
                                     <div class="flex items-center text-white">
-                                        <span class="material-symbols-outlined ">add_photo_alternate</span>
-                                        <h1 class="uppercase font-semibold">Upload</h1>
+                                        <span class="material-symbols-outlined">add_photo_alternate</span>
+                                        <h1 class="font-semibold uppercase">Upload</h1>
                                     </div>
-                                    </label>
-                                </div>
-                                <div class="flex flex-1 flex-col bg-white w-full rounded-xl p-2 items-center">
-                                    <div id="ImagePreview" class="flex w-full h-full text-black gap-2 overflow-x-auto items-center"> 
-                                    </div>
-                                 </div>  
+                                </label>
                             </div>
-
-                            <!-- Documents -->
-                             <div class="flex-1 flex flex-col">
-                                <div class="flex justify-between">
-                                    <p class="text-lg">Documents</p>
-                                    <label for="DocumentFilesEdit"  class="cursor-pointer">
-                                    <input type="file"
-                                        name="DocumentFilesEdit"
-                                        id="DocumentFilesEdit"
-                                        accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                                        multiple
-                                        class="hidden" />
-                                    <div class="flex items-center text-white">
-                                        <span class="material-symbols-outlined ">add_photo_alternate</span>
-                                        <h1 class="uppercase font-semibold">Upload</h1>
-                                    </div>
-                                    </label>
+                            <div class="flex w-full flex-1 flex-col items-center rounded-xl bg-white p-2">
+                                <div id="VideoPreview" class="flex h-full w-full items-center gap-2 overflow-x-auto text-black">
                                 </div>
-                                <div class="flex flex-1 flex-col bg-white w-full rounded-xl p-2 items-center">
-                                    <div id="DocumentPreview" class="flex w-full h-full text-black gap-2 overflow-x-auto items-center"> 
-                                    </div>
-                                 </div>  
                             </div>
                         </div>
+
+                        <!-- Images -->
+                        <div class="flex flex-1 flex-col">
+                            <div class="flex justify-between">
+                                <p class="text-lg">Images</p>
+                                <label for="ImageFilesEdit" class="cursor-pointer">
+                                    <input type="file"
+                                           name="ImageFilesEdit"
+                                           id="ImageFilesEdit"
+                                           accept="image/*"
+                                           multiple
+                                           class="hidden" />
+                                    <div class="flex items-center text-white">
+                                        <span class="material-symbols-outlined">add_photo_alternate</span>
+                                        <h1 class="font-semibold uppercase">Upload</h1>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="flex w-full flex-1 flex-col items-center rounded-xl bg-white p-2">
+                                <div id="ImagePreview" class="flex h-full w-full items-center gap-2 overflow-x-auto text-black">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Documents -->
+                        <div class="flex flex-1 flex-col">
+                            <div class="flex justify-between">
+                                <div class="flex flex-col">
+                                    <p class="text-lg">Documents</p>
+                                    <p class="text-xs text-gray-300">PDF, Word, Excel, PowerPoint</p>
+                                </div>
+                                <label for="DocumentFilesEdit" class="cursor-pointer">
+                                    <input type="file"
+                                           name="DocumentFilesEdit"
+                                           id="DocumentFilesEdit"
+                                           accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                                           multiple
+                                           class="hidden" />
+                                    <div class="flex items-center text-white">
+                                        <span class="material-symbols-outlined">add_photo_alternate</span>
+                                        <h1 class="font-semibold uppercase">Upload</h1>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="flex w-full flex-1 flex-col items-center rounded-xl bg-white p-2">
+                                <div id="DocumentPreview" class="flex h-full w-full items-center gap-2 overflow-x-auto text-black">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
         </form>
     </div>
 </div>
 
-
 <script>
+    function closeEditTopic() {
+        document.getElementById('editTopic').classList.add('hidden');
+        // Clear form
+        document.getElementById('VideoPreview').innerHTML = '';
+        document.getElementById('ImagePreview').innerHTML = '';
+        document.getElementById('DocumentPreview').innerHTML = '';
+        document.getElementById('VideoFilesEdit').value = '';
+        document.getElementById('ImageFilesEdit').value = '';
+        document.getElementById('DocumentFilesEdit').value = '';
+        document.getElementById('DeletedMediaIds').value = '';
+    }
+
+    function getFileExtension(filename) {
+        if (!filename) return '';
+        return filename.split('.').pop().toUpperCase();
+    }
+
+    function getFileExtensionColor(extension) {
+        switch(extension.toLowerCase()) {
+            case 'pdf': return 'bg-red-500';
+            case 'doc':
+            case 'docx': return 'bg-blue-500';
+            case 'xls':
+            case 'xlsx': return 'bg-green-500';
+            case 'ppt':
+            case 'pptx': return 'bg-orange-500';
+            default: return 'bg-gray-500';
+        }
+    }
+
+    function isDocumentFile(mediaType, filename) {
+        // Check by MIME type first
+        if (mediaType) {
+            const type = mediaType.toLowerCase();
+            if (type.includes('pdf') ||
+                type.includes('word') ||
+                type.includes('excel') ||
+                type.includes('powerpoint') ||
+                type.includes('spreadsheet') ||
+                type.includes('presentation') ||
+                type.includes('msword') ||
+                type.includes('vnd.openxmlformats') ||
+                type.includes('vnd.ms-')) {
+                return true;
+            }
+        }
+
+        // Check by file extension as fallback
+        if (filename) {
+            const ext = filename.toLowerCase();
+            return ext.endsWith('.pdf') ||
+                   ext.endsWith('.doc') ||
+                   ext.endsWith('.docx') ||
+                   ext.endsWith('.xls') ||
+                   ext.endsWith('.xlsx') ||
+                   ext.endsWith('.ppt') ||
+                   ext.endsWith('.pptx');
+        }
+
+        return false;
+    }
+
     function handleDeleteMedia(div, mediaId) {
         let deleted = document.getElementById('DeletedMediaIds').value;
         let arr = deleted ? deleted.split(',') : [];
@@ -129,27 +191,19 @@
     function openEditTopic(topicId, trainingId, topicName, description, mediaCount, accountFirstName, accountLastName, updatedTime, media) {
         media = Array.isArray(media) ? media : [];
         console.log('Opening edit modal with:', { topicId, trainingId, topicName, description, mediaCount, accountFirstName, accountLastName, updatedTime, media });
+
         // Set the values in the form
         document.getElementById('TopicNameEdit').value = topicName;
         document.getElementById('DescriptionEdit').value = description;
         document.getElementById('TrainingIdEdit').value = trainingId;
         document.getElementById('TopicIdEdit').value = topicId;
 
-        // Debug: log the media array
-        console.log('Raw media array:', media);
-        if (media && media.length > 0) {
-            console.log('First media object:', media[0]);
-        }
-
-        // Separate by type
+        // Separate by type using improved logic
         const images = media.filter(m => m.MediaType && m.MediaType.toLowerCase().includes('image'));
         const videos = media.filter(m => m.MediaType && m.MediaType.toLowerCase().includes('video'));
-        const documents = media.filter(m => m.MediaType && (m.MediaType.toLowerCase().includes('pdf') || m.MediaType.toLowerCase().includes('word')));
+        const documents = media.filter(m => isDocumentFile(m.MediaType, m.Name));
 
-        // Debug: log separated arrays
-        console.log('Images:', images);
-        console.log('Videos:', videos);
-        console.log('Documents:', documents);
+        console.log('Filtered media:', { images, videos, documents });
 
         document.getElementById('editTopic').classList.remove('hidden');
 
@@ -160,13 +214,17 @@
         // Video preview
         const videoPreview = document.getElementById('VideoPreview');
         videoPreview.innerHTML = '';
-        videoPreview.classList.remove('hidden');
         if (videos.length) {
             videos.forEach(m => {
                 const div = document.createElement('div');
                 div.className = 'flex flex-col items-center min-w-[60px] cursor-pointer media-item';
                 div.setAttribute('data-media-id', m.Id);
-                div.innerHTML = `<span class=\"material-symbols-outlined text-black\" style=\"font-size:30px\">movie</span>\n<span class='truncate w-[60px] text-xs text-black text-center'>${m.Name ? m.Name.substring(0, 10) : ''}</span>\n<button type='button' class='delete-media-btn' data-media-id='${m.Id}' style='color:red;'><span class=\"material-symbols-outlined \" style='font-size: 20px'>delete</span></button>`;
+                div.innerHTML = `
+                    <span class="material-symbols-outlined text-black" style="font-size:30px">movie</span>
+                    <span class='w-[60px] truncate text-center text-xs text-black'>${m.Name ? m.Name.substring(0, 10) : ''}</span>
+                    <button type='button' class='delete-media-btn' data-media-id='${m.Id}' style='color:red;'>
+                        <span class="material-symbols-outlined" style='font-size: 20px'>delete</span>
+                    </button>`;
                 div.onclick = function(e) {
                     if (e.target.closest('.delete-media-btn')) {
                         handleDeleteMedia(div, m.Id);
@@ -178,59 +236,65 @@
                 videoPreview.appendChild(div);
             });
         }
-       
-        
+
         // Image preview
         const imagePreview = document.getElementById('ImagePreview');
-        if (imagePreview) {
-            imagePreview.innerHTML = '';
-            imagePreview.classList.remove('hidden');
-            if (images.length) {
-                images.forEach(m => {
-                    const div = document.createElement('div');
-                    div.className = 'flex flex-col items-center min-w-[60px] cursor-pointer media-item';
-                    div.setAttribute('data-media-id', m.Id);
-                    div.innerHTML = `<span class=\"material-symbols-outlined text-black\" style=\"font-size:30px\">image</span>\n<span class='truncate w-[60px] text-xs text-black text-center'>${m.Name ? m.Name.substring(0, 10) : ''}</span>\n<button type='button' class='delete-media-btn' data-media-id='${m.Id}' style='color:red;'><span class=\"material-symbols-outlined \" style='font-size: 20px'>delete</span></button>`;
-                    div.onclick = function(e) {
-                        if (e.target.closest('.delete-media-btn')) {
-                            handleDeleteMedia(div, m.Id);
-                            e.stopPropagation();
-                        } else {
-                            window.open(m.MediaUrl, '_blank');
-                        }
-                    };
-                    imagePreview.appendChild(div);
-                });
-            }
-           
+        imagePreview.innerHTML = '';
+        if (images.length) {
+            images.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'flex flex-col items-center min-w-[60px] cursor-pointer media-item';
+                div.setAttribute('data-media-id', m.Id);
+                div.innerHTML = `
+                    <span class="material-symbols-outlined text-black" style="font-size:30px">image</span>
+                    <span class='w-[60px] truncate text-center text-xs text-black'>${m.Name ? m.Name.substring(0, 10) : ''}</span>
+                    <button type='button' class='delete-media-btn' data-media-id='${m.Id}' style='color:red;'>
+                        <span class="material-symbols-outlined" style='font-size: 20px'>delete</span>
+                    </button>`;
+                div.onclick = function(e) {
+                    if (e.target.closest('.delete-media-btn')) {
+                        handleDeleteMedia(div, m.Id);
+                        e.stopPropagation();
+                    } else {
+                        window.open(m.MediaUrl, '_blank');
+                    }
+                };
+                imagePreview.appendChild(div);
+            });
         }
 
         // Document preview
         const documentPreview = document.getElementById('DocumentPreview');
-        if (documentPreview) {
-            documentPreview.innerHTML = '';
-            documentPreview.classList.remove('hidden');
-            if (documents.length) {
-                documents.forEach(m => {
-                    const div = document.createElement('div');
-                    div.className = 'flex flex-col items-center min-w-[60px] cursor-pointer media-item';
-                    div.setAttribute('data-media-id', m.Id);
-                    div.innerHTML = `<span class=\"material-symbols-outlined text-black\" style=\"font-size:30px\">description</span>\n<span class='truncate w-[60px] text-xs text-black text-center'>${m.Name ? m.Name.substring(0, 10) : ''}</span>\n<button type='button' class='delete-media-btn' data-media-id='${m.Id}' style='color:red;'><span class=\"material-symbols-outlined \" style='font-size: 20px'>delete</span></button>`;
-                    div.onclick = function(e) {
-                        if (e.target.closest('.delete-media-btn')) {
-                            handleDeleteMedia(div, m.Id);
-                            e.stopPropagation();
-                        } else {
-                            window.open(m.MediaUrl, '_blank');
-                        }
-                    };
-                    documentPreview.appendChild(div);
-                });
-            }
-        
+        documentPreview.innerHTML = '';
+        if (documents.length) {
+            documents.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'flex flex-col items-center min-w-[60px] cursor-pointer media-item';
+                div.setAttribute('data-media-id', m.Id);
+
+                const extension = getFileExtension(m.Name || '');
+                const colorClass = getFileExtensionColor(extension);
+
+                div.innerHTML = `
+                    <span class="material-symbols-outlined text-black" style="font-size:30px">description</span>
+                    <span class='w-[60px] truncate text-center text-xs text-black'>${m.Name ? m.Name.substring(0, 10) : ''}</span>
+                    ${extension ? `<span class='${colorClass} mt-1 rounded px-2 py-1 text-xs font-bold text-white'>${extension}</span>` : ''}
+                    <button type='button' class='delete-media-btn' data-media-id='${m.Id}' style='color:red;'>
+                        <span class="material-symbols-outlined" style='font-size: 20px'>delete</span>
+                    </button>`;
+                div.onclick = function(e) {
+                    if (e.target.closest('.delete-media-btn')) {
+                        handleDeleteMedia(div, m.Id);
+                        e.stopPropagation();
+                    } else {
+                        window.open(m.MediaUrl, '_blank');
+                    }
+                };
+                documentPreview.appendChild(div);
+            });
         }
     }
-      
+
     // Listen for file input changes and log selected files
     ['VideoFilesEdit', 'ImageFilesEdit', 'DocumentFilesEdit'].forEach(function(inputId) {
         var input = document.getElementById(inputId);
@@ -239,7 +303,7 @@
                 if (event.target.files && event.target.files.length > 0) {
                     const fileNames = Array.from(event.target.files).map(f => f.name);
                     console.log(`[UPLOAD] ${inputId}: Selected files:`, fileNames);
-        } else {
+                } else {
                     console.log(`[UPLOAD] ${inputId}: No files selected.`);
                 }
             });
@@ -250,7 +314,22 @@
         const preview = document.getElementById(previewId);
         const div = document.createElement('div');
         div.className = 'flex flex-col items-center min-w-[60px] cursor-pointer media-item new';
-        div.innerHTML = `<span class="material-symbols-outlined text-black" style="font-size:30px">${icon}</span>\n<span class='truncate w-[60px] text-xs text-black text-center'>${file.name.substring(0, 10)}</span>\n<button type='button' class='delete-media-btn' style='color:red;'><span class="material-symbols-outlined" style='font-size: 20px'>delete</span></button>`;
+
+        let fileInfo = '';
+        if (inputId === 'DocumentFilesEdit') {
+            const extension = getFileExtension(file.name);
+            const colorClass = getFileExtensionColor(extension);
+            fileInfo = `<span class='${colorClass} mt-1 rounded px-2 py-1 text-xs font-bold text-white'>${extension}</span>`;
+        }
+
+        div.innerHTML = `
+            <span class="material-symbols-outlined text-black" style="font-size:30px">${icon}</span>
+            <span class='w-[60px] truncate text-center text-xs text-black'>${file.name.substring(0, 10)}</span>
+            ${fileInfo}
+            <button type='button' class='delete-media-btn' style='color:red;'>
+                <span class="material-symbols-outlined" style='font-size: 20px'>delete</span>
+            </button>`;
+
         div.querySelector('.delete-media-btn').onclick = function(e) {
             div.remove();
             e.stopPropagation();

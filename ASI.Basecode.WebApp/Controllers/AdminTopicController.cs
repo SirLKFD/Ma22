@@ -1,16 +1,20 @@
+using ASI.Basecode.Services.Interfaces;
+using ASI.Basecode.Services.ServiceModels;
 using ASI.Basecode.WebApp.Mvc;
 using AutoMapper;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using ASI.Basecode.Services.Interfaces;
-using ASI.Basecode.Services.ServiceModels;
 using System;
 using System.Collections.Generic;
-using CloudinaryDotNet;
-using CloudinaryDotNet.Actions;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -20,6 +24,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly ITopicService _topicService;
         private readonly ITopicMediaService _topicMediaService;
         private readonly IUserService _userService;
+
         public AdminTopicController(
             IHttpContextAccessor httpContextAccessor,
             ILoggerFactory loggerFactory,
@@ -43,7 +48,6 @@ namespace ASI.Basecode.WebApp.Controllers
             List<IFormFile> DocumentFilesAdd,
             [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
-
             if (!ModelState.IsValid)
             {
                 return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = model.TrainingId });
@@ -51,7 +55,6 @@ namespace ASI.Basecode.WebApp.Controllers
 
             try
             {
-               
                 int? accountId = HttpContext.Session.GetInt32("AccountId");
                 if (accountId == null)
                 {
@@ -63,6 +66,7 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 var addedTopic = _topicService.GetAllTopicsByTrainingId(model.TrainingId)
                     .OrderByDescending(t => t.UpdatedTime).FirstOrDefault(t => t.TopicName == model.TopicName);
+
                 if (addedTopic != null)
                 {
                     Console.WriteLine($"[AddTopic] Fetched added topic with ID: {addedTopic.Id}");
@@ -158,6 +162,130 @@ namespace ASI.Basecode.WebApp.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DownloadMediaZip(int topicId, string mode, List<int>? selectedMediaIds = null)
+        {
+            try
+            {
+                var topic = _topicService.GetTopicWithAccountById(topicId);
+                var mediaList = topic?.Media ?? new List<TopicMediaViewModel>();
+
+                if (mode == "selected" && selectedMediaIds != null)
+                {
+                    mediaList = mediaList.Where(m => selectedMediaIds.Contains(m.Id)).ToList();
+                }
+                else if (mode == "allmedia" || mode == "mediaonly")
+                {
+                    mediaList = mediaList.Where(m =>
+                        IsVideoFile(m.MediaType) ||
+                        IsDocumentFile(m.MediaType, m.Name) ||
+                        IsImageFile(m.MediaType)).ToList();
+                }
+                else if (mode == "videos")
+                {
+                    mediaList = mediaList.Where(m => IsVideoFile(m.MediaType)).ToList();
+                }
+                else if (mode == "documents")
+                {
+                    mediaList = mediaList.Where(m => IsDocumentFile(m.MediaType, m.Name)).ToList();
+                }
+                else if (mode == "images")
+                {
+                    mediaList = mediaList.Where(m => IsImageFile(m.MediaType)).ToList();
+                }
+
+                using var memoryStream = new MemoryStream();
+                using (var zip = new System.IO.Compression.ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+                {
+                    foreach (var media in mediaList)
+                    {
+                        if (string.IsNullOrWhiteSpace(media.MediaUrl))
+                            continue;
+
+                        try
+                        {
+                            using var client = new HttpClient();
+                            var fileData = await client.GetByteArrayAsync(media.MediaUrl);
+                            var entry = zip.CreateEntry(media.Name ?? $"media_{media.Id}");
+
+                            using var entryStream = entry.Open();
+                            await entryStream.WriteAsync(fileData, 0, fileData.Length);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"[DownloadMediaZip] Skipped media {media.Id}: {ex.Message}");
+                        }
+                    }
+                }
+
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                string fileName = mode switch
+                {
+                    "videos" => $"Topic_{topicId}_Videos.zip",
+                    "documents" => $"Topic_{topicId}_Documents.zip",
+                    "images" => $"Topic_{topicId}_Images.zip",
+                    "selected" => $"Topic_{topicId}_Selected.zip",
+                    _ => $"Topic_{topicId}_Media.zip"
+                };
+
+                return File(memoryStream.ToArray(), "application/zip", fileName);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DownloadMediaZip] Exception: {ex.Message}");
+                TempData["Error"] = "Failed to download ZIP: " + ex.Message;
+                return RedirectToAction("TopicDetails", new { topicId });
+            }
+        }
+
+        // Add these helper methods to the controller
+        private bool IsVideoFile(string mediaType)
+        {
+            return mediaType != null && mediaType.ToLower().Contains("video");
+        }
+
+        private bool IsImageFile(string mediaType)
+        {
+            return mediaType != null && mediaType.ToLower().Contains("image");
+        }
+
+        private bool IsDocumentFile(string mediaType, string fileName)
+        {
+            // Check by MIME type first
+            if (mediaType != null)
+            {
+                var type = mediaType.ToLower();
+                if (type.Contains("pdf") ||
+                    type.Contains("word") ||
+                    type.Contains("excel") ||
+                    type.Contains("powerpoint") ||
+                    type.Contains("spreadsheet") ||
+                    type.Contains("presentation") ||
+                    type.Contains("msword") ||
+                    type.Contains("vnd.openxmlformats") ||
+                    type.Contains("vnd.ms-"))
+                {
+                    return true;
+                }
+            }
+
+            // Check by file extension as fallback
+            if (fileName != null)
+            {
+                var ext = fileName.ToLower();
+                return ext.EndsWith(".pdf") ||
+                       ext.EndsWith(".doc") ||
+                       ext.EndsWith(".docx") ||
+                       ext.EndsWith(".xls") ||
+                       ext.EndsWith(".xlsx") ||
+                       ext.EndsWith(".ppt") ||
+                       ext.EndsWith(".pptx");
+            }
+
+            return false;
+        }
+
         [HttpGet]
         public IActionResult TopicDetails(int topicId)
         {
@@ -167,7 +295,7 @@ namespace ASI.Basecode.WebApp.Controllers
             return View("~/Views/Admin/AdminTopic.cshtml", topic);
         }
 
-          [HttpPost]
+        [HttpPost]
         public IActionResult EditTopic(
             TopicViewModel model,
             List<IFormFile> VideoFilesEdit,
@@ -176,7 +304,6 @@ namespace ASI.Basecode.WebApp.Controllers
             string DeletedMediaIds,
             [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
-
             if (!ModelState.IsValid)
             {
                 return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = model.TrainingId });
@@ -189,7 +316,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 model.AccountId = existingTopic.AccountId;
                 model.AccountFirstName = existingTopic.AccountFirstName;
                 model.AccountLastName = existingTopic.AccountLastName;
-                
+
                 _topicService.UpdateTopic(model);
 
                 var updatedTopic = _topicService.GetAllTopicsByTrainingId(model.TrainingId)
@@ -284,7 +411,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 }
 
                 TempData["Success"] = "Topic and media updated successfully!";
-                Console.WriteLine("[AddTopic] Topic and media updated successfully!");
+                Console.WriteLine("[EditTopic] Topic and media updated successfully!");
                 return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = model.TrainingId });
             }
             catch (Exception ex)
@@ -306,5 +433,5 @@ namespace ASI.Basecode.WebApp.Controllers
             }
             return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = topic.TrainingId });
         }
-    }   
-} 
+    }
+}
