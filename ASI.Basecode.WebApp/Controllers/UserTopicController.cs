@@ -22,12 +22,12 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpGet]
-        //public IActionResult TopicDetails(int topicId)
-        //{
-        //    var topic = _topicService.GetTopicWithAccountById(topicId);
-        //    var allTopics = _topicService.GetAllTopicsByTrainingId(topic.TrainingId);
-        //    ViewBag.AllTopics = allTopics;
-        //    return View("~/Views/User/AdminTopic.cshtml", topic);
-        //}
+        public IActionResult TopicDetails(int topicId)
+        {
+            var topic = _topicService.GetTopicWithAccountById(topicId);
+            var allTopics = _topicService.GetAllTopicsByTrainingId(topic.TrainingId);
+            ViewBag.AllTopics = allTopics;
+            return View("~/Views/User/ViewTopic.cshtml", topic);
+        }
     }
 }

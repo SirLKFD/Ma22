@@ -2,6 +2,10 @@
 @{
     ViewData["Title"] = "UserTopics";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
+    // this is temporary for development , needs to be modified after
+    var limitedModel = Model.Take(6).ToList();
+    var firstColumn = limitedModel.Take(3).ToList();
+    var secondColumn = limitedModel.Skip(3).ToList();
 }
 
 
@@ -38,33 +42,26 @@
             <p class="text-sm">Explore the comprehensive curriculum designed to build your programming skills step by step</p>
             <div class="flex w-full gap-10">
                 <div class="flex flex-col w-1/2 gap-5">
-                    <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300" onclick="">
-                        <p class="text-xl font-semibold">Flowcharts</p>
-                        <p class="text-sm">Learn visual programming logic and flowchart design principles</p>   
-                    </div>
-                    <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
-                        <p class="text-xl font-semibold">Flowcharts</p>
-                        <p class="text-sm">Learn visual programming logic and flowchart design principles</p>
-                    </div>
-                    <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
-                        <p class="text-xl font-semibold">Flowcharts</p>
-                        <p class="text-sm">Learn visual programming logic and flowchart design principles</p>
-                    </div>
+                    @foreach(var topic in firstColumn)
+                    {
+                        <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300" onclick="window.location.href='@Url.Action("TopicDetails", "UserTopic", new { topicId = topic.Id })'">
+                            <p class="text-xl font-semibold">Flowcharts</p>
+                            <p class="text-sm">Learn visual programming logic and flowchart design principles</p>   
+                        </div>
+                        
+                    }
+                    
                 </div>
 
                 <div class="flex flex-col w-1/2 gap-5">
-                    <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
-                        <p class="text-xl font-semibold">Flowcharts</p>
-                        <p class="text-sm">Learn visual programming logic and flowchart design principles</p>
-                    </div>
-                    <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
-                        <p class="text-xl font-semibold">Flowcharts</p>
-                        <p class="text-sm">Learn visual programming logic and flowchart design principles</p>
-                    </div>
-                    <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
-                        <p class="text-xl font-semibold">Flowcharts</p>
-                        <p class="text-sm">Learn visual programming logic and flowchart design principles</p>
-                    </div>
+                    @foreach (var topic in secondColumn)
+                    {
+                        <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300" onclick="window.location.href='@Url.Action("TopicDetails", "UserTopic", new { topicId = topic.Id })'">
+                            <p class="text-xl font-semibold">Flowcharts</p>
+                            <p class="text-sm">Learn visual programming logic and flowchart design principles</p>
+                        </div>
+
+                    }
                 </div>
             </div>
         </div>
@@ -152,7 +149,33 @@
             <span>@HttpContextAccessor.HttpContext.Session.GetString("UserName")</span>
            
         </div>
+        <!--Ratings Portion-->
+        <div class="align-items-center mt-10 flex flex-col justify-center gap-4">
+            <span class="material-symbols-outlined rounded-full bg-[#EAC231] p-3 !text-[50px] text-white">star</span>
+            <p class="font-weight-bold">What do you think of the Training?</p>
+            <button class="rounded-xl bg-[#EAC231] p-2 w-1/2 font-semibold text-black hover:bg-[#640A16] hover:text-white" onclick="addReview()">Rate</button>
+        </div>
 
     </div>
 </div>
+
+@await Html.PartialAsync("~/Views/User/_AddReviewModal.cshtml")
+
+<script>
+    function addReview(){
+        document.getElementById('addUserReview').classList.remove('hidden')
+    }
+    function closeAddReview() {
+        const modal = document.getElementById('addUserReview');
+        modal.classList.add('hidden');
+
+        // const form = document.getElementById("createuserform");
+        // if (form) {
+        //     form.reset();
+        //     const validator = $(form).validate();
+        //     validator.resetForm();
+        //     $(form).find(".input-validation-error").removeClass("input-validation-error");
+        // }
+    }
+</script>
 
