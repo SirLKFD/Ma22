@@ -8,83 +8,106 @@
 }
 
 
-<div class="flex my-10 justify-center gap-20">
+<div class="my-10 flex justify-center gap-20">
     <div class="flex flex-col gap-10">
-        <h1 class="md:text-5xl lg:text-6xl font-weight-bold">
+        <h1 class="font-weight-bold md:text-5xl lg:text-6xl">
             Discover Trainings <br />that expand your<br /> knowledge 
         </h1>
         <p class="font-semibold">Learn new skills or improve existing ones at your own pace.</p> 
-        <div class="relative w-full space-r-2">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <span class="material-symbols-outlined text-gray-400 text-xl">search</span>
+        <div class="space-r-2 relative w-full">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                <span class="material-symbols-outlined text-xl text-gray-400">search</span>
             </div>
-            <input type="search" name="search"
-                    class="w-full h-12 rounded-xl border border-gray-300 px-5 py-4 pr-[90px] text-md text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231] transition"
+            <input id="training-search-input" type="search" name="search"
+                    class="text-md h-12 w-full rounded-xl border border-gray-300 px-5 py-4 pr-[90px] text-gray-900 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-[#EAC231]"
                     placeholder="What are you looking for?" value="@Context.Request.Query["search"]" />
-            <button type="submit"
-                    class="absolute top-[6px] right-2 rounded-xl bg-[#EAC231] px-4 py-2 text-sm font-medium text-black hover:bg-[#cfa221] transition">
+            <button id="training-search-btn" type="button"
+                    class="absolute right-2 top-[6px] rounded-xl bg-[#EAC231] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#cfa221]">
                 Search
             </button>
         </div>
     </div>
     <div class="flex">
-        <img src="~/img/bg_7.png" class="w-[600px] h-[450px]" />
+        <img src="~/img/bg_7.png" class="h-[450px] w-[600px]" />
     </div>
 </div>
-<div class="flex flex-col justify-center w-screen bg-white -mx-20 p-5 gap-5 mb-20">
-    <div class="flex flex-col items-center text-center gap-5 mb-10">
-        <h2 class="text-4xl font-weight-bold">Explore by Category</h2>
+<div class="-mx-20 mb-20 flex w-screen flex-col justify-center gap-5 bg-white p-5">
+    <div class="mb-10 flex flex-col items-center gap-5 text-center">
+        <h2 class="font-weight-bold text-4xl">Explore by Category</h2>
         <p>Choose from our popular learning paths</p>
     </div>
-    <div class="flex gap-20 flex-wrap justify-center">
+    <div class="flex flex-wrap justify-center gap-20" id="category-list-container">
+        <button id="category-left-btn" class="mr-2 rounded bg-[#EAC231] px-4 py-2 font-semibold text-black shadow transition hover:bg-[#cfa221]">&#8592;</button>
+        <div id="category-cards-wrapper" class="flex flex-wrap justify-center gap-20">
         @if (Model != null && Model.Categories.Any())
         {
-            foreach (var category in Model.Categories.Take(6))
+            foreach (var category in Model.Categories)
             {
-                <div class="flex flex-col items-center justify-center
-                                bg-white text-black
-                                w-[150px] aspect-square
-                                p-4 rounded-xl gap-4
-                                shadow-md hover:cursor-pointer
-                                hover:scale-110 transition-all duration-300">
-                    <span class="material-symbols-outlined
-                                     text-black bg-[#FFE9C6]
-                                     p-2 rounded-xl text-[40px]">
+                <div class="category-card flex aspect-square w-[150px] flex-col items-center justify-center gap-4 rounded-xl bg-white p-4 text-black shadow-md transition-all duration-300 hover:scale-110 hover:cursor-pointer"
+                     data-category-id="@category.Id" data-category-description="@category.Description">
+                    <span class="material-symbols-outlined rounded-xl bg-[#FFE9C6] p-2 text-black text-[40px]">
                         code
                     </span>
-                    <p class="font-semibold text-center text-sm">@category.CategoryName</p>
+                    <p class="text-center text-sm font-semibold">@category.CategoryName</p>
                 </div>
             }
         }
+        </div>
+        <button id="category-right-btn" class="ml-2 rounded bg-[#EAC231] px-4 py-2 font-semibold text-black shadow transition hover:bg-[#cfa221]">&#8594;</button>
     </div>
 
+
 </div>
 
-<div class="flex flex-col items-center my-10">
-    <h2 class="text-4xl font-weight-bold">Trainings</h2>
-    <p>Hand-picked courses from our expert instructors</p>
+<div class="my-10 flex flex-col items-center">
+    <h2 id="trainings-title" class="font-weight-bold text-4xl">Trainings</h2>
+    <p id="trainings-subtitle">Hand-picked courses from our expert instructors</p>
+    <button id="showAllTrainingsBtn" class="mt-4 rounded bg-[#EAC231] px-4 py-2 font-semibold text-black shadow transition hover:bg-[#cfa221]">
+        Show All Trainings
+    </button>
+    <div id="trainings-loading" class="mt-2" style="display:none;">
+        <span class="material-symbols-outlined animate-spin text-3xl">hourglass_empty</span>
+    </div>
 </div>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-20 mx-20">
+<div class="mx-20 mb-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3" id="trainings-container">
     @if (Model != null && Model.Trainings.Any())
     {
         foreach (var training in trainingsToDisplay)
         {
-            <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col min-h-[300px]">
+            <div class="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md transition hover:shadow-xl">
+                <!-- Cover Image -->
                 <div class="h-[180px]">
-                    <img class="w-full h-full object-cover outline outline-1 outline-black" src="@training.CoverPicture" alt="Cover Image" />
+                    @if (!string.IsNullOrEmpty(training.CoverPicture))
+                    {
+                        <img class="h-full w-full object-cover" src="@training.CoverPicture" alt="Cover Image" />
+                    }
+                    else
+                    {
+                        <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#640A16] via-[#8B1538] to-[#640A16] text-center text-sm font-medium text-white">
+                            <span class="material-symbols-outlined text-4xl opacity-50">image</span>
+                            <p class="ml-2">No Cover Image</p>
+                        </div>
+                    }
                 </div>
-                <div class="p-4 flex flex-col flex-grow">
-                    <div class="flex justify-between items-center mb-2">
-                        <h2 class="text-xl font-semibold text-gray-800">@training.TrainingName</h2>
+
+                <!-- Details -->
+                <div class="flex flex-grow flex-col p-4">
+                    <!-- Header -->
+                    <div class="mb-2 flex items-center justify-between">
+                        <h2 class="text-xl font-bold text-[#222]">@training.TrainingName</h2>
                     </div>
-                    <p class="text-sm text-gray-600 line-clamp-3">@training.Description</p>
-                    <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
+
+                    <p class="line-clamp-4 text-sm text-gray-600">@training.Description</p>
+
+                    <!-- Footer -->
+                    <div class="mt-auto flex items-end justify-between pt-4 text-xs text-gray-500">
                         <div>
                             <p><strong>Modified:</strong> @training.UpdatedTime.ToString("MMM dd, yyyy")</p>
                             <p><strong>By:</strong> @training.AccountFirstName @training.AccountLastName</p>
                         </div>
-                        <a href="#" class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
+                        <a href="@Url.Action("TrainingDetails", "UserTraining", new { trainingId = training.Id })"
+                           class="rounded-full bg-[#640A16] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#4e0712]">
                             Access
                         </a>
                     </div>
@@ -94,25 +117,169 @@
     }
     else
     {
-        <div class="col-span-3 text-center text-gray-500 py-8">No trainings found.</div>
+        <div class="col-span-3 py-8 text-center text-gray-500">No trainings found.</div>
     }
+</div>
 
-</div> 
+
 @if (!showAll && Model.Trainings.Count > 9)
 {
-    <div class="flex justify-center mt-5">
-        <a href="?showAll=true">
-            <span class="material-symbols-outlined animate-bounce text-[50px] cursor-pointer">
+    <div class="mt-5 flex justify-center">
+        <button id="loadMoreBtn" class="cursor-pointer">
+            <span class="material-symbols-outlined animate-bounce text-[50px]">
                 keyboard_double_arrow_down
             </span>
-        </a>
+        </button>
     </div>
 }
 
+@section Scripts {
+    <script>
+        let currentlyDisplayed = @(trainingsToDisplay.Count());
+        const totalTrainings = @Model.Trainings.Count;
+        const pageSize = 9;
+        let selectedCategoryName = null;
 
+        // Category navigation logic
+        let categoryStart = 0;
+        const maxVisible = 6;
+        const wrapper = document.getElementById('category-cards-wrapper');
+        const categories = Array.from(wrapper.querySelectorAll('.category-card'));
+        function updateCategoryVisibility(animatedDirection = null) {
+            // Animate slide
+            if (animatedDirection) {
+                wrapper.style.transition = 'transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)';
+                wrapper.style.transform = `translateX(${animatedDirection === 'left' ? '80px' : '-80px'})`;
+                setTimeout(() => {
+                    wrapper.style.transform = 'translateX(0)';
+                }, 700);
+            }
+            categories.forEach((el, idx) => {
+                el.style.display = (idx >= categoryStart && idx < categoryStart + maxVisible) ? '' : 'none';
+            });
+        }
+        document.getElementById('category-left-btn').addEventListener('click', function() {
+            if (categoryStart > 0) {
+                categoryStart--;
+                updateCategoryVisibility('left');
+            }
+        });
+        document.getElementById('category-right-btn').addEventListener('click', function() {
+            if (categoryStart + maxVisible < categories.length) {
+                categoryStart++;
+                updateCategoryVisibility('right');
+            }
+        });
+        updateCategoryVisibility();
 
+        // AJAX filter by category
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const categoryId = this.getAttribute('data-category-id');
+                const categoryName = this.querySelector('p').textContent;
+                const categoryDescription = this.getAttribute('data-category-description') || '';
+                // Show loading indicator
+                document.getElementById('trainings-loading').style.display = '';
+                fetch(`/UserTraining/TrainingsByCategory?categoryId=${categoryId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('trainings-container').innerHTML = html;
+                        // Update title and subtitle
+                        document.getElementById('trainings-title').textContent = categoryName;
+                        document.getElementById('trainings-subtitle').innerHTML = categoryDescription;
+                        selectedCategoryName = categoryName;
+                        document.getElementById('trainings-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    })
+                    .finally(() => {
+                        document.getElementById('trainings-loading').style.display = 'none';
+                    });
+            });
+        });
 
+        // AJAX reload all trainings
+        document.getElementById('showAllTrainingsBtn').addEventListener('click', function() {
+            // Show loading indicator
+            document.getElementById('trainings-loading').style.display = '';
+            fetch(`/UserTraining/LoadMoreTrainings?skip=0`)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('trainings-container').innerHTML = html;
+                    // Reset title and subtitle
+                    document.getElementById('trainings-title').textContent = 'Trainings';
+                    document.getElementById('trainings-subtitle').innerHTML = 'Hand-picked courses from our expert instructors';
+                    selectedCategoryName = null;
+                    document.getElementById('trainings-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                })
+                .finally(() => {
+                    document.getElementById('trainings-loading').style.display = 'none';
+                });
+        });
 
+        // Existing load more logic
+        document.getElementById("loadMoreBtn")?.addEventListener("click", function () {
+            const button = this;
+            const buttonIcon = button.querySelector('.material-symbols-outlined');
+            // Show loading state
+            buttonIcon.textContent = 'hourglass_empty';
+            buttonIcon.classList.add('animate-spin');
+            button.disabled = true;
+            fetch(`/UserTraining/LoadMoreTrainings?skip=${currentlyDisplayed}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    const container = document.getElementById("trainings-container");
+                    container.insertAdjacentHTML('beforeend', data);
+                    // Update the count
+                    currentlyDisplayed += pageSize;
+                    // Hide button if all trainings are loaded
+                    if (currentlyDisplayed >= totalTrainings) {
+                        button.style.display = "none";
+                    } else {
+                        // Reset button state
+                        buttonIcon.textContent = 'keyboard_double_arrow_down';
+                        buttonIcon.classList.remove('animate-spin');
+                        buttonIcon.classList.add('animate-bounce');
+                        button.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error loading more trainings:", error);
+                    // Reset button state on error
+                    buttonIcon.textContent = 'keyboard_double_arrow_down';
+                    buttonIcon.classList.remove('animate-spin');
+                    buttonIcon.classList.add('animate-bounce');
+                    button.disabled = false;
+                    alert('Failed to load more trainings. Please try again.');
+                });
+        });
 
-
-
+        // SEARCH logic
+        const searchInput = document.getElementById('training-search-input');
+        const searchBtn = document.getElementById('training-search-btn');
+        function doTrainingSearch() {
+            const search = searchInput.value.trim();
+            document.getElementById('trainings-loading').style.display = '';
+            fetch(`/UserTraining/SearchTrainings?search=${encodeURIComponent(search)}`)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('trainings-container').innerHTML = html;
+                    document.getElementById('trainings-title').textContent = 'Trainings';
+                    document.getElementById('trainings-subtitle').innerHTML = 'Hand-picked courses from our expert instructors';
+                    document.getElementById('trainings-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                })
+                .finally(() => {
+                    document.getElementById('trainings-loading').style.display = 'none';
+                });
+        }
+        searchBtn.addEventListener('click', doTrainingSearch);
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                doTrainingSearch();
+            }
+        });
+    </script>
+}

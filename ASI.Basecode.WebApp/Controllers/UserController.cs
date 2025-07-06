@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using CloudinaryDotNet.Actions;
 using CloudinaryDotNet;
 using System;
+using System.Linq;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -168,6 +169,32 @@ namespace ASI.Basecode.WebApp.Controllers
             HttpContext.Session.Clear();
 
             return RedirectToAction("SignOutUser","Account");
+        }
+
+        [HttpGet]
+        public IActionResult UserTrainingsByCategory(int categoryId)
+        {
+            var trainings = _trainingService.GetAllTrainingsByCategoryId(categoryId);
+            return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", trainings);
+        }
+
+        [HttpGet]
+        public IActionResult SearchUserTrainings(string search)
+        {
+            var allTrainings = _trainingService.GetAllTrainings();
+            var filtered = string.IsNullOrWhiteSpace(search)
+                ? allTrainings
+                : allTrainings.Where(t => t.TrainingName != null && t.TrainingName.ToLower().Contains(search.ToLower())).ToList();
+            return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", filtered);
+        }
+
+        [HttpGet]
+        public IActionResult LoadMoreUserTrainings(int skip = 9)
+        {
+            const int pageSize = 9;
+            var allTrainings = _trainingService.GetAllTrainings();
+            var moreTrainings = allTrainings.Skip(skip).Take(pageSize);
+            return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", moreTrainings);
         }
     }
 }

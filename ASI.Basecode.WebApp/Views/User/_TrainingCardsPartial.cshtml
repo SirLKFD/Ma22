@@ -1,0 +1,50 @@
+﻿@model IEnumerable<ASI.Basecode.Services.ServiceModels.TrainingViewModel>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="col-span-3 py-8 text-center text-gray-500">No Trainings Found Yet</div>
+}
+else
+{
+    foreach (var training in Model)
+    {
+        <div class="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md transition hover:shadow-xl">
+            <!-- Cover Image -->
+            <div class="h-[180px]">
+                @if (!string.IsNullOrEmpty(training.CoverPicture))
+                {
+                    <img class="h-full w-full object-cover" src="@training.CoverPicture" alt="Cover Image" />
+                }
+                else
+                {
+                    <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#640A16] via-[#8B1538] to-[#640A16] text-center text-sm font-medium text-white">
+                        <span class="material-symbols-outlined text-4xl opacity-50">image</span>
+                        <p class="ml-2">No Cover Image</p>
+                    </div>
+                }
+            </div>
+
+            <!-- Details -->
+            <div class="flex flex-grow flex-col p-4">
+                <!-- Header -->
+                <div class="mb-2 flex items-center justify-between">
+                    <h2 class="text-xl font-bold text-[#222]">@training.TrainingName</h2>
+                </div>
+
+                <p class="line-clamp-4 text-sm text-gray-600">@training.Description</p>
+
+                <!-- Footer -->
+                <div class="mt-auto flex items-end justify-between pt-4 text-xs text-gray-500">
+                    <div>
+                        <p><strong>Modified:</strong> @training.UpdatedTime.ToString("MMM dd, yyyy")</p>
+                        <p><strong>By:</strong> @training.AccountFirstName @training.AccountLastName</p>
+                    </div>
+                    <a href="@Url.Action("TrainingDetails", "UserTraining", new { trainingId = training.Id })"
+                       class="rounded-full bg-[#640A16] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#4e0712]">
+                        Access
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+}
