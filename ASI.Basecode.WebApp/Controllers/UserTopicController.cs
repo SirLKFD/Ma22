@@ -20,5 +20,14 @@ namespace ASI.Basecode.WebApp.Controllers
             var topics = _topicService.GetAllTopicsByTrainingId(trainingId);
             return View("~/Views/User/UserTopics.cshtml", topics);
         }
+
+        [HttpGet]
+        public IActionResult TopicDetails(int topicId)
+        {
+            var topic = _topicService.GetTopicWithAccountById(topicId);
+            var allTopics = _topicService.GetAllTopicsByTrainingId(topic.TrainingId);
+            ViewBag.AllTopics = allTopics;
+            return View("~/Views/User/ViewTopic.cshtml", topic);
+        }
     }
 }

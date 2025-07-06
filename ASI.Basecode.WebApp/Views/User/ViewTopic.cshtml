@@ -1,11 +1,12 @@
 ﻿@model ASI.Basecode.Services.ServiceModels.TopicViewModel
 @{
-    ViewData["Title"] = "Admin Topic Details";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "User Topic Details";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
     var allTopics = ViewBag.AllTopics as List<ASI.Basecode.Services.ServiceModels.TopicViewModel> ?? new List<ASI.Basecode.Services.ServiceModels.TopicViewModel>();
     var mediaList = Model.Media;
     var hasAnyFiles = mediaList != null && mediaList.Any();
 }
+
 
 @functions {
     string GetFileExtension(string fileName)
@@ -70,8 +71,8 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-<div class="flex w-full min-w-0 space-x-8">
-    <div class="flex w-2/3 min-w-0 flex-col gap-8">
+<div class="flex w-full space-x-8 ">
+    <div class="flex w-2/3 flex-col gap-8 ">
 
         <div class="flex w-full flex-col gap-4 rounded-xl bg-white p-4 shadow-md">
             <div class="flex items-start justify-between">
@@ -263,7 +264,12 @@
             </div>
         </div>
 
-
+        <!--Ratings Portion-->
+        <div class="align-items-center mt-10 flex flex-col justify-center gap-4">
+            <span class="material-symbols-outlined rounded-full bg-[#EAC231] p-3 !text-[50px] text-white">star</span>
+            <p class="font-weight-bold">What Users think of this Training</p>
+            <button class="rounded-xl bg-[#EAC231] p-2 font-semibold text-black hover:bg-[#640A16] hover:text-white">View User Reviews</button>
+        </div>
     </div>
 </div>
 
