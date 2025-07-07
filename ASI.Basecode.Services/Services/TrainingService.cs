@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using static ASI.Basecode.Resources.Constants.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace ASI.Basecode.Services.Services
 {
@@ -80,7 +81,8 @@ namespace ASI.Basecode.Services.Services
 
         public TrainingViewModel GetTrainingById(int id)
         {
-            var training = _repository.GetTrainings().FirstOrDefault(t => t.Id == id);
+            var training = _repository.GetTrainings().Include(t => t.DurationNavigation)
+            .Include(t => t.SkillLevelNavigation).Include(t => t.TrainingCategory).Include(t => t.Reviews).FirstOrDefault(t => t.Id == id);
             if (training == null) return null;
 
             return new TrainingViewModel
@@ -89,15 +91,31 @@ namespace ASI.Basecode.Services.Services
                 Ratings = training.Ratings,
                 AccountId = training.AccountId,
                 TrainingName = training.TrainingName,
+                TrainingCategoryName = training.TrainingCategory?.CategoryName,
                 TrainingCategoryId = training.TrainingCategoryId,
                 SkillLevel = training.SkillLevel,
+                SkillLevelName = training.SkillLevelNavigation.SkillLevel1,
                 Description = training.Description,
                 CoverPicture = training.CoverPicture,
                 Duration = training.Duration,
+                DurationName = training.DurationNavigation?.Duration1,
                 CourseCode = training.CourseCode,
                 UpdatedTime = training.UpdatedTime,
+                AccountPicture = training.Account.ProfilePicture,
                 AccountFirstName = training.Account.FirstName,
                 AccountLastName = training.Account.LastName,
+                Reviews = training.Reviews.Select(t => new ReviewViewModel
+                {
+                    ReviewId = t.ReviewId,
+                    TrainingId = t.TrainingId,
+                    Title = t.Title,
+                    UserReview = t.UserReview,
+                    ReviewScore = t.ReviewScore,
+                    AccountId = t.AccountId,
+                    AccountFirstName = t.Account?.FirstName,
+                    AccountLastName = t.Account?.LastName,
+                    CreatedTime = t.CreatedTime
+                }).ToList()
             };
         }
 

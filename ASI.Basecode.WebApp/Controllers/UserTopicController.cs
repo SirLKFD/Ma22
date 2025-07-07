@@ -8,16 +8,21 @@ namespace ASI.Basecode.WebApp.Controllers
     public class UserTopicController : Controller
     {
         private readonly ITopicService _topicService;
+        private readonly ITrainingService _trainingService;
 
-        public UserTopicController(ITopicService topicService)
+        public UserTopicController(ITopicService topicService, ITrainingService trainingService)
         {
             _topicService = topicService;
+            _trainingService = trainingService;
         }
 
         [HttpGet]
         public IActionResult Topics(int trainingId)
         {
+            var training = _trainingService.GetTrainingById(trainingId);
             var topics = _topicService.GetAllTopicsByTrainingId(trainingId);
+
+            ViewData["training"] = training;
             return View("~/Views/User/UserTopics.cshtml", topics);
         }
 

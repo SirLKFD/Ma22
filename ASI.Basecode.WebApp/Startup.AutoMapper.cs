@@ -31,6 +31,7 @@ namespace ASI.Basecode.WebApp
                 CreateMap<TrainingCategoryViewModel, TrainingCategory>();
                 CreateMap<TrainingViewModel, Training>();
                 CreateMap<UserProfileEditViewModel, Account>();
+                CreateMap<ReviewViewModel, Review>();
 
                 CreateMap<Training, TrainingViewModel>()
                     .ForMember(dest => dest.AccountFirstName, opt => opt.MapFrom(src => src.Account.FirstName))

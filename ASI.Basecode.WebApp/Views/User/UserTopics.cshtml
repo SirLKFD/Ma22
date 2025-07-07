@@ -2,10 +2,17 @@
 @{
     ViewData["Title"] = "UserTopics";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
+    var training = ViewData["training"] as TrainingViewModel;
     // this is temporary for development , needs to be modified after
     var limitedModel = Model.Take(6).ToList();
     var firstColumn = limitedModel.Take(3).ToList();
     var secondColumn = limitedModel.Skip(3).ToList();
+    double avgRating = (training.Reviews != null && training.Reviews.Any())
+        ? training.Reviews.Average(r => r.ReviewScore)
+        : 0;
+    int fullStars = (int)Math.Floor(avgRating);
+    bool hasHalfStar = (avgRating - fullStars) >= 0.5;
+    int emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 }
 
 
@@ -17,8 +24,8 @@
     <div class="flex flex-col w-2/3 gap-10">
         <div class="flex flex-col bg-white p-4 gap-5 rounded-lg shadow-md">
             <div class="bg-[#EAC231] max-w-fit px-2 py-1 rounded-full text-xs">Topic</div>
-            <h1 class="text-4xl w-3/4 font-weight-bold">CMSC 11: Introduction to Programming (Dummy Title)</h1>
-            <p class="w-3/4">Master the fundamentals of programming with this comprehensive course. Learn essential concepts, problem-solving techniques, and practical skills that form the foundation of computer science. Perfect for beginners looking to start their programming journey.</p>
+            <h1 class="text-4xl w-3/4 font-weight-bold">@training.TrainingName</h1>
+            <p class="w-3/4">@training.Description</p>
             <div class="flex items-center gap-6 text-sm text-slate-500">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined">group</span>
@@ -26,11 +33,11 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined">import_contacts</span>
-                    <span>59 lessons</span>
+                    <span>@Model.Count topic@(Model.Count == 1 ? "" : "s")</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined">schedule</span>
-                    <span>25h 30m total</span>
+                    <span>@training.DurationName to study</span>
                 </div>
             </div>
         </div>
@@ -40,29 +47,14 @@
                 <h2 class="text-2xl font-weight-bold">Course Topics</h2>
             </div>
             <p class="text-sm">Explore the comprehensive curriculum designed to build your programming skills step by step</p>
-            <div class="flex w-full gap-10">
-                <div class="flex flex-col w-1/2 gap-5">
-                    @foreach(var topic in firstColumn)
-                    {
-                        <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300" onclick="window.location.href='@Url.Action("TopicDetails", "UserTopic", new { topicId = topic.Id })'">
-                            <p class="text-xl font-semibold">Flowcharts</p>
-                            <p class="text-sm">Learn visual programming logic and flowchart design principles</p>   
-                        </div>
-                        
-                    }
-                    
-                </div>
-
-                <div class="flex flex-col w-1/2 gap-5">
-                    @foreach (var topic in secondColumn)
-                    {
-                        <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300" onclick="window.location.href='@Url.Action("TopicDetails", "UserTopic", new { topicId = topic.Id })'">
-                            <p class="text-xl font-semibold">Flowcharts</p>
-                            <p class="text-sm">Learn visual programming logic and flowchart design principles</p>
-                        </div>
-
-                    }
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
+                @foreach (var topic in Model)
+                {
+                    <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300" onclick="window.location.href='@Url.Action("TopicDetails", "UserTopic", new { topicId = topic.Id })'">
+                        <p class="text-xl font-semibold">@topic.TopicName</p>
+                        <p class="text-sm">@topic.Description</p>
+                    </div>
+                }
             </div>
         </div>
         <div class="flex flex-col bg-white w-full p-4 gap-2 rounded-lg shadow-md">
@@ -72,43 +64,57 @@
                     <h2 class="text-2xl font-weight-bold">Ratings and Reviews</h2>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <p class="text-2xl font-semibold">4.8</p>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-[#EAC231]" viewBox="0 0 24 24">
-                        <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
-                    </svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-[#EAC231]" viewBox="0 0 24 24">
-                        <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
-                    </svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-[#EAC231]" viewBox="0 0 24 24">
-                        <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
-                    </svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-[#EAC231]" viewBox="0 0 24 24">
-                        <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
-                    </svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-[#EAC231]" viewBox="0 0 24 24">
-                        <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
-                    </svg>
+                    <p class="text-2xl font-semibold">
+                        @(avgRating > 0 ? avgRating.ToString("0.0") : "No ratings")
+                    </p>
+                    @for (int i = 0; i < fullStars; i++)
+                    {
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-[#EAC231]" viewBox="0 0 24 24">
+                            <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
+                        </svg>
+                    }
+                    @if (hasHalfStar)
+                    {
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24">
+                            <defs>
+                                <linearGradient id="half">
+                                    <stop offset="50%" stop-color="#EAC231"/>
+                                    <stop offset="50%" stop-color="white"/>
+                                </linearGradient>
+                            </defs>
+                            <path fill="url(#half)" d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
+                        </svg>
+                    }
+                    @for (int i = 0; i < emptyStars; i++)
+                    {
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-gray-300" viewBox="0 0 24 24">
+                            <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
+                        </svg>
+                    }
                 </div>
             </div>
             <p>See what other students are saying about this course</p>
             <div class="flex flex-col gap-10">
-                <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
-                    <p class="text-xl font-semibold">John Doe</p>
-                    <p class="text-sm">huwaw</p>
-
-                </div>
-                <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
-                    <p class="text-xl font-semibold">John Doe</p>
-                    <p class="text-sm">huwaw</p>
-                </div>
-                <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
-                    <p class="text-xl font-semibold">John Doe</p>
-                    <p class="text-sm">huwaw</p>
-                </div>
-                <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
-                    <p class="text-xl font-semibold">John Doe</p>
-                    <p class="text-sm">huwaw</p>
-                </div>
+                @if (training.Reviews != null && training.Reviews.Any())
+                {
+                    foreach (var review in training.Reviews)
+                    {
+                        <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
+                            <p class="text-xl font-semibold">@review.Title</p>
+                            <p class="text-sm">@review.UserReview</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="material-symbols-outlined text-[#EAC231]">star</span>
+                                <span>@review.ReviewScore</span>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="flex flex-col bg-white shadow-md w-full p-4 text-center text-gray-400">
+                        <p class="text-lg font-semibold">No reviews yet for this course.</p>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -123,30 +129,28 @@
             <div class="space-y-3">
                 <div class="flex justify-between">
                     <p>Skill Level</p>
-                    <p class="bg-[#C6FFCD] max-w-fit px-2 py-1 rounded-full text-xs">Beginner</p>
+                    <p class="bg-[#C6FFCD] max-w-fit px-2 py-1 rounded-full text-xs">@training.SkillLevelName</p>
                 </div>
                 <div class="flex justify-between">
                     <p>Category</p>
-                    <p class="bg-[#FFE9C6] max-w-fit px-2 py-1 rounded-full text-xs">Programming</p>
+                    <p class="bg-[#FFE9C6] max-w-fit px-2 py-1 rounded-full text-xs">@training.TrainingCategoryName</p>
                 </div>
             </div>
         </div>
         <div class="flex flex-col bg-white max-h-fit rounded-lg shadow-md p-4 items-center gap-4">
             <p class="font-semibold text-xl">Your Instructor</p>
             <div class="flex ">
-                @{
-                    var profilePicture = HttpContextAccessor.HttpContext.Session.GetString("ProfilePicture");
-                }
-                @if (!string.IsNullOrEmpty(profilePicture))
+               
+                @if (!string.IsNullOrEmpty(@training.AccountPicture))
                 {
-                    <img src="@profilePicture" alt="Profile" class="w-[50px] h-[50px] rounded-full object-cover" />
+                    <img src="@training.AccountPicture" alt="Profile" class="w-[50px] h-[50px] rounded-full object-cover" />
                 }
                 else
                 {
                     <span class="material-symbols-outlined !text-[50px]">person</span>
                 }
             </div>
-            <span>@HttpContextAccessor.HttpContext.Session.GetString("UserName")</span>
+            <span>@training.AccountFirstName @training.AccountLastName</span>
            
         </div>
         <!--Ratings Portion-->
@@ -159,7 +163,7 @@
     </div>
 </div>
 
-@await Html.PartialAsync("~/Views/User/_AddReviewModal.cshtml")
+@await Html.PartialAsync("~/Views/User/_AddReviewModal.cshtml", new ReviewViewModel())
 
 <script>
     function addReview(){

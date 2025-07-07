@@ -20,22 +20,33 @@ public class TrainingViewModel
     [Required(ErrorMessage = "Training category ID is required.")]
     public int TrainingCategoryId { get; set; }
 
+    public string TrainingCategoryName {get;set;}
+
     [Required(ErrorMessage = "Skill level is required.")]
     public int SkillLevel { get; set; }
+    public string SkillLevelName {get;set;}
 
     [Required(ErrorMessage = "Description is required.")]
     public string? Description { get; set; }
+
+    public string AccountPicture {get;set;}
 
     public string? CoverPicture { get; set; }
 
     public int? Duration { get; set; }
 
+    public string DurationName {get;set;}
+
     [Required(ErrorMessage = "Course code is required.")]
     public string CourseCode { get; set; }
+
     public DateTime UpdatedTime { get; set; }
 
     public string AccountFirstName { get; set; }
 
     public string AccountLastName { get; set; }
+
+    
+    public List<ReviewViewModel> Reviews { get; set; }
 
 }

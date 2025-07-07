@@ -19,7 +19,7 @@ public partial class Training
 
     public string CoverPicture { get; set; }
 
-    public int? Duration { get; set; }
+    public int Duration { get; set; }
 
     public string CourseCode { get; set; }
 
@@ -40,6 +40,8 @@ public partial class Training
     public virtual SkillLevel SkillLevelNavigation { get; set; }
 
     public virtual ICollection<Topic> Topics { get; set; } = new List<Topic>();
+
+    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
     public virtual TrainingCategory TrainingCategory { get; set; }
 }

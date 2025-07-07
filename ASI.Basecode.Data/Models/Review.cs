@@ -3,17 +3,19 @@ using System.Collections.Generic;
 
 namespace ASI.Basecode.Data.Models;
 
-public partial class TopicMedium
+public partial class Review
 {
-    public int Id { get; set; }
+    public int ReviewId { get; set; }
 
-    public int TopicId { get; set; }
+    public string UserReview { get; set; }
 
-    public string MediaType { get; set; }
+    public int ReviewScore { get; set; }
 
-    public string MediaUrl { get; set; }
+    public int TrainingId { get; set; }
 
     public int AccountId { get; set; }
+
+    public string Title { get; set; }
 
     public string CreatedBy { get; set; }
 
@@ -23,9 +25,7 @@ public partial class TopicMedium
 
     public DateTime UpdatedTime { get; set; }
 
-    public string Name { get; set; }
-
     public virtual Account Account { get; set; }
 
-    public virtual Topic Topic { get; set; }
+    public virtual Training Training { get; set; }
 }
