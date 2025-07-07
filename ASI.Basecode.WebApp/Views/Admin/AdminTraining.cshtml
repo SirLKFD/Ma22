@@ -2,7 +2,7 @@
 @using static ASI.Basecode.Resources.Constants.Enums
 
 @{
-    var pageTitle = ViewBag.CategoryName ?? "Trainings";
+    var pageTitle = ViewBag.CategoryName ?? "Ma22 | Trainings";
     ViewData["Title"] = pageTitle;
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 
@@ -26,17 +26,33 @@
         <h1 class="text-4xl font-bold uppercase text-[#222]">@pageTitle</h1>
 
         <div class="flex flex-col gap-4 sm:flex-row">
-            <form method="get" asp-action="AdminTraining" class="relative w-full sm:w-[400px]">
-                <input type="search" name="search" value="@search"
-                       placeholder="Search Trainings..."
-                       class="h-12 w-full rounded-full border border-gray-300 pl-5 pr-[140px] text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
-
-                <button type="submit"
-                        class="absolute right-2 top-[6px] rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#cfa221]">
-                    Search
-                </button>
-            </form>
-
+            @if (isCategory)
+            {
+                <form method="get" action="@Url.Action("TrainingCategoryDetails", new { categoryId = categoryId })" class="relative w-full sm:w-[400px]">
+                    <input type="hidden" name="categoryId" value="@categoryId" />
+                    <span class="material-symbols-outlined -translate-y-1/2 absolute left-3 top-1/2 text-gray-400">search</span>
+                    <input type="search" name="search" value="@search"
+                           placeholder="Search Trainings..."
+                           class="h-12 w-full rounded-full border border-gray-300 bg-white pl-10 pr-[140px] text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
+                    <button type="submit"
+                            class="absolute right-2 top-[6px] rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#cfa221]">
+                        Search
+                    </button>
+                </form>
+            }
+            else
+            {
+                <form method="get" asp-action="AdminTraining" class="relative w-full sm:w-[400px]">
+                    <span class="material-symbols-outlined -translate-y-1/2 absolute left-3 top-1/2 text-gray-400">search</span>
+                    <input type="search" name="search" value="@search"
+                           placeholder="Search Trainings..."
+                           class="h-12 w-full rounded-full border border-gray-300 bg-white pl-10 pr-[140px] text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
+                    <button type="submit"
+                            class="absolute right-2 top-[6px] rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#cfa221]">
+                        Search
+                    </button>
+                </form>
+            }
             <button class="rounded-full bg-[#EAC231] px-6 py-2 text-sm font-semibold text-black shadow-md transition hover:bg-[#cfa221]"
                     onclick="addTraining()">
                 Add+
@@ -100,7 +116,24 @@
                                       onclick="openDeleteTraining('@training.Id', '@training.TrainingName', '@training.TrainingCategoryId', '@training.SkillLevel', '@training.CourseCode', '@training.Description', '@training.CoverPicture', '@training.UpdatedTime', '@training.AccountFirstName', '@training.AccountLastName')">delete</span>
                             </div>
                         </div>
-                        <p class="line-clamp-3 text-sm text-gray-600">@training.Description</p>
+                        <div class="mb-2 flex gap-2">
+                            @if (!string.IsNullOrEmpty(training.SkillLevelName))
+                            {
+                                var skillColor = training.SkillLevelName == "Beginner" ? "bg-green-200 text-green-800"
+                                                : training.SkillLevelName == "Intermediate" ? "bg-yellow-200 text-yellow-800"
+                                                : "bg-red-200 text-red-800";
+                                <span class="rounded-full px-3 py-1 text-xs font-semibold @skillColor">
+                                    @training.SkillLevelName
+                                </span>
+                            }
+                            @if (!string.IsNullOrEmpty(training.TrainingCategoryName))
+                            {
+                                <span class="rounded-full bg-orange-200 px-3 py-1 text-xs font-semibold text-orange-800">
+                                    @training.TrainingCategoryName
+                                </span>
+                            }
+                        </div>
+                        <p class="mt-2 line-clamp-3 text-sm text-gray-600">@training.Description</p>
                         <div class="mt-auto flex items-end justify-between pt-4 text-xs text-gray-500">
                             <div>
                                 <p><strong>Modified:</strong> @training.UpdatedTime.ToString("MMM dd, yyyy")</p>
@@ -165,6 +198,8 @@
 @await Html.PartialAsync("~/Views/Admin/AddTraining.cshtml", new TrainingViewModel())
 @await Html.PartialAsync("~/Views/Admin/EditTraining.cshtml", new TrainingViewModel())
 @await Html.PartialAsync("~/Views/Admin/DeleteTraining.cshtml", new TrainingViewModel())
+
+<div id="viewUserModalContainer"></div>
 
 <script>
     function addTraining() {

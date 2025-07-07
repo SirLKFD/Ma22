@@ -45,6 +45,9 @@ namespace ASI.Basecode.WebApp.Controllers
                 }
             }
 
+            var enrollmentCount = _enrollmentService.GetEnrollmentCount(trainingId);
+            ViewData["EnrollmentCount"] = enrollmentCount;
+
             return View("~/Views/User/UserTopics.cshtml", topics);
         }
 

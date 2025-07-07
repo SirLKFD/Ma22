@@ -6,6 +6,7 @@ using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace ASI.Basecode.Services.Services
 {
@@ -49,9 +50,34 @@ namespace ASI.Basecode.Services.Services
             var enrollments = _enrollmentRepository.GetByUserId(userId);
             var trainingIds = enrollments.Select(e => e.TrainingId).ToList();
             var trainings = _trainingRepository.GetTrainings()
+                .Include(t => t.SkillLevelNavigation)
+                .Include(t => t.TrainingCategory)
                 .Where(t => trainingIds.Contains(t.Id))
                 .ToList();
-            return _mapper.Map<List<TrainingViewModel>>(trainings);
+            return trainings.Select(t => new TrainingViewModel
+            {
+                Id = t.Id,
+                Ratings = t.Ratings,
+                AccountId = t.AccountId,
+                TrainingName = t.TrainingName,
+                TrainingCategoryId = t.TrainingCategoryId,
+                TrainingCategoryName = t.TrainingCategory.CategoryName,
+                SkillLevel = t.SkillLevel,
+                SkillLevelName = t.SkillLevelNavigation.SkillLevel1,
+                Description = t.Description,
+                CoverPicture = t.CoverPicture,
+                Duration = t.Duration,
+                CourseCode = t.CourseCode,
+                UpdatedTime = t.UpdatedTime,
+                AccountFirstName = t.Account.FirstName,
+                AccountLastName = t.Account.LastName
+            }).ToList();
+        }
+
+        public int GetEnrollmentCount(int trainingId)
+        {
+            var enrollments = _enrollmentRepository.GetByTrainingId(trainingId);
+            return enrollments.Count;
         }
     }
 }

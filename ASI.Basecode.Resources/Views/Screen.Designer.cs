@@ -70,7 +70,7 @@ namespace ASI.Basecode.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign up here.
+        ///   Looks up a localized string similar to Register here.
         /// </summary>
         public static string CreateNew {
             get {

@@ -8,5 +8,6 @@ namespace ASI.Basecode.Data.Interfaces
         void Add(Enrollment enrollment);
         bool IsEnrolled(int userId, int trainingId);
         List<Enrollment> GetByUserId(int userId);
+        List<Enrollment> GetByTrainingId(int trainingId);
     }
 }

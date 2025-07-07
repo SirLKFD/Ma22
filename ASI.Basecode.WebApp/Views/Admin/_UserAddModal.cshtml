@@ -57,7 +57,7 @@
                 <div>
                     <div class="flex items-center justify-between">
                         <label class="w-32 text-white">First Name</label>
-                        <input name="FirstName" id="firstName" class="w-[400px] rounded-xl border p-2" oninput="updatePreviewName()" />
+                        <input asp-for="FirstName" id="firstName" class="w-[400px] rounded-xl border p-2" oninput="updatePreviewName()" />
                     </div>
                     <span asp-validation-for="FirstName" class="block text-sm text-[#EAC231]"></span>
                 </div>
@@ -65,7 +65,7 @@
                 <div>
                     <div class="flex items-center justify-between">
                         <label class="w-32 text-white">Last Name</label>
-                        <input name="LastName" id="lastName" class="w-[400px] rounded-xl border p-2" oninput="updatePreviewName()" />
+                        <input asp-for="LastName" id="lastName" class="w-[400px] rounded-xl border p-2" oninput="updatePreviewName()" />
                     </div>
                     <span asp-validation-for="LastName" class="block text-sm text-[#EAC231]"></span>
                 </div>
@@ -73,8 +73,9 @@
                 <div>
                     <div class="flex items-center justify-between">
                         <label class="w-32 text-white">Birthdate</label>
-                        <input type="date" name="Birthdate" class="w-[400px] rounded-xl border p-2" />
+                        <input asp-for="Birthdate" type="date" class="w-[400px] rounded-xl border p-2" />
                     </div>
+                    <span asp-validation-for="Birthdate" class="block text-sm text-[#EAC231]"></span>
                 </div>
 
                 <div>
@@ -88,7 +89,7 @@
                 <div>
                     <div class="flex items-center justify-between">
                         <label class="w-32 text-white">Email</label>
-                        <input name="EmailId" class="w-[400px] rounded-xl border p-2" />
+                        <input asp-for="EmailId" class="w-[400px] rounded-xl border p-2" />
                     </div>
                     <span asp-validation-for="EmailId" class="block text-sm text-[#EAC231]"></span>
                 </div>
@@ -96,7 +97,7 @@
                 <div>
                     <div class="flex items-center justify-between">
                         <label class="w-32 text-white">Password</label>
-                        <input name="Password" type="password" class="w-[400px] rounded-xl border p-2" />
+                        <input asp-for="Password" type="password" class="w-[400px] rounded-xl border p-2" />
                     </div>
                     <span asp-validation-for="Password" class="block text-sm text-[#EAC231]"></span>
                 </div>
@@ -104,7 +105,7 @@
                 <div>
                     <div class="flex items-center justify-between">
                         <label class="w-32 text-white">Role</label>
-                        <select name="Role" class="w-[400px] rounded-xl border bg-[#EAC231] p-2 font-semibold text-black">
+                        <select asp-for="Role" class="w-[400px] rounded-xl border bg-[#EAC231] p-2 font-semibold text-black">
                             <option value="0">Admin</option>
                             <option value="1">Guest</option>
                         </select>
@@ -122,3 +123,4 @@
 
 <!-- User Add Modal AJAX Script -->
 <script src="~/js/useraddmodal_AJAX.js" asp-append-version="true"></script>
+@await Html.PartialAsync("~/Views/Shared/_ValidationScriptsPartial.cshtml")
