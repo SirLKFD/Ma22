@@ -6,12 +6,21 @@
     ViewData["Title"] = "Admin Training Topics";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var training = ViewData["training"] as TrainingViewModel;
+    var limitedModel = Model.Take(6).ToList();
+    var firstColumn = limitedModel.Take(3).ToList();
+    var secondColumn = limitedModel.Skip(3).ToList();
+    double avgRating = (training.Reviews != null && training.Reviews.Any())
+        ? training.Reviews.Average(r => r.ReviewScore)
+        : 0;
+    int fullStars = (int)Math.Floor(avgRating);
+    bool hasHalfStar = (avgRating - fullStars) >= 0.5;
+    int emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 }
 @section NoPadding {}
 
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-<!-- Cover Section with Foggy Bottom -->
+@* <!-- Cover Section with Foggy Bottom -->
 <div class="relative h-[250px] w-full overflow-hidden">
     @if (!string.IsNullOrEmpty(training?.CoverPicture))
     {
@@ -86,6 +95,177 @@
                 </div>
             </div>
         }
+    </div>
+</div>
+
+<!-- Modals -->
+@await Html.PartialAsync("~/Views/Admin/AddTopic.cshtml", new TopicViewModel())
+@await Html.PartialAsync("~/Views/Admin/EditTopic.cshtml", new TopicViewModel())
+@await Html.PartialAsync("~/Views/Admin/DeleteTopic.cshtml", new TopicViewModel())
+
+<script type="text/javascript">
+    function closeAddTopic() {
+        document.getElementById('addTopic').classList.add('hidden');
+    }
+    function closeEditTopic() {
+        document.getElementById('editTopic').classList.add('hidden');
+    }
+    function closeDeleteTopic() {
+        document.getElementById('deleteTopic').classList.add('hidden');
+    }
+</script> *@
+
+
+<div class="flex items-center justify-center bg-blue-900 w-screen h-[250px] ">
+    <h1 class="text-white text-4xl uppercase">Placeholder for Image</h1>
+</div>
+<div class="pb-20 mb-20">
+
+    <div class="flex max-w-[90vw] gap-10 -my-20 mx-20 ">
+        <div class="flex flex-col flex-[2] gap-10">
+            <div class="flex flex-col bg-white p-4 gap-5 rounded-lg shadow-md">
+                <div class="bg-[#EAC231] max-w-fit px-2 py-1 rounded-full text-xs">Topic</div>
+                <h1 class="text-4xl w-3/4 font-weight-bold">@training.TrainingName</h1>
+                <p class="w-3/4">@training.Description</p>
+                <div class="flex items-center gap-6 text-sm text-slate-500">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined">group</span>
+                        <span>2,847 students enrolled</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined">import_contacts</span>
+                        <span>@Model.Count topic@(Model.Count == 1 ? "" : "s")</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined">schedule</span>
+                        <span>@training.DurationName to study</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col bg-white w-full p-4 gap-2 rounded-lg shadow-md">
+                <div class="flex items-center space-x-4">
+                    <span class="material-symbols-outlined bg-[#EAC231] p-2 rounded-lg">import_contacts</span>
+                    <h2 class="text-2xl font-weight-bold">Course Topics</h2>
+                </div>
+                <p class="text-sm">Explore the comprehensive curriculum designed to build your programming skills step by step</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
+                    @foreach (var topic in Model)
+                    {
+                        <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-105 transition-all duration-300" onclick="window.location.href='@Url.Action("TopicDetails", "AdminTopic", new { topicId = topic.Id })'">
+                            <div class="flex justify-between">
+                                <p class="text-xl font-semibold">@topic.TopicName</p>
+                                <div>
+                                    <span class="material-symbols-outlined cursor-pointer text-[20px] hover:text-blue-500"
+                                          onclick='event.stopPropagation(); openEditTopic(@topic.Id, @topic.TrainingId, "@topic.TopicName", "@topic.Description", @topic.MediaCount, "@topic.AccountFirstName", "@topic.AccountLastName", "@topic.UpdatedTime", @Html.Raw(JsonSerializer.Serialize(topic.Media)))'>edit</span>
+                                    <span class="material-symbols-outlined cursor-pointer text-[20px] hover:text-red-500"
+                                          onclick='event.stopPropagation(); openDeleteTopic(@topic.Id, @topic.TrainingId, "@topic.TopicName", @topic.MediaCount, "@topic.AccountFirstName", "@topic.AccountLastName", "@topic.UpdatedTime")'>delete</span>
+                                </div>
+                            </div>
+                            <p class="text-sm">@topic.Description</p>
+
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="flex flex-col bg-white w-full p-4 gap-2 rounded-lg shadow-md">
+                <div class="flex justify-between">
+                    <div class="flex items-center space-x-4">
+                        <span class="material-symbols-outlined bg-[#EAC231] p-2 rounded-lg">star</span>
+                        <h2 class="text-2xl font-weight-bold">Ratings and Reviews</h2>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <p class="text-2xl font-semibold">
+                            @(avgRating > 0 ? avgRating.ToString("0.0") : "No ratings")
+                        </p>
+                        @for (int i = 0; i < fullStars; i++)
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-[#EAC231]" viewBox="0 0 24 24">
+                                <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
+                            </svg>
+                        }
+                        @if (hasHalfStar)
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24">
+                                <defs>
+                                    <linearGradient id="half">
+                                        <stop offset="50%" stop-color="#EAC231" />
+                                        <stop offset="50%" stop-color="white" />
+                                    </linearGradient>
+                                </defs>
+                                <path fill="url(#half)" d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
+                            </svg>
+                        }
+                        @for (int i = 0; i < emptyStars; i++)
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-gray-300" viewBox="0 0 24 24">
+                                <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
+                            </svg>
+                        }
+                    </div>
+                </div>
+                <p>See what other students are saying about this course</p>
+                <div class="flex flex-col gap-10">
+                    @if (training.Reviews != null && training.Reviews.Any())
+                    {
+                        foreach (var review in training.Reviews)
+                        {
+                            <div class="flex flex-col bg-white shadow-md w-full p-4 hover-pointer hover:scale-110 transition-all duration-300">
+                                <p class="text-xl font-semibold">@review.Title</p>
+                                <p class="text-sm">@review.UserReview</p>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="material-symbols-outlined text-[#EAC231]">star</span>
+                                    <span>@review.ReviewScore</span>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="flex flex-col bg-white shadow-md w-full p-4 text-center text-gray-400">
+                            <p class="text-lg font-semibold">No reviews yet for this course.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col flex-[1] gap-10">
+            <div class="flex flex-col p-4 shadow-md bg-white max-h-fit rounded-lg">
+                <div class="flex flex-col items-center gap-2 mb-4">
+                    <h1 class=" text-2xl font-weight-bold">Need new Topics?</h1>
+                    <p class="mb-2">Add more topics for your users</p>
+                    <button class="bg-[#EAC231] px-32 py-2 rounded-lg font-semibold" onclick="addTopic(@training?.Id)">Add Topic +</button>
+                </div>
+                <hr class="mb-2" />
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <p>Skill Level</p>
+                        <p class="bg-[#C6FFCD] max-w-fit px-2 py-1 rounded-full text-xs">@training.SkillLevelName</p>
+                    </div>
+                    <div class="flex justify-between">
+                        <p>Category</p>
+                        <p class="bg-[#FFE9C6] max-w-fit px-2 py-1 rounded-full text-xs">@training.TrainingCategoryName</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col bg-white max-h-fit rounded-lg shadow-md p-4 items-center gap-4">
+                <p class="font-semibold text-xl">Created By</p>
+                <div class="flex ">
+
+                    @if (!string.IsNullOrEmpty(@training.AccountPicture))
+                    {
+                        <img src="@training.AccountPicture" alt="Profile" class="w-[50px] h-[50px] rounded-full object-cover" />
+                    }
+                    else
+                    {
+                        <span class="material-symbols-outlined !text-[50px]">person</span>
+                    }
+                </div>
+                <span>@training.AccountFirstName @training.AccountLastName</span>
+
+            </div>
+        
+
+        </div>
     </div>
 </div>
 
