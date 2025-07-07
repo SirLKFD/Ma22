@@ -117,7 +117,19 @@
 
 
 <div class="flex items-center justify-center bg-blue-900 w-screen h-[250px] ">
-    <h1 class="text-white text-4xl uppercase">Placeholder for Image</h1>
+    @if (!string.IsNullOrEmpty(training?.CoverPicture))
+    {
+        <img src="@training.CoverPicture" alt="Cover Photo" class="h-full w-full object-cover " />
+    }
+    else
+    {
+        <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#640A16] via-[#8B1538] to-[#640A16]">
+            <div class="animate-[float_6s_ease-in-out_infinite] text-center text-white">
+                <span class="material-symbols-outlined mb-2 text-6xl opacity-50">image</span>
+                <p class="text-lg font-medium">No Cover Image Provided</p>
+            </div>
+        </div>
+    }
 </div>
 <div class="pb-20 mb-20">
 
