@@ -120,32 +120,5 @@
     </div>
 </div>
 
-<!-- ✅ JS Preview Script -->
-<script>
-    const input = document.getElementById('profilePictureInput');
-    const preview = document.getElementById('profilePreview');
-    const plus = document.getElementById('plusSign');
-    const previewName = document.getElementById('previewName');
-    const firstNameInput = document.getElementById('firstName');
-    const lastNameInput = document.getElementById('lastName');
-
-    input.addEventListener('change', function () {
-        const file = this.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.src = e.target.result;
-                preview.classList.remove('hidden');
-                plus.classList.add('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    function updatePreviewName() {
-        const firstName = document.getElementById('firstName').value;
-        const lastName = document.getElementById('lastName').value;
-        const fullName = [firstName, lastName].filter(Boolean).join(' ') || 'New User';
-        previewName.textContent = fullName.toUpperCase();
-    }
-</script>
+<!-- User Add Modal AJAX Script -->
+<script src="~/js/useraddmodal_AJAX.js" asp-append-version="true"></script>

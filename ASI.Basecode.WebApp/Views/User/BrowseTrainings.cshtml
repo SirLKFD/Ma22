@@ -125,7 +125,9 @@
 @if (!showAll && Model.Trainings.Count > 9)
 {
     <div class="mt-5 flex justify-center">
-        <button id="loadMoreBtn" class="cursor-pointer">
+        <button id="loadMoreBtn" class="cursor-pointer" 
+                data-currently-displayed="@(trainingsToDisplay.Count())" 
+                data-total-trainings="@Model.Trainings.Count">
             <span class="material-symbols-outlined animate-bounce text-[50px]">
                 keyboard_double_arrow_down
             </span>
@@ -134,152 +136,6 @@
 }
 
 @section Scripts {
-    <script>
-        let currentlyDisplayed = @(trainingsToDisplay.Count());
-        const totalTrainings = @Model.Trainings.Count;
-        const pageSize = 9;
-        let selectedCategoryName = null;
-
-        // Category navigation logic
-        let categoryStart = 0;
-        const maxVisible = 6;
-        const wrapper = document.getElementById('category-cards-wrapper');
-        const categories = Array.from(wrapper.querySelectorAll('.category-card'));
-        function updateCategoryVisibility(animatedDirection = null) {
-            // Animate slide
-            if (animatedDirection) {
-                wrapper.style.transition = 'transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)';
-                wrapper.style.transform = `translateX(${animatedDirection === 'left' ? '80px' : '-80px'})`;
-                setTimeout(() => {
-                    wrapper.style.transform = 'translateX(0)';
-                }, 700);
-            }
-            categories.forEach((el, idx) => {
-                el.style.display = (idx >= categoryStart && idx < categoryStart + maxVisible) ? '' : 'none';
-            });
-        }
-        document.getElementById('category-left-btn').addEventListener('click', function() {
-            if (categoryStart > 0) {
-                categoryStart--;
-                updateCategoryVisibility('left');
-            }
-        });
-        document.getElementById('category-right-btn').addEventListener('click', function() {
-            if (categoryStart + maxVisible < categories.length) {
-                categoryStart++;
-                updateCategoryVisibility('right');
-            }
-        });
-        updateCategoryVisibility();
-
-        // AJAX filter by category
-        document.querySelectorAll('.category-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const categoryId = this.getAttribute('data-category-id');
-                const categoryName = this.querySelector('p').textContent;
-                const categoryDescription = this.getAttribute('data-category-description') || '';
-                // Show loading indicator
-                document.getElementById('trainings-loading').style.display = '';
-                fetch(`/UserTraining/TrainingsByCategory?categoryId=${categoryId}`)
-                    .then(response => response.text())
-                    .then(html => {
-                        document.getElementById('trainings-container').innerHTML = html;
-                        // Update title and subtitle
-                        document.getElementById('trainings-title').textContent = categoryName;
-                        document.getElementById('trainings-subtitle').innerHTML = categoryDescription;
-                        selectedCategoryName = categoryName;
-                        document.getElementById('trainings-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    })
-                    .finally(() => {
-                        document.getElementById('trainings-loading').style.display = 'none';
-                    });
-            });
-        });
-
-        // AJAX reload all trainings
-        document.getElementById('showAllTrainingsBtn').addEventListener('click', function() {
-            // Show loading indicator
-            document.getElementById('trainings-loading').style.display = '';
-            fetch(`/UserTraining/LoadMoreTrainings?skip=0`)
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('trainings-container').innerHTML = html;
-                    // Reset title and subtitle
-                    document.getElementById('trainings-title').textContent = 'Trainings';
-                    document.getElementById('trainings-subtitle').innerHTML = 'Hand-picked courses from our expert instructors';
-                    selectedCategoryName = null;
-                    document.getElementById('trainings-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                })
-                .finally(() => {
-                    document.getElementById('trainings-loading').style.display = 'none';
-                });
-        });
-
-        // Existing load more logic
-        document.getElementById("loadMoreBtn")?.addEventListener("click", function () {
-            const button = this;
-            const buttonIcon = button.querySelector('.material-symbols-outlined');
-            // Show loading state
-            buttonIcon.textContent = 'hourglass_empty';
-            buttonIcon.classList.add('animate-spin');
-            button.disabled = true;
-            fetch(`/UserTraining/LoadMoreTrainings?skip=${currentlyDisplayed}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    const container = document.getElementById("trainings-container");
-                    container.insertAdjacentHTML('beforeend', data);
-                    // Update the count
-                    currentlyDisplayed += pageSize;
-                    // Hide button if all trainings are loaded
-                    if (currentlyDisplayed >= totalTrainings) {
-                        button.style.display = "none";
-                    } else {
-                        // Reset button state
-                        buttonIcon.textContent = 'keyboard_double_arrow_down';
-                        buttonIcon.classList.remove('animate-spin');
-                        buttonIcon.classList.add('animate-bounce');
-                        button.disabled = false;
-                    }
-                })
-                .catch(error => {
-                    console.error("Error loading more trainings:", error);
-                    // Reset button state on error
-                    buttonIcon.textContent = 'keyboard_double_arrow_down';
-                    buttonIcon.classList.remove('animate-spin');
-                    buttonIcon.classList.add('animate-bounce');
-                    button.disabled = false;
-                    alert('Failed to load more trainings. Please try again.');
-                });
-        });
-
-        // SEARCH logic
-        const searchInput = document.getElementById('training-search-input');
-        const searchBtn = document.getElementById('training-search-btn');
-        function doTrainingSearch() {
-            const search = searchInput.value.trim();
-            document.getElementById('trainings-loading').style.display = '';
-            fetch(`/UserTraining/SearchTrainings?search=${encodeURIComponent(search)}`)
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('trainings-container').innerHTML = html;
-                    document.getElementById('trainings-title').textContent = 'Trainings';
-                    document.getElementById('trainings-subtitle').innerHTML = 'Hand-picked courses from our expert instructors';
-                    document.getElementById('trainings-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                })
-                .finally(() => {
-                    document.getElementById('trainings-loading').style.display = 'none';
-                });
-        }
-        searchBtn.addEventListener('click', doTrainingSearch);
-        searchInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                doTrainingSearch();
-            }
-        });
-    </script>
+    <!-- BrowseTrainings AJAX Script -->
+    <script src="~/js/browsetrainings_AJAX.js" asp-append-version="true"></script>
 }
