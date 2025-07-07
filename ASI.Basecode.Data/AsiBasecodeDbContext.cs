@@ -27,6 +27,8 @@ namespace ASI.Basecode.Data
         public virtual DbSet<TrainingCategory> TrainingCategories { get; set; }
         public virtual DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
 
+        public virtual DbSet<Review> Reviews { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Account>(entity =>
@@ -316,6 +318,27 @@ namespace ASI.Basecode.Data
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_PasswordResetTokens_Accounts");
             });
+
+            modelBuilder.Entity<Review>(entity =>
+            {
+                entity.HasKey(e => e.ReviewId);
+
+                entity.Property(e => e.ReviewId).ValueGeneratedOnAdd();
+                entity.Property(e => e.Title).HasMaxLength(100);
+
+                entity.HasOne(d => d.Account)
+                .WithMany(a => a.Reviews) // <-- Specify the navigation property
+                .HasForeignKey(d => d.AccountId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Reviews_Accounts");
+
+                entity.HasOne(d => d.Training)
+                    .WithMany(t => t.Reviews) // <-- Specify the navigation property
+                    .HasForeignKey(d => d.TrainingId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_Reviews_Trainings");
+            });
+
 
             OnModelCreatingPartial(modelBuilder);
         }
