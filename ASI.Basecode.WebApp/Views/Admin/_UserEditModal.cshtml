@@ -108,33 +108,5 @@
     </div>
 </div>
 
-<script>
-    // Profile picture preview for edit modal
-    document.getElementById('editProfilePictureInput').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.getElementById('editProfileImage');
-                const placeholder = document.getElementById('editProfilePlaceholder');
-                const container = document.getElementById('editProfileImageContainer');
-
-                img.src = e.target.result;
-                img.classList.remove('hidden');
-                placeholder.classList.add('hidden');
-                container.style.background = 'transparent';
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    // Add form submission handling for debugging
-    document.getElementById('editUserForm').addEventListener('submit', function(e) {
-        console.log('Form submitted');
-        console.log('User ID:', document.getElementById('editUserIdInput').value);
-        console.log('Profile Picture File:', document.getElementById('editProfilePictureInput').files[0]);
-        console.log('Existing Profile Picture:', document.getElementById('editExistingProfilePicture').value);
-
-        // Don't prevent default - let the form submit normally
-    });
-</script>
+<!-- User Edit Modal AJAX Script -->
+<script src="~/js/usereditmodal_AJAX.js" asp-append-version="true"></script>
