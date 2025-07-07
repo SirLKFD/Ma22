@@ -1,4 +1,5 @@
 ﻿@model ASI.Basecode.Services.ServiceModels.TopicViewModel
+@using ASI.Basecode.Services.Helpers
 @{
     ViewData["Title"] = "User Topic Details";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
@@ -7,74 +8,12 @@
     var hasAnyFiles = mediaList != null && mediaList.Any();
 }
 
-
-@functions {
-    string GetFileExtension(string fileName)
-    {
-        return fileName != null && fileName.Contains(".") ? fileName.Split('.').Last().ToUpper() : "";
-    }
-
-    string GetFileExtensionColor(string extension)
-    {
-        return extension.ToLower() switch
-        {
-            "pdf" => "bg-red-500",
-            "doc" or "docx" => "bg-blue-500",
-            "xls" or "xlsx" => "bg-green-500",
-            "ppt" or "pptx" => "bg-orange-500",
-            _ => "bg-gray-500"
-        };
-    }
-
-    bool IsPdfFile(string mediaType, string fileName)
-    {
-        return (mediaType != null && mediaType.ToLower().Contains("pdf")) ||
-               (fileName != null && fileName.ToLower().EndsWith(".pdf"));
-    }
-
-    bool IsDocumentFile(string mediaType, string fileName)
-    {
-        // Check by MIME type first
-        if (mediaType != null)
-        {
-            var type = mediaType.ToLower();
-            if (type.Contains("pdf") ||
-                type.Contains("word") ||
-                type.Contains("excel") ||
-                type.Contains("powerpoint") ||
-                type.Contains("spreadsheet") ||
-                type.Contains("presentation") ||
-                type.Contains("msword") ||
-                type.Contains("vnd.openxmlformats") ||
-                type.Contains("vnd.ms-"))
-            {
-                return true;
-            }
-        }
-
-        // Check by file extension as fallback
-        if (fileName != null)
-        {
-            var ext = fileName.ToLower();
-            return ext.EndsWith(".pdf") ||
-                   ext.EndsWith(".doc") ||
-                   ext.EndsWith(".docx") ||
-                   ext.EndsWith(".xls") ||
-                   ext.EndsWith(".xlsx") ||
-                   ext.EndsWith(".ppt") ||
-                   ext.EndsWith(".pptx");
-        }
-
-        return false;
-    }
-}
-
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-<div class="flex w-full gap-8 ">
-    <div class="flex w-2/3 flex-col gap-8 ">
+<div class="flex flex-col md:flex-row w-full gap-4 md:gap-8 box-border px-2 sm:px-4 md:px-8 py-2 sm:py-4 md:py-8">
+    <div class="flex flex-col gap-8 w-full md:w-2/3">
 
-        <div class="flex w-full flex-col gap-4 rounded-xl bg-white p-4 shadow-md">
+        <div class="flex w-full flex-col gap-4 rounded-xl bg-white p-4 shadow-md box-border">
             <div class="flex items-start justify-between">
                 <div class="flex-1">
                     <h1 class="mb-2 text-5xl font-semibold uppercase">@Model.TopicName</h1>
@@ -95,16 +34,16 @@
                 <div class="ml-4">
                     @if (hasAnyFiles)
                     {
-                        <button onclick="openDownloadModal()" class="flex items-center gap-2 rounded-xl bg-[#640A16] px-4 py-2 text-white transition-colors hover:bg-[#4a0810] focus:outline-none focus:ring-2 focus:ring-[#640A16]">
+                        <button onclick="openDownloadModal()" class="flex flex-wrap md:flex-nowrap items-center gap-2 rounded-xl bg-[#640A16] px-2 sm:px-4 py-2 text-white transition-colors hover:bg-[#4a0810] focus:outline-none focus:ring-2 focus:ring-[#640A16] w-full max-w-[180px] sm:max-w-xs md:max-w-none">
                             <span class="material-symbols-outlined">download</span>
-                            <span>Download Options</span>
+                            <span class="truncate text-xs sm:text-sm md:text-base">Download Options</span>
                         </button>
                     }
                     else
                     {
-                        <button disabled class="flex cursor-not-allowed items-center gap-2 rounded-xl bg-gray-400 px-4 py-2 text-gray-600">
+                        <button disabled class="flex flex-wrap md:flex-nowrap cursor-not-allowed items-center gap-2 rounded-xl bg-gray-400 px-2 sm:px-4 py-2 text-gray-600 w-full max-w-[180px] sm:max-w-xs md:max-w-none">
                             <span class="material-symbols-outlined">download</span>
-                            <span>Download Options</span>
+                            <span class="truncate text-xs sm:text-sm md:text-base">Download Options</span>
                         </button>
                     }
                 </div>
@@ -112,7 +51,7 @@
         </div>
 
         <!-- Video Section -->
-        <div class="flex w-full flex-col rounded-lg bg-white p-4 shadow-sm">
+        <div class="flex w-full flex-col rounded-lg bg-white p-4 shadow-sm box-border">
             <div class="flex space-x-2">
                 <span class="material-symbols-outlined rounded-xl bg-red-100 p-2 !text-[25px]">movie</span>
                 <div class="flex flex-col">
@@ -121,7 +60,7 @@
                 </div>
             </div>
 
-            <div class="mt-2 flex overflow-x-auto whitespace-nowrap">
+            <div class="mt-2 flex overflow-x-auto max-w-full whitespace-nowrap">
                 @if (mediaList != null && mediaList.Any(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")))
                 {
                     foreach (var video in mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")))
@@ -148,21 +87,21 @@
         </div>
 
         <!-- Documents Section -->
-        <div class="flex w-full flex-col whitespace-nowrap rounded-lg bg-white p-4 shadow-sm">
+        <div class="flex w-full flex-col whitespace-nowrap rounded-lg bg-white p-4 shadow-sm box-border">
             <div class="flex space-x-2">
                 <span class="material-symbols-outlined rounded-xl bg-green-100 p-2 !text-[25px]">docs</span>
                 <div class="flex flex-col">
                     <h2 class="text-xl font-semibold">Documents</h2>
-                    <p class="text-sm">@((mediaList?.Where(m => IsDocumentFile(m.MediaType, m.Name)).Count() ?? 0) + " document(s)")</p>
+                    <p class="text-sm">@((mediaList?.Where(m => MediaHelper.IsDocumentFile(m.MediaType, m.Name)).Count() ?? 0) + " document(s)")</p>
                 </div>
             </div>
-            @if (mediaList != null && mediaList.Any(m => IsDocumentFile(m.MediaType, m.Name)))
+            @if (mediaList != null && mediaList.Any(m => MediaHelper.IsDocumentFile(m.MediaType, m.Name)))
             {
-                foreach (var doc in mediaList.Where(m => IsDocumentFile(m.MediaType, m.Name)))
+                foreach (var doc in mediaList.Where(m => MediaHelper.IsDocumentFile(m.MediaType, m.Name)))
                 {
-                    var fileExtension = GetFileExtension(doc.Name);
-                    var extensionColor = GetFileExtensionColor(fileExtension);
-                    var isPdf = IsPdfFile(doc.MediaType, doc.Name);
+                    var fileExtension = MediaHelper.GetFileExtension(doc.Name);
+                    var extensionColor = MediaHelper.GetFileExtensionColor(fileExtension);
+                    var isPdf = MediaHelper.IsPdfFile(doc.MediaType, doc.Name);
 
                     <div class="m-2 flex h-[100px] w-full transform cursor-pointer items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-transform duration-200 ease-in-out hover:scale-[102%] hover:shadow-2xl" onclick="openMediaModal('document', '@doc.MediaUrl', '@doc.MediaType', '@isPdf.ToString().ToLower()')">
                         <div class="flex space-x-3">
@@ -174,7 +113,7 @@
                                 }
                             </div>
                             <div class="flex flex-col">
-                                <h2 class="text-lg font-semibold">@(doc.Name != null && doc.Name.Length > 40 ? doc.Name.Substring(0, 40) + "..." : doc.Name)</h2>
+                                <h2 class="text-lg font-semibold truncate max-w-[180px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-none lg:whitespace-normal lg:overflow-visible lg:text-ellipsis-none">@(doc.Name)</h2>
                                 <p class="text-xs text-gray-600">Document Resource</p>
                                 @if (isPdf)
                                 {
@@ -200,7 +139,7 @@
         </div>
 
         <!-- Images Section -->
-        <div class="flex w-full flex-col rounded-lg bg-white p-4 shadow-sm">
+        <div class="flex w-full flex-col rounded-lg bg-white p-4 shadow-sm box-border">
             <div class="flex space-x-2">
                 <span class="material-symbols-outlined rounded-xl bg-purple-100 p-2 !text-[25px]">image</span>
                 <div class="flex flex-col">
@@ -234,8 +173,8 @@
     </div>
 
     <!-- Right Sidebar -->
-    <div class="w-1/3">
-        <div class="flex max-h-fit flex-col rounded-xl bg-[#640A16] p-4 text-white shadow-md">
+    <div class="w-full md:w-1/3 mt-8 md:mt-0">
+        <div class="flex max-h-fit flex-col rounded-xl bg-[#640A16] p-4 text-white shadow-md box-border">
             <div class="flex items-center justify-center space-x-2">
                 <span class="material-symbols-outlined !text-[40px]">import_contacts</span>
                 <h2 class="text-3xl font-semibold">Other Topics</h2>
@@ -268,7 +207,7 @@
 
 <!-- Download Options Modal -->
 <div id="downloadModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-60">
-    <div class="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6 shadow-2xl">
+    <div class="relative max-h-[90vh] w-[95vw] md:w-full max-w-lg overflow-y-auto rounded-xl bg-white p-2 sm:p-6 shadow-2xl box-border">
         <div class="mb-4 flex items-center justify-between">
             <h2 class="text-2xl font-semibold text-gray-800">Download Options</h2>
             <button onclick="closeDownloadModal()" class="text-gray-500 hover:text-gray-700">
@@ -300,7 +239,7 @@
                             <div class="mt-2 text-xs text-gray-500">
                                 @{
                                     var totalVideos = mediaList?.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")).Count() ?? 0;
-                                    var totalDocs = mediaList?.Where(m => IsDocumentFile(m.MediaType, m.Name)).Count() ?? 0;
+                                    var totalDocs = mediaList?.Where(m => MediaHelper.IsDocumentFile(m.MediaType, m.Name)).Count() ?? 0;
                                     var totalImages = mediaList?.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")).Count() ?? 0;
                                 }
                                 Includes: @totalVideos video(s), @totalDocs document(s), @totalImages image(s)
@@ -390,7 +329,7 @@
                                                 {
                                                     <span class="material-symbols-outlined text-red-500 !text-[16px]">movie</span>
                                                 }
-                                                else if (IsDocumentFile(media.MediaType, media.Name))
+                                                else if (MediaHelper.IsDocumentFile(media.MediaType, media.Name))
                                                 {
                                                     <span class="material-symbols-outlined text-green-500 !text-[16px]">docs</span>
                                                 }
@@ -440,13 +379,13 @@
 
 <!-- Image Preview Modal -->
 <div id="imageModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-60">
-    <span class="absolute right-8 top-4 cursor-pointer select-none text-4xl text-white" onclick="closeImageModal()">&times;</span>
+    <span class="absolute right-4 top-2 sm:right-8 sm:top-4 cursor-pointer select-none text-4xl text-white" onclick="closeImageModal()">&times;</span>
     <img id="modalImage" src="" alt="Preview" class="max-h-[80vh] max-w-[90vw] rounded shadow-lg" />
 </div>
 
 <!-- Media Preview Modal -->
 <div id="mediaModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-60">
-    <span class="absolute right-8 top-4 cursor-pointer select-none text-4xl text-white" onclick="closeMediaModal()">&times;</span>
+    <span class="absolute right-4 top-2 sm:right-8 sm:top-4 cursor-pointer select-none text-4xl text-white" onclick="closeMediaModal()">&times;</span>
     <div id="modalContent" class="flex max-h-[80vh] max-w-[90vw] items-center justify-center rounded bg-transparent p-4 shadow-lg"></div>
 </div>
 

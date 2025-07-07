@@ -8,7 +8,8 @@
         <img src="~/img/Logo.png" alt="MA22 Logo" class="h-full w-full object-contain" />
     </div> 
 
-    <div class="flex flex-1 justify-center gap-40 font-semibold">
+    <!-- Desktop Nav Links -->
+    <div class="hidden md:flex flex-1 justify-center gap-40 font-semibold">
         <a asp-controller="User" asp-action="UserDashboard" class="hover:text-[#EAC231]">
             Home
         </a>
@@ -20,7 +21,7 @@
         </a>
     </div>
 
-    <div class="absolute right-10">
+    <div class="absolute right-10 flex items-center gap-2">
         <div class="flex cursor-pointer items-center justify-center gap-4" onclick="toggleDropDown()">
             <span >
                 @{
@@ -39,6 +40,13 @@
             <span class="material-symbols-outlined hover:text-[#EAC231]">arrow_drop_down</span>
         </div>
 
+        <!-- Hamburger Icon (Mobile, right after dropdown) -->
+        <div class="md:hidden flex items-center">
+            <button id="hamburgerBtn" class="focus:outline-none" onclick="toggleMobileMenu()">
+                <span class="material-symbols-outlined !text-[32px]">menu</span>
+            </button>
+        </div>
+
         <!-- Dropdown Menu -->
         <div id="dropdownMenu" class="absolute right-0 top-full z-50 mt-2 hidden min-w-[140px] rounded bg-white text-black shadow-md">
             <ul class="flex flex-col py-2 text-sm">
@@ -46,13 +54,32 @@
                 <li><a href="/Account/SignOutUser" class="block px-4 py-2 hover:bg-gray-100">Log Out</a></li>
             </ul>
         </div>
-    </div> 
+    </div>
+</div>
+
+<!-- Mobile Nav Menu -->
+<div id="mobileNavMenu" class="md:hidden fixed top-[10vh] left-0 w-full bg-[#640A16] text-white z-40 hidden transition-all duration-300">
+    <div class="flex flex-col items-center py-4 gap-4 font-semibold">
+        <a asp-controller="User" asp-action="UserDashboard" class="hover:text-[#EAC231] w-full text-center" onclick="closeMobileMenu()">Home</a>
+        <a asp-controller="User" asp-action="BrowseTrainings" class="hover:text-[#EAC231] w-full text-center" onclick="closeMobileMenu()">Browse Trainings</a>
+        <a asp-controller="User" asp-action="UserTrainings" class="hover:text-[#EAC231] w-full text-center" onclick="closeMobileMenu()">My Trainings</a>
+    </div>
 </div>
 
 <script>
     function toggleDropDown() {
         const menu = document.getElementById("dropdownMenu");
         menu.classList.toggle("hidden");
+    }
+
+    // Hamburger menu logic
+    function toggleMobileMenu() {
+        const menu = document.getElementById("mobileNavMenu");
+        menu.classList.toggle("hidden");
+    }
+    function closeMobileMenu() {
+        const menu = document.getElementById("mobileNavMenu");
+        menu.classList.add("hidden");
     }
 
     // Scroll behavior for topbar
