@@ -33,11 +33,42 @@
     <div class="h-[6px] w-full bg-gradient-to-r from-[#640A16] via-[#EAC231] to-[#640A16]"></div>
     <div class="flex flex-col items-center justify-center px-6 py-4">
         <h1 class="text-center text-3xl font-bold text-gray-800 md:text-4xl">@Html.Raw(Html.Encode(training?.TrainingName))</h1>
+        @{
+            double avgRating = (training?.Reviews != null && training.Reviews.Any())
+                ? training.Reviews.Average(r => r.ReviewScore)
+                : 0;
+            int fullStars = (int)Math.Floor(avgRating);
+            bool hasHalfStar = (avgRating - fullStars) >= 0.5;
+            int emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+        }
         <div class="mt-2 flex items-center space-x-2 text-xl text-yellow-500">
-            <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span>
+            @for (int i = 0; i < fullStars; i++)
+            {
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-[#EAC231]" viewBox="0 0 24 24">
+                    <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
+                </svg>
+            }
+            @if (hasHalfStar)
+            {
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24">
+                    <defs>
+                        <linearGradient id="half">
+                            <stop offset="50%" stop-color="#EAC231"/>
+                            <stop offset="50%" stop-color="#d1d5db"/>
+                        </linearGradient>
+                    </defs>
+                    <path fill="url(#half)" d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
+                </svg>
+            }
+            @for (int i = 0; i < emptyStars; i++)
+            {
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-gray-300" viewBox="0 0 24 24">
+                    <path d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
+                </svg>
+            }
             <div class="ml-2 text-left text-sm text-gray-600">
-                <div class="text-base font-bold text-gray-800">5.0</div>
-                <div class="text-xs">Positive Reviews</div>
+                <div class="text-base font-bold text-gray-800">@(avgRating > 0 ? avgRating.ToString("0.0") : "No ratings")</div>
+                <div class="text-xs">@((training?.Reviews != null && training.Reviews.Any()) ? ($"{training.Reviews.Count} Review{(training.Reviews.Count == 1 ? "" : "s")}") : "No Reviews")</div>
             </div>
         </div>
     </div>

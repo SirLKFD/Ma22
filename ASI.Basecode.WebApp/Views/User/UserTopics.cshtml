@@ -18,7 +18,19 @@
 
 <!--Placeholder for cover photo-->
 <div class="flex items-center justify-center bg-blue-900 w-screen h-[250px] -mx-20 -my-20 ">
-    <h1 class="text-white text-4xl uppercase">Placeholder for Image</h1>
+    @if (!string.IsNullOrEmpty(training?.CoverPicture))
+    {
+        <img src="@training.CoverPicture" alt="Cover Photo" class="h-full w-full object-cover [mask-image:linear-gradient(to_bottom,black 70%,transparent_100%)]" />
+    }
+    else
+    {
+        <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#640A16] via-[#8B1538] to-[#640A16]">
+            <div class="animate-[float_6s_ease-in-out_infinite] text-center text-white">
+                <span class="material-symbols-outlined mb-2 text-6xl opacity-50">image</span>
+                <p class="text-lg font-medium">No Cover Image Provided</p>
+            </div>
+        </div>
+    }
 </div>
 <div class="flex w-full gap-10">
     <div class="flex flex-col w-2/3 gap-10">
@@ -79,7 +91,7 @@
                             <defs>
                                 <linearGradient id="half">
                                     <stop offset="50%" stop-color="#EAC231"/>
-                                    <stop offset="50%" stop-color="white"/>
+                                    <stop offset="50%" stop-color="#d1d5db"/>
                                 </linearGradient>
                             </defs>
                             <path fill="url(#half)" d="M12 .587l3.668 7.431L24 9.753l-6 5.845 1.416 8.263L12 18.896l-7.416 4.965L6 15.598 0 9.753l8.332-1.735z" />
