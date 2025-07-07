@@ -39,7 +39,7 @@ else
                         <p><strong>Modified:</strong> @training.UpdatedTime.ToString("MMM dd, yyyy")</p>
                         <p><strong>By:</strong> @training.AccountFirstName @training.AccountLastName</p>
                     </div>
-                    <a href="@Url.Action("TrainingDetails", "UserTraining", new { trainingId = training.Id })"
+                    <a href="@Url.Action("Topics","UserTopic", new { trainingId = training.Id })"
                        class="rounded-full bg-[#640A16] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#4e0712]">
                         Access
                     </a>
