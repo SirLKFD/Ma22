@@ -8,5 +8,6 @@ namespace ASI.Basecode.Services.Interfaces
         void EnrollUser(int userId, int trainingId);
         bool IsUserEnrolled(int userId, int trainingId);
         List<TrainingViewModel> GetEnrolledTrainings(int userId);
+        int GetEnrollmentCount(int trainingId);
     }
 }

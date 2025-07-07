@@ -61,22 +61,28 @@ namespace ASI.Basecode.Services.Services
 
         public List<TrainingViewModel> GetAllTrainingsByCategoryId(int categoryId)
         {
-            return _repository.GetTrainings().Where(t => t.TrainingCategoryId == categoryId).Select(t => new TrainingViewModel
-            {
-                Id = t.Id,
-                Ratings = t.Ratings,
-                AccountId = t.AccountId,
-                TrainingName = t.TrainingName,
-                TrainingCategoryId = t.TrainingCategoryId,
-                SkillLevel = t.SkillLevel,
-                Description = t.Description,
-                CoverPicture = t.CoverPicture,
-                Duration = t.Duration,
-                CourseCode = t.CourseCode,
-                UpdatedTime = t.UpdatedTime,
-                AccountFirstName = t.Account.FirstName,
-                AccountLastName = t.Account.LastName
-            }).ToList();
+            return _repository.GetTrainings()
+                .Include(t => t.SkillLevelNavigation)
+                .Include(t => t.TrainingCategory)
+                .Where(t => t.TrainingCategoryId == categoryId)
+                .Select(t => new TrainingViewModel
+                {
+                    Id = t.Id,
+                    Ratings = t.Ratings,
+                    AccountId = t.AccountId,
+                    TrainingName = t.TrainingName,
+                    TrainingCategoryId = t.TrainingCategoryId,
+                    TrainingCategoryName = t.TrainingCategory.CategoryName,
+                    SkillLevel = t.SkillLevel,
+                    SkillLevelName = t.SkillLevelNavigation.SkillLevel1,
+                    Description = t.Description,
+                    CoverPicture = t.CoverPicture,
+                    Duration = t.Duration,
+                    CourseCode = t.CourseCode,
+                    UpdatedTime = t.UpdatedTime,
+                    AccountFirstName = t.Account.FirstName,
+                    AccountLastName = t.Account.LastName
+                }).ToList();
         }
 
         public TrainingViewModel GetTrainingById(int id)
@@ -121,22 +127,27 @@ namespace ASI.Basecode.Services.Services
 
         public List<TrainingViewModel> GetAllTrainings()
         {
-            return _repository.GetTrainings().Select(t => new TrainingViewModel
-            {
-                Id = t.Id,
-                Ratings = t.Ratings,
-                AccountId = t.AccountId,
-                TrainingName = t.TrainingName,
-                TrainingCategoryId = t.TrainingCategoryId,
-                SkillLevel = t.SkillLevel,
-                Description = t.Description,
-                CoverPicture = t.CoverPicture,
-                Duration = t.Duration,
-                CourseCode = t.CourseCode,
-                UpdatedTime = t.UpdatedTime,
-                AccountFirstName = t.Account.FirstName,
-                AccountLastName = t.Account.LastName
-            }).ToList();
+            return _repository.GetTrainings()
+                .Include(t => t.SkillLevelNavigation)
+                .Include(t => t.TrainingCategory)
+                .Select(t => new TrainingViewModel
+                {
+                    Id = t.Id,
+                    Ratings = t.Ratings,
+                    AccountId = t.AccountId,
+                    TrainingName = t.TrainingName,
+                    TrainingCategoryId = t.TrainingCategoryId,
+                    TrainingCategoryName = t.TrainingCategory.CategoryName,
+                    SkillLevel = t.SkillLevel,
+                    SkillLevelName = t.SkillLevelNavigation.SkillLevel1,
+                    Description = t.Description,
+                    CoverPicture = t.CoverPicture,
+                    Duration = t.Duration,
+                    CourseCode = t.CourseCode,
+                    UpdatedTime = t.UpdatedTime,
+                    AccountFirstName = t.Account.FirstName,
+                    AccountLastName = t.Account.LastName
+                }).ToList();
         }
 
         public void UpdateTraining(TrainingViewModel model)
@@ -199,7 +210,10 @@ namespace ASI.Basecode.Services.Services
         }
         public List<TrainingViewModel> GetFilteredTrainings(string search, int? categoryId, int? skillLevelId, int page, int pageSize, out int totalCount)
         {
-            var query = _repository.GetTrainings().AsQueryable();
+            var query = _repository.GetTrainings()
+                .Include(t => t.SkillLevelNavigation)
+                .Include(t => t.TrainingCategory)
+                .AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
             {
@@ -235,7 +249,9 @@ namespace ASI.Basecode.Services.Services
                 AccountId = training.AccountId,
                 TrainingName = training.TrainingName,
                 TrainingCategoryId = training.TrainingCategoryId,
+                TrainingCategoryName = training.TrainingCategory.CategoryName,
                 SkillLevel = training.SkillLevel,
+                SkillLevelName = training.SkillLevelNavigation.SkillLevel1,
                 Description = training.Description,
                 CoverPicture = training.CoverPicture,
                 Duration = training.Duration,

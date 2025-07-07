@@ -1,56 +1,54 @@
 ﻿@model ASI.Basecode.Services.ServiceModels.BrowseTrainingsViewModel
 @{
-    ViewData["Title"] = "UserTrainings";
+    ViewData["Title"] = "Ma22 | My Trainings";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
     bool showAll = Context.Request.Query["showAll"] == "true";
-    var trainingsToDisplay = showAll ? Model.Trainings : Model.Trainings.Take(9);
+    // Only enrolled trainings
+    var enrolledTrainings = Model.Trainings;
+    var trainingsToDisplay = showAll ? enrolledTrainings : enrolledTrainings.Take(9);
+    // Only categories that have at least one enrolled training
+    var enrolledCategoryIds = enrolledTrainings.Select(t => t.TrainingCategoryId).Distinct().ToList();
+    var categoriesToDisplay = Model.Categories.Where(c => enrolledCategoryIds.Contains(c.Id)).ToList();
 }
 
 
-<div class="flex flex-col mt-10 mb-20 justify-center items-center h-[50vh] gap-10">
-    <h1 class="md:text-5xl lg:text-6xl font-weight-bold">
+<div class="mb-20 mt-10 flex h-[50vh] flex-col items-center justify-center gap-10">
+    <h1 class="font-weight-bold md:text-5xl lg:text-6xl">
         Enrolled Trainings
     </h1>
     <p class="font-semibold">Continue where you left off.</p>
-    <div class="relative w-1/2 space-r-2">
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <span class="material-symbols-outlined text-gray-400 text-xl">search</span>
+    <div class="space-r-2 relative w-1/2">
+        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+            <span class="material-symbols-outlined text-xl text-gray-400">search</span>
         </div>
         <input id="usertrainings-search-input" type="search" name="search"
-                class="w-full h-12 rounded-xl border border-gray-300 px-5 py-4 pr-[90px] text-md text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231] transition"
+                class="text-md h-12 w-full rounded-xl border border-gray-300 px-5 py-4 pr-[90px] text-gray-900 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-[#EAC231]"
                 placeholder="What are you looking for?" value="@Context.Request.Query["search"]" />
         <button id="usertrainings-search-btn" type="button"
-                class="absolute top-[6px] right-2 rounded-xl bg-[#EAC231] px-4 py-2 text-sm font-medium text-black hover:bg-[#cfa221] transition">
+                class="absolute right-2 top-[6px] rounded-xl bg-[#EAC231] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#cfa221]">
             Search
         </button>
     </div>
 </div>
 
-<div class="flex flex-col justify-center w-screen bg-white -mx-20 p-5 gap-5 mb-20">
-    <div class="flex flex-col items-center text-center gap-5 mb-10">
-        <h2 class="text-4xl font-weight-bold">Explore by Category</h2>
+<div class="-mx-20 mb-20 flex w-screen flex-col justify-center gap-5 bg-white p-5">
+    <div class="mb-10 flex flex-col items-center gap-5 text-center">
+        <h2 class="font-weight-bold text-4xl">Explore by Category</h2>
         <p>Choose from our popular learning paths</p>
     </div>
     <div class="flex flex-wrap justify-center gap-20" id="usertrainings-category-list-container">
         <button id="usertrainings-category-left-btn" class="mr-2 rounded bg-[#EAC231] px-4 py-2 font-semibold text-black shadow transition hover:bg-[#cfa221]">&#8592;</button>
         <div id="usertrainings-category-cards-wrapper" class="flex flex-wrap justify-center gap-20">
-        @if (Model != null && Model.Categories.Any())
+        @if (categoriesToDisplay.Any())
         {
-            foreach (var category in Model.Categories)
+            foreach (var category in categoriesToDisplay)
             {
-                <div class="category-card flex flex-col items-center justify-center
-                                        bg-white text-black
-                                        w-[150px] aspect-square
-                                        p-4 rounded-xl gap-4
-                                        shadow-md hover:cursor-pointer
-                                        hover:scale-110 transition-all duration-300"
+                <div class="category-card flex aspect-square w-[150px] flex-col items-center justify-center gap-4 rounded-xl bg-white p-4 text-black shadow-md transition-all duration-300 hover:scale-110 hover:cursor-pointer"
                      data-category-id="@category.Id" data-category-description="@category.Description">
-                    <span class="material-symbols-outlined
-                                             text-black bg-[#FFE9C6]
-                                             p-2 rounded-xl text-[40px]">
+                    <span class="material-symbols-outlined rounded-xl bg-[#FFE9C6] p-2 text-black text-[40px]">
                         code
                     </span>
-                    <p class="font-semibold text-center text-sm">@category.CategoryName</p>
+                    <p class="text-center text-sm font-semibold">@category.CategoryName</p>
                 </div>
             }
         }
@@ -60,16 +58,16 @@
 
 </div>
 
-<div class="flex flex-col items-center my-10">
-    <h2 id="usertrainings-title" class="text-4xl font-weight-bold">Trainings</h2>
+<div class="my-10 flex flex-col items-center">
+    <h2 id="usertrainings-title" class="font-weight-bold text-4xl">Trainings</h2>
     <p id="usertrainings-subtitle">Hand-picked courses from our expert instructors</p>
     <div id="usertrainings-loading" class="mt-2" style="display:none;">
         <span class="material-symbols-outlined animate-spin text-3xl">hourglass_empty</span>
     </div>
 </div>
 
-<div id="usertrainings-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-20 mx-20">
-    @if (Model != null && Model.Trainings.Any())
+<div id="usertrainings-container" class="mx-20 mb-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    @if (enrolledTrainings.Any())
     {
         foreach (var training in trainingsToDisplay)
         {
@@ -94,7 +92,24 @@
                     <div class="mb-2 flex items-center justify-between">
                         <h2 class="text-xl font-bold text-[#222]">@training.TrainingName</h2>
                     </div>
-                    <p class="line-clamp-4 text-sm text-gray-600">@training.Description</p>
+                    <div class="mb-2 flex gap-2">
+                        @if (!string.IsNullOrEmpty(training.SkillLevelName))
+                        {
+                            var skillColor = training.SkillLevelName == "Beginner" ? "bg-green-200 text-green-800"
+                                            : training.SkillLevelName == "Intermediate" ? "bg-yellow-200 text-yellow-800"
+                                            : "bg-red-200 text-red-800";
+                            <span class="rounded-full px-3 py-1 text-xs font-semibold @skillColor">
+                                @training.SkillLevelName
+                            </span>
+                        }
+                        @if (!string.IsNullOrEmpty(training.TrainingCategoryName))
+                        {
+                            <span class="rounded-full bg-orange-200 px-3 py-1 text-xs font-semibold text-orange-800">
+                                @training.TrainingCategoryName
+                            </span>
+                        }
+                    </div>
+                    <p class="mt-2 line-clamp-4 text-sm text-gray-600">@training.Description</p>
                     <!-- Footer -->
                     <div class="mt-auto flex items-end justify-between pt-4 text-xs text-gray-500">
                         <div>
@@ -112,16 +127,16 @@
     }
     else
     {
-        <div class="col-span-3 text-center text-gray-500 py-8">No trainings found.</div>
+        <div class="col-span-3 py-8 text-center text-gray-500">No trainings found.</div>
     }
 
 </div>
-@if (!showAll && Model.Trainings.Count > 9)
+@if (!showAll && enrolledTrainings.Count > 9)
 {
-    <div class="flex justify-center mt-5">
+    <div class="mt-5 flex justify-center">
         <button id="loadMoreUserTrainingsBtn" class="cursor-pointer" 
                 data-currently-displayed="@(trainingsToDisplay.Count())" 
-                data-total-trainings="@Model.Trainings.Count">
+                data-total-trainings="@enrolledTrainings.Count">
             <span class="material-symbols-outlined animate-bounce text-[50px]">
                 keyboard_double_arrow_down
             </span>

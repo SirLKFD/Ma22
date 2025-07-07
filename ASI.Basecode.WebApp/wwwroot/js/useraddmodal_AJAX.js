@@ -37,6 +37,11 @@ document.addEventListener('DOMContentLoaded', function() {
         createUserForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
+            // Trigger client-side validation
+            if (!$(this).valid()) {
+                return;
+            }
+            
             const formData = new FormData(this);
             
             // Show loading state

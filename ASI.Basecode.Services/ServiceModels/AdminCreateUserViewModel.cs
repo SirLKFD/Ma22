@@ -28,6 +28,7 @@ namespace ASI.Basecode.Services.ServiceModels
 
         [DataType(DataType.Date)]
         [Display(Name = "Birthdate")]
+        [Required(ErrorMessage = "Birthdate is required.")]
         public DateOnly? Birthdate { get; set; }
 
         [Required(ErrorMessage = "Password is required.")]
