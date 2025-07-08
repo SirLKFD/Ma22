@@ -165,7 +165,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DownloadMediaZip(int topicId, string mode, List<int>? selectedMediaIds = null)
+        public async Task<IActionResult> DownloadMediaZip(int topicId, string mode, List<int>? selectedMediaIds = null, string topicTitle = null)
         {
             try
             {
@@ -222,14 +222,57 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
-                string fileName = mode switch
+                // Sanitize topicTitle for file name
+                string safeTitle = string.IsNullOrWhiteSpace(topicTitle) ? $"Topic_{topicId}" : string.Join("_", topicTitle.Split(Path.GetInvalidFileNameChars()));
+                string fileName = "";
+                if (mode == "all" || mode == "allmedia")
                 {
-                    "videos" => $"Topic_{topicId}_Videos.zip",
-                    "documents" => $"Topic_{topicId}_Documents.zip",
-                    "images" => $"Topic_{topicId}_Images.zip",
-                    "selected" => $"Topic_{topicId}_Selected.zip",
-                    _ => $"Topic_{topicId}_Media.zip"
-                };
+                    fileName = $"{safeTitle}.zip";
+                }
+                else if (mode == "videos")
+                {
+                    fileName = $"{safeTitle}-Video.zip";
+                }
+                else if (mode == "documents")
+                {
+                    fileName = $"{safeTitle}-Documents.zip";
+                }
+                else if (mode == "images")
+                {
+                    fileName = $"{safeTitle}-Pictures.zip";
+                }
+                else if (mode == "mediaonly")
+                {
+                    // Determine which media type is selected
+                    if (mediaList.All(m => IsVideoFile(m.MediaType)))
+                        fileName = $"{safeTitle}-Video.zip";
+                    else if (mediaList.All(m => IsDocumentFile(m.MediaType, m.Name)))
+                        fileName = $"{safeTitle}-Documents.zip";
+                    else if (mediaList.All(m => IsImageFile(m.MediaType)))
+                        fileName = $"{safeTitle}-Pictures.zip";
+                    else
+                        fileName = $"{safeTitle}-Media.zip";
+                }
+                else if (mode == "selected")
+                {
+                    if (mediaList.Count == 1)
+                    {
+                        // Return the single file directly
+                        var media = mediaList.First();
+                        using var client = new HttpClient();
+                        var fileData = await client.GetByteArrayAsync(media.MediaUrl);
+                        string singleFileName = media.Name ?? $"media_{media.Id}";
+                        return File(fileData, "application/octet-stream", singleFileName);
+                    }
+                    else
+                    {
+                        fileName = $"{safeTitle}-Content.zip";
+                    }
+                }
+                else
+                {
+                    fileName = $"{safeTitle}-Media.zip";
+                }
 
                 return File(memoryStream.ToArray(), "application/zip", fileName);
             }
@@ -434,6 +477,16 @@ namespace ASI.Basecode.WebApp.Controllers
                 return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = topic.TrainingId });
             }
             return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = topic.TrainingId });
+        }
+
+        [HttpGet]
+        public IActionResult MediaModalPartial(int topicId, string type, int index)
+        {
+            var topic = _topicService.GetTopicWithAccountById(topicId);
+            var mediaList = topic.Media;
+            ViewBag.CurrentIndex = index;
+            ViewBag.Type = type;
+            return PartialView("~/Views/Admin/_MediaModalPartial.cshtml", mediaList);
         }
     }
 }

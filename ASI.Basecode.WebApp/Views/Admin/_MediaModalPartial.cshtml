@@ -1,0 +1,74 @@
+@model List<ASI.Basecode.Services.ServiceModels.TopicMediaViewModel>
+@{
+    var currentIndex = (int)ViewBag.CurrentIndex;
+    var type = (string)ViewBag.Type;
+    var media = Model[currentIndex];
+    var sameTypeIndexes = Model.Select((m, i) => new { m, i }).Where(x => (x.m.MediaType != null && x.m.MediaType.ToLower().Contains(type))).Select(x => x.i).ToList();
+    var currentTypePos = sameTypeIndexes.IndexOf(currentIndex);
+}
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60" id="mediaModal">
+    <span class="absolute right-4 top-2 cursor-pointer select-none text-4xl text-white sm:right-8 sm:top-4" onclick="window.closeMediaModal()">&times;</span>
+    @if (sameTypeIndexes.Count > 1 && currentTypePos > 0)
+    {
+        <button id="mediaPrevBtn" class="-translate-y-1/2 absolute left-4 top-1/2 z-50 transform rounded-full bg-white/80 p-2 shadow-lg hover:bg-white" aria-label="Previous" onclick="window.navigateMedia('@type', @(sameTypeIndexes[currentTypePos-1]))">
+            <span class="material-symbols-outlined text-3xl text-gray-800">chevron_left</span>
+        </button>
+    }
+    <div class="flex max-h-[80vh] max-w-[90vw] items-center justify-center rounded bg-transparent p-4 shadow-lg">
+        @if (type == "video")
+        {
+            <div class="relative w-full">
+                <video controls autoplay class="max-h-[70vh] max-w-[80vw] rounded">
+                    <source src="@media.MediaUrl" type="@media.MediaType">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="absolute bottom-4 left-0 right-0 flex justify-center">
+                    <div class="rounded bg-black/70 px-3 py-1 text-white">
+                        @(currentTypePos + 1) of @sameTypeIndexes.Count
+                    </div>
+                </div>
+            </div>
+        }
+        else if (type == "image")
+        {
+            <div class="relative">
+                <img src="@media.MediaUrl" alt="Preview" class="max-h-[80vh] max-w-[90vw] rounded shadow-lg" />
+                <div class="absolute bottom-4 left-0 right-0 flex justify-center">
+                    <div class="rounded bg-black/70 px-3 py-1 text-white">
+                        @(currentTypePos + 1) of @sameTypeIndexes.Count
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    @if (sameTypeIndexes.Count > 1 && currentTypePos < sameTypeIndexes.Count - 1)
+    {
+        <button id="mediaNextBtn" class="-translate-y-1/2 absolute right-4 top-1/2 z-50 transform rounded-full bg-white/80 p-2 shadow-lg hover:bg-white" aria-label="Next" onclick="window.navigateMedia('@type', @(sameTypeIndexes[currentTypePos+1]))">
+            <span class="material-symbols-outlined text-3xl text-gray-800">chevron_right</span>
+        </button>
+    }
+</div>
+<script>
+    window.closeMediaModal = function() {
+        var modal = document.getElementById('mediaModal');
+        if (modal) modal.remove();
+    }
+    window.navigateMedia = function(type, index) {
+        fetch(`@Url.Action("MediaModalPartial", "AdminTopic")?topicId=@media.TopicId&type=${type}&index=${index}`)
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById('mediaModal').outerHTML = html;
+            });
+    }
+    document.addEventListener('keydown', function(e) {
+        if (!document.getElementById('mediaModal')) return;
+        if (e.key === 'Escape') window.closeMediaModal();
+    });
+    // Remove stray modal on page load (fix for empty modal on refresh)
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.getElementById('mediaModal');
+        if (modal && !modal.querySelector('video, img')) {
+            modal.remove();
+        }
+    });
+</script> 
