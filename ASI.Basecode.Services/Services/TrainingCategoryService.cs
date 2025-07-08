@@ -211,5 +211,39 @@ namespace ASI.Basecode.Services.Services
 
             return paged;
         }
+
+        public List<TrainingCategoryViewModel> GetTrainingCategoryViewModelsByIds(IEnumerable<int> ids)
+        {
+            var categories = _repository.GetTrainingCategoriesByIds(ids)
+                .OrderByDescending(c => c.UpdatedTime)
+                .Select(c => new TrainingCategoryViewModel
+                {
+                    Id = c.Id,
+                    CategoryName = c.CategoryName,
+                    Description = c.Description,
+                    CoverPicture = c.CoverPicture,
+                    UpdatedTime = c.UpdatedTime,
+                    AccountFirstName = c.Account.FirstName,
+                    AccountLastName = c.Account.LastName
+                }).ToList();
+            return categories;
+        }
+
+        public List<TrainingCategoryViewModel> GetAllTrainingCategoryViewModelsUnfiltered()
+        {
+            var categories = _repository.GetTrainingCategories()
+                .OrderByDescending(c => c.UpdatedTime)
+                .Select(c => new TrainingCategoryViewModel
+                {
+                    Id = c.Id,
+                    CategoryName = c.CategoryName,
+                    Description = c.Description,
+                    CoverPicture = c.CoverPicture,
+                    UpdatedTime = c.UpdatedTime,
+                    AccountFirstName = c.Account.FirstName,
+                    AccountLastName = c.Account.LastName
+                }).ToList();
+            return categories;
+        }
     }
 }

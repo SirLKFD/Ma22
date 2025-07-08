@@ -61,5 +61,10 @@ namespace ASI.Basecode.Data.Repositories
                 Console.WriteLine("SaveChanges called.");
             }
         }
+
+        public IQueryable<TrainingCategory> GetTrainingCategoriesByIds(IEnumerable<int> ids)
+        {
+            return this.GetDbSet<TrainingCategory>().Include(c => c.Account).Where(c => ids.Contains(c.Id));
+        }
     }
 }

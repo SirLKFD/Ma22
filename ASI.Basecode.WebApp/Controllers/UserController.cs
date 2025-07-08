@@ -51,7 +51,6 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpGet]
-        [HttpGet]
         public IActionResult UserTrainings()
         {
             var userEmail = HttpContext.Session.GetString("UserEmail");
@@ -66,9 +65,9 @@ namespace ASI.Basecode.WebApp.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
-
             var trainings = _enrollmentService.GetEnrolledTrainings(user.Id);
+            var enrolledCategoryIds = trainings.Select(t => t.TrainingCategoryId).Distinct().ToList();
+            var categories = _trainingCategoryService.GetTrainingCategoryViewModelsByIds(enrolledCategoryIds);
 
             var viewModel = new BrowseTrainingsViewModel
             {
@@ -83,7 +82,7 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult BrowseTrainings()
         {
-            var categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
+            var categories = _trainingCategoryService.GetAllTrainingCategoryViewModelsUnfiltered();
             var trainings = _trainingService.GetAllTrainings();
             var viewModel = new BrowseTrainingsViewModel
             {
@@ -204,10 +203,20 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult SearchUserTrainings(string search)
         {
-            var allTrainings = _trainingService.GetAllTrainings();
+            var userEmail = HttpContext.Session.GetString("UserEmail");
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return Unauthorized();
+            }
+            var user = _userService.GetUserByEmailId(userEmail);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            var enrolledTrainings = _enrollmentService.GetEnrolledTrainings(user.Id);
             var filtered = string.IsNullOrWhiteSpace(search)
-                ? allTrainings
-                : allTrainings.Where(t => t.TrainingName != null && t.TrainingName.ToLower().Contains(search.ToLower())).ToList();
+                ? enrolledTrainings
+                : enrolledTrainings.Where(t => t.TrainingName != null && t.TrainingName.ToLower().Contains(search.ToLower())).ToList();
             return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", filtered);
         }
 

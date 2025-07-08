@@ -60,10 +60,10 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             int? accountId = HttpContext.Session.GetInt32("AccountId");
             if (accountId == null) return RedirectToAction("Login", "Account");
-            var trainings = _trainingService.GetAllTrainings();
+            var enrolledTrainings = _enrollmentService.GetEnrolledTrainings(accountId.Value);
             var filtered = string.IsNullOrWhiteSpace(search)
-                ? trainings
-                : trainings.Where(t => t.TrainingName != null && t.TrainingName.ToLower().Contains(search.ToLower())).ToList();
+                ? enrolledTrainings
+                : enrolledTrainings.Where(t => t.TrainingName != null && t.TrainingName.ToLower().Contains(search.ToLower())).ToList();
             return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", filtered);
         }
 
