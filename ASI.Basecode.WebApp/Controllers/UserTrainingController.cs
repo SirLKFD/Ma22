@@ -25,7 +25,7 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             int? accountId = HttpContext.Session.GetInt32("AccountId");
             if (accountId == null) return RedirectToAction("Login", "Account");
-            var trainings = _enrollmentService.GetEnrolledTrainings(accountId.Value);
+            var trainings = _trainingService.GetAllTrainings();
             // Optionally filter by search/category here
             if (!string.IsNullOrWhiteSpace(search))
                 trainings = trainings.Where(t => t.TrainingName != null && t.TrainingName.ToLower().Contains(search.ToLower())).ToList();
@@ -40,8 +40,8 @@ namespace ASI.Basecode.WebApp.Controllers
             int? accountId = HttpContext.Session.GetInt32("AccountId");
             if (accountId == null) return RedirectToAction("Login", "Account");
             const int pageSize = 9;
-            var allTrainings = _enrollmentService.GetEnrolledTrainings(accountId.Value);
-            var moreTrainings = allTrainings.Skip(skip).Take(pageSize);
+            var trainings = _trainingService.GetAllTrainings();
+            var moreTrainings = trainings.Skip(skip).Take(pageSize);
             return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", moreTrainings);
         }
 
@@ -50,7 +50,7 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             int? accountId = HttpContext.Session.GetInt32("AccountId");
             if (accountId == null) return RedirectToAction("Login", "Account");
-            var trainings = _enrollmentService.GetEnrolledTrainings(accountId.Value)
+            var trainings = _trainingService.GetAllTrainings()
                 .Where(t => t.TrainingCategoryId == categoryId).ToList();
             return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", trainings);
         }
@@ -60,10 +60,10 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             int? accountId = HttpContext.Session.GetInt32("AccountId");
             if (accountId == null) return RedirectToAction("Login", "Account");
-            var allTrainings = _enrollmentService.GetEnrolledTrainings(accountId.Value);
+            var trainings = _trainingService.GetAllTrainings();
             var filtered = string.IsNullOrWhiteSpace(search)
-                ? allTrainings
-                : allTrainings.Where(t => t.TrainingName != null && t.TrainingName.ToLower().Contains(search.ToLower())).ToList();
+                ? trainings
+                : trainings.Where(t => t.TrainingName != null && t.TrainingName.ToLower().Contains(search.ToLower())).ToList();
             return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", filtered);
         }
 
