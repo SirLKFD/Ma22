@@ -166,6 +166,14 @@ namespace ASI.Basecode.Services.Services
                 query = _repository.GetTrainingCategories();
             }
 
+            // Apply search filter if search term is provided
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(c => 
+                    c.CategoryName.Contains(search)
+                );
+            }
+
             totalCount = query.Count();
             Console.WriteLine("totalCount",totalCount);
             var paged = query
