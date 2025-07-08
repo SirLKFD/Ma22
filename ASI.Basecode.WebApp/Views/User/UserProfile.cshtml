@@ -1,93 +1,93 @@
-@model UserProfileViewModel
+﻿@model UserProfileViewModel
 
 @{
-    ViewData["Title"] = "User Profile";
+    ViewData["Title"] = "Ma22 | Profile";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
 
-<div class="flex justify-center items-center w-screen h-full bg-[#FFEACC] px-8">
-    <div class="bg-white rounded-2xl shadow-2xl flex flex-row w-full w-[90%] h-[90%] ">
+<div class="flex min-h-screen w-screen items-center justify-center bg-[#FFEACC] px-8 py-16">
+    <div class="flex w-full max-w-6xl flex-row rounded-2xl bg-white shadow-2xl p-12">
         <!-- Left Column -->
-        <div class="flex flex-col items-center justify-center w-1/2 p-4 border-r border-[#FFEACC]">
+        <div class="flex w-1/2 flex-col items-center justify-center border-r border-[#FFEACC] p-4">
             <!-- Profile Image -->
             <div class="relative mb-2">
-                <img id="profile-pic-main" src="@Model.ProfilePicture" alt="Profile" class="rounded-full w-[300px] h-[300px] object-cover border-4 border-[#FFEACC] shadow cursor-pointer" onclick="triggerProfilePicUpload()" />
+                <img id="profile-pic-main" src="@Model.ProfilePicture" alt="Profile" class="h-[300px] w-[300px] cursor-pointer rounded-full border-4 border-[#FFEACC] object-cover shadow" onclick="triggerProfilePicUpload()" />
                 <input type="file" id="ProfilePictureFile" name="ProfilePictureFile" accept="image/*" class="hidden" onchange="previewProfilePic(event)" />
             </div>
             <!-- User Info -->
-            <div class="text-center mt-2">
-                <div class="font-bold text-xl">@Model.FirstName @Model.LastName</div>
-                <div class="text-gray-500 text-sm">Account ID: @Model.Id</div>
-                <div class="text-gray-500 text-sm">Account Created: @Model.CreatedTime.ToString("MM/dd/yyyy")</div>
-                <div class="text-gray-500 text-sm">@Model.EmailId</div>
+            <div class="mt-2 text-center">
+                <div class="text-xl font-bold">@Model.FirstName @Model.LastName</div>
+                <div class="text-sm text-gray-500">Account ID: @Model.Id</div>
+                <div class="text-sm text-gray-500">Account Created: @Model.CreatedTime.ToString("MM/dd/yyyy")</div>
+                <div class="text-sm text-gray-500">@Model.EmailId</div>
             </div>
-            <span class="bg-yellow-300 text-black px-4 py-1 rounded-full mt-2 text-xs font-semibold">Guest</span>
-            <button type="button" class="bg-[#800000] text-white px-8 py-2 rounded-lg mt-6 flex items-center gap-2 hover:bg-[#a83232] transition" onclick="openDeleteUserModal(@Model.Id, '@Model.FirstName @Model.LastName', '@Model.ProfilePicture')">
+            <span class="mt-2 rounded-full bg-yellow-300 px-4 py-1 text-xs font-semibold text-black">Guest</span>
+            <button type="button" class="mt-6 flex items-center gap-2 rounded-lg bg-[#800000] px-8 py-2 text-white transition hover:bg-[#a83232]" onclick="openDeleteUserModal(@Model.Id, '@Model.FirstName @Model.LastName', '@Model.ProfilePicture')">
                 <span>⚠️</span> Delete Account
             </button>
         </div>
         <!-- Right Column -->
-        <div class="flex flex-col w-1/2 py-2 px-6 justify-center">
-            <div class="font-bold text-2xl text-[#800000]">PROFILE DETAILS</div>
+        <div class="flex w-1/2 flex-col justify-center px-6 py-2">
+            <div class="text-2xl font-bold text-[#800000]">PROFILE DETAILS</div>
             <!-- View Mode -->
-            <div id="profile-view" class="flex flex-col gap-2 mt-2">
+            <div id="profile-view" class="mt-2 flex flex-col gap-2">
                 <div>
-                    <span class="block text-sm font-semibold mb-1">First Name</span>
+                    <span class="mb-1 block text-sm font-semibold">First Name</span>
                     <span class="block px-3 py-2">@Model.FirstName</span>
                 </div>
                 <div>
-                    <span class="block text-sm font-semibold mb-1">Last Name</span>
+                    <span class="mb-1 block text-sm font-semibold">Last Name</span>
                     <span class="block px-3 py-2">@Model.LastName</span>
                 </div>
                 <div>
-                    <span class="block text-sm font-semibold mb-1">Birthdate</span>
+                    <span class="mb-1 block text-sm font-semibold">Birthdate</span>
                     <span class="block px-3 py-2">@Model.Birthdate?.ToString("MM/dd/yyyy")</span>
                 </div>
                 <div>
-                    <span class="block text-sm font-semibold mb-1">Contact No.</span>
+                    <span class="mb-1 block text-sm font-semibold">Contact No.</span>
                     <span class="block px-3 py-2">@Model.Contact</span>
                 </div>
                 <div>
-                    <span class="block text-sm font-semibold mb-1">Email</span>
+                    <span class="mb-1 block text-sm font-semibold">Email</span>
                     <span class="block px-3 py-2">@Model.EmailId</span>
                 </div>
                 <div>
-                    <span class="block text-sm font-semibold mb-1">Password</span>
+                    <span class="mb-1 block text-sm font-semibold">Password</span>
                     <span class="block px-3 py-2">******</span>
                 </div>
-                <button type="button" onclick="toggleEdit(true)" class="bg-[#800000] text-white font-semibold rounded-lg py-3 mt-4 hover:bg-[#a83232] transition text-center">Edit Profile</button>
+                <button type="button" onclick="toggleEdit(true)" class="mt-4 rounded-lg bg-[#800000] py-3 text-center font-semibold text-white transition hover:bg-[#a83232]">Edit Profile</button>
             </div>
             <!-- Edit Mode -->
-            <form asp-controller="User" asp-action="UserProfileEdit" id="profile-edit" class="flex flex-col gap-2 mt-4 hidden" enctype="multipart/form-data" method="post" onsubmit="return moveFileInputToForm()">
+            <form asp-controller="User" asp-action="UserProfileEdit" id="profile-edit" class="mt-4 flex hidden flex-col gap-2" enctype="multipart/form-data" method="post" onsubmit="return moveFileInputToForm()">
                 <input type="hidden" name="Id" value="@Model.Id" />
                 <span id="file-input-placeholder"></span>
                 <div>
-                    <label class="block text-sm font-semibold mb-1" for="FirstName">First Name</label>
-                    <input id="FirstName" name="FirstName" type="text" value="@Model.FirstName" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#800000] transition" />
+                    <label class="mb-1 block text-sm font-semibold" for="FirstName">First Name</label>
+                    <input id="FirstName" name="FirstName" type="text" value="@Model.FirstName" class="w-full rounded-lg border border-gray-300 px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#800000]" />
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1" for="LastName">Last Name</label>
-                    <input id="LastName" name="LastName" type="text" value="@Model.LastName" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#800000] transition" />
+                    <label class="mb-1 block text-sm font-semibold" for="LastName">Last Name</label>
+                    <input id="LastName" name="LastName" type="text" value="@Model.LastName" class="w-full rounded-lg border border-gray-300 px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#800000]" />
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1" for="Birthdate">Birthdate</label>
-                    <input id="Birthdate" name="Birthdate" type="date" value="@Model.Birthdate?.ToString("yyyy-MM-dd")" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#800000] transition" />
+                    <label class="mb-1 block text-sm font-semibold" for="Birthdate">Birthdate</label>
+                    <input id="Birthdate" name="Birthdate" type="date" value="@Model.Birthdate?.ToString("yyyy-MM-dd")" class="w-full rounded-lg border border-gray-300 px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#800000]" />
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1" for="Contact">Contact No.</label>
-                    <input id="Contact" name="Contact" type="text" value="@Model.Contact" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#800000] transition" />
+                    <label class="mb-1 block text-sm font-semibold" for="Contact">Contact No.</label>
+                    <input id="Contact" name="Contact" type="text" value="@Model.Contact" class="w-full rounded-lg border border-gray-300 px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#800000]" />
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1" for="EmailId">Email</label>
-                    <input id="EmailId" name="EmailId" type="email" value="@Model.EmailId" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#800000] transition" />
+                    <label class="mb-1 block text-sm font-semibold" for="EmailId">Email</label>
+                    <input id="EmailId" name="EmailId" type="email" value="@Model.EmailId" class="w-full rounded-lg border border-gray-300 px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#800000]" />
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1" for="Password">Password</label>
-                    <input id="Password" name="Password" type="password" placeholder="Leave blank for no change" value="" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#800000] transition"/>
+                    <label class="mb-1 block text-sm font-semibold" for="Password">Password</label>
+                    <input id="Password" name="Password" type="password" placeholder="Leave blank for no change" value="" class="w-full rounded-lg border border-gray-300 px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#800000]"/>
                 </div>
-                <div class="flex gap-2 mt-2 justify-around items-center">
-                    <button type="submit" class="bg-[#800000] text-white font-semibold rounded-lg py-3 hover:bg-[#a83232] transition w-1/3">Save Changes</button>
-                    <button type="button" onclick="toggleEdit(false)" class="text-[#800000] underline font-semibold w-1/3">Cancel</button>
+                <div class="mt-2 flex items-center justify-around gap-2">
+                    <button type="submit" class="w-1/3 rounded-lg bg-[#800000] py-3 font-semibold text-white transition hover:bg-[#a83232]">Save Changes</button>
+                    <button type="button" onclick="toggleEdit(false)" class="w-1/3 font-semibold text-[#800000] underline">Cancel</button>
                 </div>
             </form>
         </div>

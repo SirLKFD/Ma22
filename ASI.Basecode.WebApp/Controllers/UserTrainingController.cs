@@ -4,31 +4,43 @@ using ASI.Basecode.Services.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
     public class UserTrainingController : Controller
     {
         private readonly ITrainingService _trainingService;
+        private readonly IEnrollmentService _enrollmentService;
         //private readonly ITopicService _topicService;
 
-        public UserTrainingController(ITrainingService trainingService)
+        public UserTrainingController(ITrainingService trainingService, IEnrollmentService enrollmentService)
         {
             _trainingService = trainingService;
+            _enrollmentService = enrollmentService;
         }
 
         [HttpGet]
         public IActionResult Trainings(string search = "", int? categoryId = null)
         {
-            var trainings = _trainingService.GetAllTrainings();
+            int? accountId = HttpContext.Session.GetInt32("AccountId");
+            if (accountId == null) return RedirectToAction("Login", "Account");
+            var trainings = _enrollmentService.GetEnrolledTrainings(accountId.Value);
+            // Optionally filter by search/category here
+            if (!string.IsNullOrWhiteSpace(search))
+                trainings = trainings.Where(t => t.TrainingName != null && t.TrainingName.ToLower().Contains(search.ToLower())).ToList();
+            if (categoryId.HasValue)
+                trainings = trainings.Where(t => t.TrainingCategoryId == categoryId.Value).ToList();
             return View("~/Views/UserTrainings/Trainings.cshtml", trainings);
         }
 
         [HttpGet]
         public IActionResult LoadMoreTrainings(int skip = 9)
         {
+            int? accountId = HttpContext.Session.GetInt32("AccountId");
+            if (accountId == null) return RedirectToAction("Login", "Account");
             const int pageSize = 9;
-            var allTrainings = _trainingService.GetAllTrainings();
+            var allTrainings = _enrollmentService.GetEnrolledTrainings(accountId.Value);
             var moreTrainings = allTrainings.Skip(skip).Take(pageSize);
             return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", moreTrainings);
         }
@@ -36,14 +48,19 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult TrainingsByCategory(int categoryId)
         {
-            var trainings = _trainingService.GetAllTrainingsByCategoryId(categoryId);
+            int? accountId = HttpContext.Session.GetInt32("AccountId");
+            if (accountId == null) return RedirectToAction("Login", "Account");
+            var trainings = _enrollmentService.GetEnrolledTrainings(accountId.Value)
+                .Where(t => t.TrainingCategoryId == categoryId).ToList();
             return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", trainings);
         }
 
         [HttpGet]
         public IActionResult SearchTrainings(string search)
         {
-            var allTrainings = _trainingService.GetAllTrainings();
+            int? accountId = HttpContext.Session.GetInt32("AccountId");
+            if (accountId == null) return RedirectToAction("Login", "Account");
+            var allTrainings = _enrollmentService.GetEnrolledTrainings(accountId.Value);
             var filtered = string.IsNullOrWhiteSpace(search)
                 ? allTrainings
                 : allTrainings.Where(t => t.TrainingName != null && t.TrainingName.ToLower().Contains(search.ToLower())).ToList();

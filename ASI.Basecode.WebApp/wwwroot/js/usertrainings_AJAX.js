@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const loadingElement = document.getElementById('usertrainings-loading');
         if (loadingElement) loadingElement.style.display = '';
         
-        fetch(`/User/SearchUserTrainings?search=${encodeURIComponent(search)}`)
+        fetch(`/UserTraining/SearchTrainings?search=${encodeURIComponent(search)}`)
             .then(response => response.text())
             .then(html => {
                 const grid = document.getElementById('usertrainings-container');

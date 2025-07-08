@@ -17,6 +17,7 @@ using System.Linq;
 namespace ASI.Basecode.WebApp.Controllers
 {
     [Route("admin/[action]")]
+    [Authorize(Roles = "0,2")]
     public class AdminTrainingCategoryController : ControllerBase<AdminTrainingCategoryController>
     {
         /// <summary>
@@ -48,7 +49,7 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <returns> Home View </returns>
         /// 
         
-        [Authorize(Roles = "0")]
+    
         public IActionResult AdminTrainingCategory(string search, int page = 1)
         {
             const int pageSize = 6;
@@ -66,7 +67,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "0")]
+ 
         public IActionResult AddTrainingCategory(
             TrainingCategoryViewModel model,
             IFormFile CoverPictureAdd,
@@ -146,7 +147,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "0")]
+      
         public IActionResult EditTrainingCategory(TrainingCategoryViewModel model, IFormFile CoverPictureEdit, [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
             int totalCount;
@@ -223,7 +224,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "0")]
+      
         public IActionResult DeleteTrainingCategory(int id)
         {
             int totalCount;

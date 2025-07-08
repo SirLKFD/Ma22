@@ -1,13 +1,14 @@
 ﻿using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.ServiceModels;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using CloudinaryDotNet.Actions;
+using ASI.Basecode.Services.Services;
 using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ASI.Basecode.WebApp.Controllers
@@ -22,18 +23,23 @@ namespace ASI.Basecode.WebApp.Controllers
 
         private readonly ILogger<UserController> _logger;
 
+        private readonly IEnrollmentService _enrollmentService;  
+
+
         public UserController(
             ITrainingService trainingService,
             ITrainingCategoryService trainingCategoryService,
             ITopicService topicService,
             IUserService userService,
+            IEnrollmentService enrollmentService,
             ILogger<UserController> logger)
         {
             _trainingService = trainingService;
             _trainingCategoryService = trainingCategoryService;
             _topicService = topicService;
             _userService = userService;
-             _logger = logger;
+            _enrollmentService = enrollmentService;
+            _logger = logger;
         }
 
         [Authorize(Roles = "1")]
@@ -45,17 +51,34 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpGet]
+        [HttpGet]
         public IActionResult UserTrainings()
         {
+            var userEmail = HttpContext.Session.GetString("UserEmail");
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = _userService.GetUserByEmailId(userEmail);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             var categories = _trainingCategoryService.GetAllTrainingCategoryViewModels();
-            var trainings = _trainingService.GetAllTrainings();
+
+            var trainings = _enrollmentService.GetEnrolledTrainings(user.Id);
+
             var viewModel = new BrowseTrainingsViewModel
             {
                 Categories = categories,
                 Trainings = trainings
             };
+
             return View("UserTrainings", viewModel);
         }
+
 
         [HttpGet]
         public IActionResult BrowseTrainings()

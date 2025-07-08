@@ -21,12 +21,13 @@ namespace ASI.Basecode.WebApp.Controllers
     /// Admin Training Controller
     /// </summary>
     [Route("admin/[action]")]
-    [Authorize(Roles = "0")]
+    [Authorize(Roles = "0,2")]
     public class AdminTrainingController : ControllerBase<AdminTrainingController>
     {
         private readonly ITrainingService _trainingService;
         private readonly ITrainingCategoryService _trainingCategoryService;
         private readonly ITopicService _topicService;
+        private readonly IEnrollmentService _enrollmentService;
 
         /// <summary>
         /// Constructor
@@ -42,11 +43,13 @@ namespace ASI.Basecode.WebApp.Controllers
                               IMapper mapper = null,
                               ITrainingService trainingService = null,
                               ITrainingCategoryService trainingCategoryService = null,
-                              ITopicService topicService = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
+                              ITopicService topicService = null,
+                              IEnrollmentService enrollmentService = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             _trainingService = trainingService;
             _trainingCategoryService = trainingCategoryService;
             _topicService = topicService;
+            _enrollmentService = enrollmentService;
         }
 
         /// <summary>
@@ -240,12 +243,11 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult AdminTrainingTopics(int trainingId)
         {
-            
             var training = _trainingService.GetTrainingById(trainingId); 
             var topics = _topicService.GetAllTopicsByTrainingId(trainingId);
-
             ViewData["training"] = training;
-
+            var enrollmentCount = _enrollmentService.GetEnrollmentCount(trainingId);
+            ViewData["EnrollmentCount"] = enrollmentCount;
             return View("~/Views/Admin/AdminTrainingTopics.cshtml", topics);
         }
     }

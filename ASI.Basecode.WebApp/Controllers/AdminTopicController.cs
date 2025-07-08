@@ -6,6 +6,7 @@ using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -19,6 +20,7 @@ using System.Threading.Tasks;
 namespace ASI.Basecode.WebApp.Controllers
 {
     [Route("admin/[action]")]
+    [Authorize(Roles = "0,2")]
     public class AdminTopicController : ControllerBase<AdminTopicController>
     {
         private readonly ITopicService _topicService;

@@ -1,33 +1,33 @@
-@model List<ASI.Basecode.Services.ServiceModels.TrainingViewModel>
+﻿@model List<ASI.Basecode.Services.ServiceModels.TrainingViewModel>
 
 @{
-    ViewData["Title"] = "UserDashboard";
+    ViewData["Title"] = "Ma22 | Dashboard";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
 
-<div class="flex bg-[#fff] w-full max-h-xl items-center rounded-xl mb-20">
+<div class="max-h-xl mb-20 flex w-full items-center rounded-xl bg-[#fff]">
     <!-- Left Image -->
     <div class="w-[45%]">
-        <img src="~/img/bg_3.png" alt="Learning Illustration" class="w-full h-auto object-contain" />
+        <img src="~/img/bg_3.png" alt="Learning Illustration" class="h-auto w-full object-contain" />
     </div>
 
     <!-- Right Text Content -->
     <div class="flex-1 pr-10">
-        <div class="bg-[#640A16] text-white p-8 rounded-lg">
-            <h1 class="uppercase text-7xl font-extrabold leading-tight">
+        <div class="rounded-lg bg-[#640A16] p-8 text-white">
+            <h1 class="text-7xl font-extrabold uppercase leading-tight">
                 KNOWLEDGE FOR<br />
                 EVERY JUAN
             </h1>
-            <p class="text-lg mt-4">
+            <p class="mt-4 text-lg">
                 Your gateway to reliable and accessible, simplified knowledge.
             </p>
         </div>
     </div>
 </div>
 
-<div class="flex flex-col gap-10 mb-20">
-    <h1 class="text-4xl font-weight-bold">About Us</h1>
-    <div class="flex text-center bg-[#640A16] w-full text-white p-10 rounded-lg">
+<div class="mb-20 flex flex-col gap-10">
+    <h1 class="font-weight-bold text-4xl">About Us</h1>
+    <div class="flex w-full rounded-lg bg-[#640A16] p-10 text-center text-white">
         <p class="text-lg">
             We are a knowledge-sharing platform dedicated to making complex topics simple and accessible.
             Our goal is to empower curious minds with clear, reliable, and easy-to-understand information
@@ -36,12 +36,12 @@
     </div>
 </div>
 
-<div class="flex flex-col gap-2 mb-10">
-    <h1 class="text-4xl font-weight-bold">Trainings to get you started</h1>
+<div class="mb-10 flex flex-col gap-2">
+    <h1 class="font-weight-bold text-4xl">Trainings to get you started</h1>
     <p>Learn new skills or improve existing ones at your own pace.</p>
 </div>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+<div class="mb-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
     @if (Model != null && Model.Any())
     {
         foreach (var training in Model.Take(6))
@@ -67,7 +67,24 @@
                     <div class="mb-2 flex items-center justify-between">
                         <h2 class="text-xl font-bold text-[#222]">@training.TrainingName</h2>
                     </div>
-                    <p class="line-clamp-4 text-sm text-gray-600">@training.Description</p>
+                    <div class="mb-2 flex gap-2">
+                        @if (!string.IsNullOrEmpty(training.SkillLevelName))
+                        {
+                            var skillColor = training.SkillLevelName == "Beginner" ? "bg-green-200 text-green-800"
+                                            : training.SkillLevelName == "Intermediate" ? "bg-yellow-200 text-yellow-800"
+                                            : "bg-red-200 text-red-800";
+                            <span class="rounded-full px-3 py-1 text-xs font-semibold @skillColor">
+                                @training.SkillLevelName
+                            </span>
+                        }
+                        @if (!string.IsNullOrEmpty(training.TrainingCategoryName))
+                        {
+                            <span class="rounded-full bg-orange-200 px-3 py-1 text-xs font-semibold text-orange-800">
+                                @training.TrainingCategoryName
+                            </span>
+                        }
+                    </div>
+                    <p class="mt-2 line-clamp-4 text-sm text-gray-600">@training.Description</p>
                     <!-- Footer -->
                     <div class="mt-auto flex items-end justify-between pt-4 text-xs text-gray-500">
                         <div>
@@ -85,13 +102,13 @@
     }
     else
     {
-        <div class="col-span-3 text-center text-gray-500 py-8">No trainings found.</div>
+        <div class="col-span-3 py-8 text-center text-gray-500">No trainings found.</div>
     }
 </div>
 
 <div class="flex items-center justify-center">
 
-    <a asp-controller="User" asp-action="BrowseTrainings" class="bg-[#640A16] px-16 py-2 text-white rounded-lg">
+    <a asp-controller="User" asp-action="BrowseTrainings" class="rounded-lg bg-[#640A16] px-16 py-2 text-white">
         Explore More
     </a>
 </div>

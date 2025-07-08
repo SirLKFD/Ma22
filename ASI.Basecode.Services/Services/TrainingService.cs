@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using static ASI.Basecode.Resources.Constants.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 namespace ASI.Basecode.Services.Services
 {
@@ -18,16 +19,18 @@ namespace ASI.Basecode.Services.Services
     {
         private readonly ITrainingRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public TrainingService(ITrainingRepository repository, IMapper mapper)
+
+        public TrainingService(ITrainingRepository repository, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
             _repository = repository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public void AddTraining(TrainingViewModel model)
         {
-
             var training = new Training();
             if (!_repository.TrainingExists(model.TrainingName))
             {
@@ -61,14 +64,27 @@ namespace ASI.Basecode.Services.Services
 
         public List<TrainingViewModel> GetAllTrainingsByCategoryId(int categoryId)
         {
-            return _repository.GetTrainings().Where(t => t.TrainingCategoryId == categoryId).Select(t => new TrainingViewModel
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+
+            var query = _repository.GetTrainings()
+                .Include(t => t.SkillLevelNavigation)
+                .Include(t => t.TrainingCategory)
+                .Where(t => t.TrainingCategoryId == categoryId);
+
+            if (accountRole != 2) // Only superadmin sees all
+                query = query.Where(t => t.AccountId == accountId);
+
+            return query.Select(t => new TrainingViewModel
             {
                 Id = t.Id,
                 Ratings = t.Ratings,
                 AccountId = t.AccountId,
                 TrainingName = t.TrainingName,
                 TrainingCategoryId = t.TrainingCategoryId,
+                TrainingCategoryName = t.TrainingCategory.CategoryName,
                 SkillLevel = t.SkillLevel,
+                SkillLevelName = t.SkillLevelNavigation.SkillLevel1,
                 Description = t.Description,
                 CoverPicture = t.CoverPicture,
                 Duration = t.Duration,
@@ -83,7 +99,10 @@ namespace ASI.Basecode.Services.Services
         {
             var training = _repository.GetTrainings().Include(t => t.DurationNavigation)
             .Include(t => t.SkillLevelNavigation).Include(t => t.TrainingCategory).Include(t => t.Reviews).FirstOrDefault(t => t.Id == id);
-            if (training == null) return null;
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+            if (training == null || (training.AccountId != accountId && accountRole != 2))
+                throw new UnauthorizedAccessException("You are not allowed to view this training.");
 
             return new TrainingViewModel
             {
@@ -121,14 +140,24 @@ namespace ASI.Basecode.Services.Services
 
         public List<TrainingViewModel> GetAllTrainings()
         {
-            return _repository.GetTrainings().Select(t => new TrainingViewModel
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+            var query = _repository.GetTrainings()
+                .Include(t => t.SkillLevelNavigation)
+                .Include(t => t.TrainingCategory)
+                .AsQueryable();
+            if (accountRole != 2)
+                query = query.Where(t => t.AccountId == accountId);
+            return query.Select(t => new TrainingViewModel
             {
                 Id = t.Id,
                 Ratings = t.Ratings,
                 AccountId = t.AccountId,
                 TrainingName = t.TrainingName,
                 TrainingCategoryId = t.TrainingCategoryId,
+                TrainingCategoryName = t.TrainingCategory.CategoryName,
                 SkillLevel = t.SkillLevel,
+                SkillLevelName = t.SkillLevelNavigation.SkillLevel1,
                 Description = t.Description,
                 CoverPicture = t.CoverPicture,
                 Duration = t.Duration,
@@ -142,8 +171,12 @@ namespace ASI.Basecode.Services.Services
         public void UpdateTraining(TrainingViewModel model)
         {
             var training = _repository.GetTrainings().FirstOrDefault(c => c.Id == model.Id);
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
             if (training != null)
             {
+                if (training.AccountId != accountId && accountRole != 2)
+                    throw new UnauthorizedAccessException("You are not allowed to edit this training.");
                 Console.WriteLine($"[Service] Attempting to edit training: {training.TrainingName}, AccountId: {training.AccountId}");
                 if (!_repository.TrainingExists(training.TrainingName))
                 {
@@ -161,15 +194,23 @@ namespace ASI.Basecode.Services.Services
         public void DeleteTraining(int id)
         {
             var training = _repository.GetTrainings().FirstOrDefault(t => t.Id == id);
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
             if (training != null)
             {
+                if (training.AccountId != accountId && accountRole != 2)
+                    throw new UnauthorizedAccessException("You are not allowed to delete this training.");
                 _repository.DeleteTraining(training);
             }
         }
 
         public List<TrainingViewModel> GetPaginatedTrainings(string search, int page, int pageSize, out int totalCount)
         {
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
             var query = _repository.GetTrainings();
+            if (accountRole != 2)
+                query = query.Where(t => t.AccountId == accountId);
             if (!string.IsNullOrEmpty(search))
             {
                 query = query.Where(t => t.TrainingName.Contains(search));
@@ -197,9 +238,18 @@ namespace ASI.Basecode.Services.Services
                 }).ToList();
             return paged;
         }
+
         public List<TrainingViewModel> GetFilteredTrainings(string search, int? categoryId, int? skillLevelId, int page, int pageSize, out int totalCount)
         {
-            var query = _repository.GetTrainings().AsQueryable();
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+            var query = _repository.GetTrainings()
+                .Include(t => t.SkillLevelNavigation)
+                .Include(t => t.TrainingCategory)
+                .AsQueryable();
+
+            if (accountRole != 2)
+                query = query.Where(t => t.AccountId == accountId);
 
             if (!string.IsNullOrEmpty(search))
             {
@@ -235,7 +285,9 @@ namespace ASI.Basecode.Services.Services
                 AccountId = training.AccountId,
                 TrainingName = training.TrainingName,
                 TrainingCategoryId = training.TrainingCategoryId,
+                TrainingCategoryName = training.TrainingCategory.CategoryName,
                 SkillLevel = training.SkillLevel,
+                SkillLevelName = training.SkillLevelNavigation.SkillLevel1,
                 Description = training.Description,
                 CoverPicture = training.CoverPicture,
                 Duration = training.Duration,

@@ -28,6 +28,8 @@ namespace ASI.Basecode.Data
         public virtual DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
 
         public virtual DbSet<Review> Reviews { get; set; }
+        public virtual DbSet<Enrollment> Enrollments { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

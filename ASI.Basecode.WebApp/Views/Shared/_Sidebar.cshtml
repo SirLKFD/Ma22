@@ -2,86 +2,147 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
 
-<div class="fixed flex flex-row">
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var isProfile = currentController == "Admin" && currentAction == "UserMaster";
+    var isCategory = currentController == "AdminTrainingCategory" && currentAction == "AdminTrainingCategory";
+    var isTraining = currentController == "AdminTraining" && currentAction == "AdminTraining";
+    var userId = HttpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+    var userRole = HttpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+}
 
-<aside id="sidebar" class="group flex h-screen w-24 flex-col bg-[#640A16] text-white transition-all duration-300 hover:w-64">
-    <!-- Logo -->
-    <div class="flex justify-center p-4">
-        <img src="~/img/Logo.png" alt="MA22 Logo" class="w-15 h-15" />
-    </div>
+
+<div class="fixed flex flex-row">
+    <aside id="sidebar" class="group flex h-screen w-24 flex-col bg-[#640A16] text-white transition-all duration-300 hover:w-64">
+        <!-- Logo -->
+        <div class="flex justify-center p-4">
+            <img src="~/img/Logo.png" alt="MA22 Logo" class="w-15 h-15" />
+        </div>
 
         <!-- Navigation -->
         <ul class="flex-grow space-y-4 px-2">
+            @if (userRole == 2) 
+            {
+                <li>
+                    <a asp-controller="Admin" asp-action="UserMaster" class="flex justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline @(isProfile ? "bg-yellow-400 text-black" : "")">
+                        <span class="material-symbols-outlined text-[25px]">groups_3</span>
+                        <span class="hidden text-sm group-hover:inline">Profiles</span>
+                    </a>
+                </li>
+            }
             <li>
-                <a asp-controller="Admin" asp-action="UserMaster" class="flex justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline">
-                    <span class="material-symbols-outlined text-[25px]">groups_3</span>
-                    <span class="hidden text-sm group-hover:inline">Profiles</span>
-                </a>
-            </li>
-            <li>
-                <a asp-controller="Admin" asp-action="AdminTrainingCategory" class="flex justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline">
+                <a asp-controller="AdminTrainingCategory" asp-action="AdminTrainingCategory" class="flex justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline @(isCategory ? "bg-yellow-400 text-black" : "")">
                     <span class="material-symbols-outlined text-[25px]">category</span>
                     <span class="hidden text-sm group-hover:inline">Training Categories</span>
                 </a>
             </li>
             <li>
-                <a asp-controller="Admin" asp-action="AdminTraining" class="flex justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline">
+                <a asp-controller="AdminTraining" asp-action="AdminTraining" class="flex justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline @(isTraining ? "bg-yellow-400 text-black" : "")">
                     <span class="material-symbols-outlined text-[25px]">book</span>
                     <span class="hidden text-sm group-hover:inline">Trainings</span>
                 </a>
             </li>
         </ul>
 
+        <!-- Bottom Section with Dropdown -->
+        <div class="mb-10 px-2 relative">
+            <button onclick="toggleDropDown()" class="focus:outline-none w-full flex items-center justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline">
+                @{
+                    var profilePicture = HttpContextAccessor.HttpContext.Session.GetString("ProfilePicture");
+                }
+                @if (!string.IsNullOrEmpty(profilePicture))
+                {
+                    <img src="@profilePicture" alt="Profile" class="w-8 h-8 rounded-full object-cover" />
+                }
+                else
+                {
+                    <span class="material-symbols-outlined text-[25px]">person</span>
+                }
+                <span class="hidden text-sm group-hover:inline">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</span>
+                <span class="material-symbols-outlined text-[16px] hidden group-hover:inline ml-auto">arrow_drop_up</span>
+            </button>
 
-    <!-- Bottom Section -->
-    <div class="mb-10 px-2">
-        <a href="javascript:void(0)" onclick="toggleDropDown()" class="flex items-center justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline">
-            @{
-                var profilePicture = HttpContextAccessor.HttpContext.Session.GetString("ProfilePicture");
-            }
-            @if (!string.IsNullOrEmpty(profilePicture))
-            {
-                <img src="@profilePicture" alt="Profile" class="w-8 h-8 rounded-full object-cover" />
-            }
-            else
-            {
-                <span class="material-symbols-outlined text-[25px]">person</span>
-            }
-            <span class="hidden text-sm group-hover:inline">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</span>
-        </a>
-    </div>
+            <!-- Improved Dropdown Menu -->
+            <div id="dropdownMenu" class="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden opacity-0 invisible transition-all duration-300 transform translate-y-2 z-50">
+                <div class="py-2">
+                    
 
-</aside>
+                    <!-- Menu Items -->
+                    <a href="javascript:void(0);" onclick="viewDetails(@userId)" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 text-black transition-colors duration-200">
+                        <span class="material-symbols-outlined text-[20px]">account_circle</span>
+                        <span class="text-sm">View Profile</span>
+                    </a>
 
+                    <div class="border-t border-gray-100 my-1"></div>
 
-<div id="dropdownMenu" class="mb-8 ml-10 flex hidden items-end transition duration-200">
-    <ul class="items-end space-y-4">
-            <li class="bg-[#640A16] px-2 py-1">
-                <i class="fa-solid fa-gear"></i>
-                <a href="#">Settings</a>
-            </li>
-            <li class="bg-[#640A16] px-2 py-1">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <a href="/Account/SignOutUser">Logout</a>
-            </li>
-
-    </ul>
-</div>
-
-
+                    <!-- Logout -->
+                    <a href="/Account/SignOutUser" class="flex items-center space-x-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-colors duration-200">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
+                        <span class="text-sm font-medium">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </aside>
 </div>
 
 
 <script>
-    function toggleDropDown(){
-        const menu = document.getElementById("dropdownMenu")
-        menu.classList.toggle("hidden");
+    function toggleDropDown() {
+        const dropdown = document.getElementById('dropdownMenu');
+        const isVisible = !dropdown.classList.contains('opacity-0');
+
+        if (isVisible) {
+            closeDropdown();
+        } else {
+            openDropdown();
+        }
     }
 
-    // const element = document.getElementById('sidebar');
+    function openDropdown() {
+        const dropdown = document.getElementById('dropdownMenu');
+        dropdown.classList.remove('opacity-0', 'invisible', 'translate-y-2');
+    }
 
-    // element.addEventListener('mouseleave', () => {
-    //   toggleDropDown()
-    // });
+    function closeDropdown() {
+        const dropdown = document.getElementById('dropdownMenu');
+        dropdown.classList.add('opacity-0', 'invisible', 'translate-y-2');
+    }
 
+    // Close dropdown when sidebar is unhovered
+    document.getElementById('sidebar').addEventListener('mouseleave', function() {
+        closeDropdown();
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('dropdownMenu');
+        const sidebar = document.getElementById('sidebar');
+
+        if (!sidebar.contains(event.target)) {
+            closeDropdown();
+        }
+    });
+
+    // Prevent dropdown from closing when hovering over the dropdown itself
+    document.getElementById('dropdownMenu').addEventListener('mouseenter', function(event) {
+        event.stopPropagation();
+    });
+
+
+    // function viewDetails(id) {
+    //     fetch(`/Admin/ViewUserDetails?userId=${id}`)
+    //         .then(response => {
+    //             if (!response.ok) throw new Error("Unable to fetch user.");
+    //             return response.text();
+    //         })
+    //         .then(html => {
+    //             const container = document.getElementById("viewUserModalContainer");
+    //             if (container) container.innerHTML = html;
+    //         })
+    //         .catch(error => {
+    //             alert(error.message);
+    //         });
+    // }
 </script>

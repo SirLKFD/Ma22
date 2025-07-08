@@ -1,7 +1,7 @@
 ﻿@model ASI.Basecode.Services.ServiceModels.TopicViewModel
 @using ASI.Basecode.Services.Helpers
 @{
-    ViewData["Title"] = "User Topic Details";
+    ViewData["Title"] = "Ma22 | Topics";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
     var allTopics = ViewBag.AllTopics as List<ASI.Basecode.Services.ServiceModels.TopicViewModel> ?? new List<ASI.Basecode.Services.ServiceModels.TopicViewModel>();
     var mediaList = Model.Media;
@@ -10,10 +10,10 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-<div class="flex flex-col md:flex-row w-full gap-4 md:gap-8 box-border px-2 sm:px-4 md:px-8 py-2 sm:py-4 md:py-8">
-    <div class="flex flex-col gap-8 w-full md:w-2/3">
+<div class="box-border flex w-full flex-col gap-4 px-2 py-2 sm:px-4 sm:py-4 md:flex-row md:gap-8 md:px-8 md:py-8">
+    <div class="flex w-full flex-col gap-8 md:w-2/3">
 
-        <div class="flex w-full flex-col gap-4 rounded-xl bg-white p-4 shadow-md box-border">
+        <div class="box-border flex w-full flex-col gap-4 rounded-xl bg-white p-4 shadow-md">
             <div class="flex items-start justify-between">
                 <div class="flex-1">
                     <h1 class="mb-2 text-5xl font-semibold uppercase">@Model.TopicName</h1>
@@ -34,14 +34,14 @@
                 <div class="ml-4">
                     @if (hasAnyFiles)
                     {
-                        <button onclick="openDownloadModal()" class="flex flex-wrap md:flex-nowrap items-center gap-2 rounded-xl bg-[#640A16] px-2 sm:px-4 py-2 text-white transition-colors hover:bg-[#4a0810] focus:outline-none focus:ring-2 focus:ring-[#640A16] w-full max-w-[180px] sm:max-w-xs md:max-w-none">
+                        <button onclick="openDownloadModal()" class="flex w-full max-w-[180px] flex-wrap items-center gap-2 rounded-xl bg-[#640A16] px-2 py-2 text-white transition-colors hover:bg-[#4a0810] focus:outline-none focus:ring-2 focus:ring-[#640A16] sm:max-w-xs sm:px-4 md:max-w-none md:flex-nowrap">
                             <span class="material-symbols-outlined">download</span>
                             <span class="truncate text-xs sm:text-sm md:text-base">Download Options</span>
                         </button>
                     }
                     else
                     {
-                        <button disabled class="flex flex-wrap md:flex-nowrap cursor-not-allowed items-center gap-2 rounded-xl bg-gray-400 px-2 sm:px-4 py-2 text-gray-600 w-full max-w-[180px] sm:max-w-xs md:max-w-none">
+                        <button disabled class="flex w-full max-w-[180px] cursor-not-allowed flex-wrap items-center gap-2 rounded-xl bg-gray-400 px-2 py-2 text-gray-600 sm:max-w-xs sm:px-4 md:max-w-none md:flex-nowrap">
                             <span class="material-symbols-outlined">download</span>
                             <span class="truncate text-xs sm:text-sm md:text-base">Download Options</span>
                         </button>
@@ -51,7 +51,7 @@
         </div>
 
         <!-- Video Section -->
-        <div class="flex w-full flex-col rounded-lg bg-white p-4 shadow-sm box-border">
+        <div class="box-border flex w-full flex-col rounded-lg bg-white p-4 shadow-sm">
             <div class="flex space-x-2">
                 <span class="material-symbols-outlined rounded-xl bg-red-100 p-2 !text-[25px]">movie</span>
                 <div class="flex flex-col">
@@ -60,7 +60,7 @@
                 </div>
             </div>
 
-            <div class="mt-2 flex overflow-x-auto max-w-full whitespace-nowrap">
+            <div class="mt-2 flex max-w-full overflow-x-auto whitespace-nowrap">
                 @if (mediaList != null && mediaList.Any(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")))
                 {
                     foreach (var video in mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")))
@@ -87,7 +87,7 @@
         </div>
 
         <!-- Documents Section -->
-        <div class="flex w-full flex-col whitespace-nowrap rounded-lg bg-white p-4 shadow-sm box-border">
+        <div class="box-border flex w-full flex-col whitespace-nowrap rounded-lg bg-white p-4 shadow-sm">
             <div class="flex space-x-2">
                 <span class="material-symbols-outlined rounded-xl bg-green-100 p-2 !text-[25px]">docs</span>
                 <div class="flex flex-col">
@@ -113,7 +113,7 @@
                                 }
                             </div>
                             <div class="flex flex-col">
-                                <h2 class="text-lg font-semibold truncate max-w-[180px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-none lg:whitespace-normal lg:overflow-visible lg:text-ellipsis-none">@(doc.Name)</h2>
+                                <h2 class="max-w-[180px] truncate text-lg font-semibold sm:max-w-[300px] md:max-w-[400px] lg:text-ellipsis-none lg:max-w-none lg:overflow-visible lg:whitespace-normal">@(doc.Name)</h2>
                                 <p class="text-xs text-gray-600">Document Resource</p>
                                 @if (isPdf)
                                 {
@@ -139,7 +139,7 @@
         </div>
 
         <!-- Images Section -->
-        <div class="flex w-full flex-col rounded-lg bg-white p-4 shadow-sm box-border">
+        <div class="box-border flex w-full flex-col rounded-lg bg-white p-4 shadow-sm">
             <div class="flex space-x-2">
                 <span class="material-symbols-outlined rounded-xl bg-purple-100 p-2 !text-[25px]">image</span>
                 <div class="flex flex-col">
@@ -173,8 +173,8 @@
     </div>
 
     <!-- Right Sidebar -->
-    <div class="w-full md:w-1/3 mt-8 md:mt-0">
-        <div class="flex max-h-fit flex-col rounded-xl bg-[#640A16] p-4 text-white shadow-md box-border">
+    <div class="mt-8 w-full md:mt-0 md:w-1/3">
+        <div class="box-border flex max-h-fit flex-col rounded-xl bg-[#640A16] p-4 text-white shadow-md">
             <div class="flex items-center justify-center space-x-2">
                 <span class="material-symbols-outlined !text-[40px]">import_contacts</span>
                 <h2 class="text-3xl font-semibold">Other Topics</h2>
@@ -187,7 +187,7 @@
                         <div class="mt-4 flex flex-col rounded-xl border border-gray-200 bg-white p-4 text-black shadow-sm">
                             <div class="flex justify-between">
                                 <h3 class="text-md font-semibold">@t.TopicName</h3>
-                                <a href="@Url.Action("TopicDetails", "AdminTopic", new { topicId = t.Id })" class="material-symbols-outlined hover-pointer">open_in_new</a>
+                                <a href="@Url.Action("TopicDetails", "UserTopic", new { topicId = t.Id })" class="material-symbols-outlined hover-pointer">open_in_new</a>
                             </div>
                             <p class="text-xs">@t.Description</p>
                             <div class="mt-4 flex items-center space-x-4">
@@ -207,7 +207,7 @@
 
 <!-- Download Options Modal -->
 <div id="downloadModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-60">
-    <div class="relative max-h-[90vh] w-[95vw] md:w-full max-w-lg overflow-y-auto rounded-xl bg-white p-2 sm:p-6 shadow-2xl box-border">
+    <div class="relative box-border max-h-[90vh] w-[95vw] max-w-lg overflow-y-auto rounded-xl bg-white p-2 shadow-2xl sm:p-6 md:w-full">
         <div class="mb-4 flex items-center justify-between">
             <h2 class="text-2xl font-semibold text-gray-800">Download Options</h2>
             <button onclick="closeDownloadModal()" class="text-gray-500 hover:text-gray-700">
@@ -379,13 +379,13 @@
 
 <!-- Image Preview Modal -->
 <div id="imageModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-60">
-    <span class="absolute right-4 top-2 sm:right-8 sm:top-4 cursor-pointer select-none text-4xl text-white" onclick="closeImageModal()">&times;</span>
+    <span class="absolute right-4 top-2 cursor-pointer select-none text-4xl text-white sm:right-8 sm:top-4" onclick="closeImageModal()">&times;</span>
     <img id="modalImage" src="" alt="Preview" class="max-h-[80vh] max-w-[90vw] rounded shadow-lg" />
 </div>
 
 <!-- Media Preview Modal -->
 <div id="mediaModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-60">
-    <span class="absolute right-4 top-2 sm:right-8 sm:top-4 cursor-pointer select-none text-4xl text-white" onclick="closeMediaModal()">&times;</span>
+    <span class="absolute right-4 top-2 cursor-pointer select-none text-4xl text-white sm:right-8 sm:top-4" onclick="closeMediaModal()">&times;</span>
     <div id="modalContent" class="flex max-h-[80vh] max-w-[90vw] items-center justify-center rounded bg-transparent p-4 shadow-lg"></div>
 </div>
 

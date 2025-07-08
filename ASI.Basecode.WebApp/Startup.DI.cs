@@ -61,6 +61,11 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<IPasswordResetService, PasswordResetService>();
             this._services.AddScoped<IEmailService, EmailService>();
             this._services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
+
+            // Enrollment services
+            this._services.AddScoped<IEnrollmentService, EnrollmentService>();  
+            this._services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+
         }
     }
 }
