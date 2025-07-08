@@ -188,15 +188,27 @@
                 {
                     foreach (var t in allTopics.Where(x => x.Id != Model.Id))
                     {
-                        <div class="mt-4 flex flex-col rounded-xl border border-gray-200 bg-white p-4 text-black shadow-sm">
+                        var isEnrolled = ViewBag.IsEnrolled != null && (bool)ViewBag.IsEnrolled;
+                        <div class="mt-4 flex flex-col rounded-xl border border-gray-200 p-4 shadow-sm @(isEnrolled ? "bg-white text-black" : "bg-gray-200 text-gray-400 opacity-60 cursor-not-allowed")">
                             <div class="flex justify-between">
                                 <h3 class="text-md font-semibold">@t.TopicName</h3>
-                                <a href="@Url.Action("TopicDetails", "UserTopic", new { topicId = t.Id })" class="material-symbols-outlined hover-pointer">open_in_new</a>
+                                @if (isEnrolled)
+                                {
+                                    <a href="@Url.Action("TopicDetails", "UserTopic", new { topicId = t.Id })" class="material-symbols-outlined hover-pointer">open_in_new</a>
+                                }
+                                else
+                                {
+                                    <span class="material-symbols-outlined">lock</span>
+                                }
                             </div>
                             <p class="text-xs">@t.Description</p>
                             <div class="mt-4 flex items-center space-x-4">
                                 <span class="rounded-full bg-[#EAC231] p-2 text-xs font-semibold">@t.MediaCount Lessons</span>
                             </div>
+                            @if (!isEnrolled)
+                            {
+                                <p class="mt-2 text-xs text-red-500">You must enroll to access this topic.</p>
+                            }
                         </div>
                     }
                 }
@@ -402,6 +414,23 @@
         <span class="material-symbols-outlined text-3xl text-gray-800">chevron_right</span>
     </button>
 </div>
+
+<script type="application/json" id="videoMediaJson">
+    @Html.Raw(Json.Serialize(
+        (mediaList != null
+            ? mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video"))
+                .Select(m => new { url = m.MediaUrl, type = m.MediaType, name = m.Name }).ToList()
+            : new List<object>())
+    ))
+</script>
+<script type="application/json" id="imageMediaJson">
+    @Html.Raw(Json.Serialize(
+        (mediaList != null
+            ? mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image"))
+                .Select(m => new { url = m.MediaUrl, type = m.MediaType, name = m.Name }).ToList()
+            : new List<object>())
+    ))
+</script>
 
 @section Scripts {
     <script src="/html/assets/js/mediaModal.js"></script>

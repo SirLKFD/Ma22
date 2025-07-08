@@ -302,6 +302,27 @@
             radio.addEventListener('change', updateDownloadModalSections);
         });
         updateDownloadModalSections();
+
+        // --- NEW: Auto-initialize media lists from JSON blobs if present ---
+        try {
+            var videoJsonTag = document.getElementById('videoMediaJson');
+            var imageJsonTag = document.getElementById('imageMediaJson');
+            var videos = [];
+            var images = [];
+            if (videoJsonTag && videoJsonTag.textContent) {
+                videos = JSON.parse(videoJsonTag.textContent);
+            }
+            if (imageJsonTag && imageJsonTag.textContent) {
+                images = JSON.parse(imageJsonTag.textContent);
+            }
+            setMediaLists(videos, images);
+        } catch (e) {
+            // Ignore if not present or invalid
+        }
+
+        // Expose for inline onclicks (for backward compatibility)
+        window.openMediaModalWithNavigation = openMediaModalWithNavigation;
+        window.closeMediaModal = closeMediaModal;
     });
     // Also call when opening the modal
     const origOpenDownloadModal = window.mediaModal.openDownloadModal;

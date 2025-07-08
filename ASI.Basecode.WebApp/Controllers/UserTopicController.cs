@@ -59,6 +59,24 @@ namespace ASI.Basecode.WebApp.Controllers
             var topic = _topicService.GetTopicWithAccountById(topicId);
             var allTopics = _topicService.GetAllTopicsByTrainingId(topic.TrainingId);
             ViewBag.AllTopics = allTopics;
+            var userEmail = HttpContext.Session.GetString("UserEmail");
+            if (!string.IsNullOrEmpty(userEmail))
+            {
+                var user = _userService.GetUserByEmailId(userEmail);
+                if (user != null)
+                {
+                    bool isEnrolled = _enrollmentService.IsUserEnrolled(user.Id, topic.TrainingId);
+                    ViewBag.IsEnrolled = isEnrolled;
+                }
+                else
+                {
+                    ViewBag.IsEnrolled = false;
+                }
+            }
+            else
+            {
+                ViewBag.IsEnrolled = false;
+            }
             return View("~/Views/User/ViewTopic.cshtml", topic);
         }
 
