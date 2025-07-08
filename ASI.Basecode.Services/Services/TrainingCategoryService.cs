@@ -4,11 +4,13 @@ using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.Manager;
 using ASI.Basecode.Services.ServiceModels;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using static ASI.Basecode.Resources.Constants.Enums;
+
 
 namespace ASI.Basecode.Services.Services
 {
@@ -17,10 +19,13 @@ namespace ASI.Basecode.Services.Services
         private readonly ITrainingCategoryRepository _repository;
         private readonly IMapper _mapper;
 
-        public TrainingCategoryService(ITrainingCategoryRepository repository, IMapper mapper)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public TrainingCategoryService(ITrainingCategoryRepository repository, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
             _repository = repository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public void AddTrainingCategory(TrainingCategoryViewModel model)
@@ -61,8 +66,14 @@ namespace ASI.Basecode.Services.Services
         public void EditTrainingCategory(TrainingCategoryViewModel model)
         {
             var trainingCategory = _repository.GetTrainingCategories().FirstOrDefault(c => c.Id == model.Id);
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+    
             if (trainingCategory != null)
             {
+                 if (trainingCategory.AccountId != accountId && accountRole != 2)
+                    throw new UnauthorizedAccessException("You are not allowed to edit this category.");
+
                 Console.WriteLine($"[Service] Attempting to edit category: {trainingCategory.CategoryName}, AccountId: {trainingCategory.AccountId}");
                 if (!_repository.TrainingCategoryExists(trainingCategory.CategoryName))
                 {
@@ -80,8 +91,14 @@ namespace ASI.Basecode.Services.Services
         public void DeleteTrainingCategory(int id)
         {
             var trainingCategory = _repository.GetTrainingCategories().FirstOrDefault(c => c.Id == id);
-            if (trainingCategory != null)
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+    
+            if (trainingCategory != null )
             {
+                 if (trainingCategory.AccountId != accountId &&  accountRole != 2)
+                    throw new UnauthorizedAccessException("You are not allowed to delete this category.");
+
                 _repository.DeleteTrainingCategory(trainingCategory);
             }
         }
@@ -92,7 +109,15 @@ namespace ASI.Basecode.Services.Services
 
         public TrainingCategoryViewModel GetTrainingCategoryById(int id)
         {
+            
+   
             var category = _repository.GetTrainingCategories().FirstOrDefault(c => c.Id == id);
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+
+            if (category == null || (category.AccountId != accountId && accountRole != 2))
+                throw new UnauthorizedAccessException("You are not allowed to view this category.");
+
             return new TrainingCategoryViewModel
             {
                 Id = category.Id,
@@ -126,15 +151,31 @@ namespace ASI.Basecode.Services.Services
 
         public List<TrainingCategoryViewModel> GetPaginatedTrainingCategories(string search, int page, int pageSize, out int totalCount)
         {
-            var query = _repository.GetTrainingCategories();
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
 
-            if (!string.IsNullOrEmpty(search))
+            IQueryable<TrainingCategory> query;
+
+            if (accountRole == 0) // Only show categories created by this account
             {
-                query = query.Where(c => c.CategoryName.Contains(search));
+                query = _repository.GetTrainingCategories()
+                                .Where(c => c.AccountId == accountId);
+            }
+            else // Show all categories
+            {
+                query = _repository.GetTrainingCategories();
+            }
+
+            // Apply search filter if search term is provided
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(c => 
+                    c.CategoryName.Contains(search)
+                );
             }
 
             totalCount = query.Count();
-
+            Console.WriteLine("totalCount",totalCount);
             var paged = query
                 .OrderByDescending(c => c.UpdatedTime)
                 .Skip((page - 1) * pageSize)

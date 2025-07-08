@@ -53,6 +53,7 @@ namespace ASI.Basecode.Services.Services
                                 session.Set("UserName", Encoding.UTF8.GetBytes($"{account.FirstName} {account.LastName}"));
                                 session.Set("UserEmail", Encoding.UTF8.GetBytes(account.EmailId));
                                 session.SetInt32("AccountId", account.Id);
+                                session.SetInt32("AccountRole", account.Role);
                                 session.Set("ProfilePicture", Encoding.UTF8.GetBytes(account.ProfilePicture ?? ""));
                                 
                                 _logger.LogInformation($"Session restored for user: {account.FirstName} {account.LastName} {account.Id}");

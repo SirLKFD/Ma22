@@ -21,7 +21,7 @@ namespace ASI.Basecode.WebApp.Controllers
     /// Admin Training Controller
     /// </summary>
     [Route("admin/[action]")]
-    [Authorize(Roles = "0")]
+    [Authorize(Roles = "0,2")]
     public class AdminTrainingController : ControllerBase<AdminTrainingController>
     {
         private readonly ITrainingService _trainingService;
