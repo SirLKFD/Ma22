@@ -18,11 +18,15 @@ namespace ASI.Basecode.Services.Services
                 {
                     if (role == "0")
                     {
-                        context.Result = new RedirectToActionResult("UserMaster", "Admin", null);
+                        context.Result = new RedirectToActionResult("AdminTrainingCategory", "AdminTrainingCategory", null);
                     }
                     else if (role == "1")
                     {
                         context.Result = new RedirectToActionResult("UserDashboard", "User", null);
+                    }
+                    else if(role == "2")
+                    {
+                        context.Result = new RedirectToActionResult("UserMaster", "Admin", null);
                     }
                     else
                     {

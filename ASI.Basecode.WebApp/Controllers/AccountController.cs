@@ -88,11 +88,12 @@ namespace ASI.Basecode.WebApp.Controllers
                 switch (role)
                 {
                     case "0": // Admin role
-                        return RedirectToAction("UserMaster", "Admin");
+                        return RedirectToAction("AdminTrainingCategory", "AdminTrainingCategory");
 
                     case "1": // User role
                         return RedirectToAction("UserDashboard", "User");
-
+                    case "2": // User role
+                        return RedirectToAction("UserMaster", "Admin");
                     default:
                         return RedirectToAction("Login", "Account");
                 }
@@ -136,16 +137,19 @@ namespace ASI.Basecode.WebApp.Controllers
                 _session.SetString("UserName", $"{account.FirstName} {account.LastName}");
                 _session.SetString("UserEmail", account.EmailId);
                 _session.SetInt32("AccountId", account.Id);
+                _session.SetInt32("AccountRole",account.Role);
                 _session.SetString("ProfilePicture", account.ProfilePicture ?? "");
 
                 // Redirect based on role
                 switch ((RoleType)account.Role)
                 {
                     case RoleType.Admin:
-                        return RedirectToAction("UserMaster", "Admin");
+                        return RedirectToAction("AdminTrainingCategory", "AdminTrainingCategory");
 
                     case RoleType.User:
                         return RedirectToAction("UserDashboard", "User"); // Replace with actual User landing view
+                    case RoleType.SuperAdmin:
+                        return RedirectToAction("UserMaster", "Admin");
 
                     default:
                         TempData["ErrorMessage"] = "Incorrect account role.";

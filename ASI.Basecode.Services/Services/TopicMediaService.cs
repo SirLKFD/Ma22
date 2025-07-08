@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using static ASI.Basecode.Resources.Constants.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace ASI.Basecode.Services.Services
 {
@@ -16,11 +17,13 @@ namespace ASI.Basecode.Services.Services
     {
         private readonly ITopicMediaRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public TopicMediaService(ITopicMediaRepository repository, IMapper mapper)
+        public TopicMediaService(ITopicMediaRepository repository, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
             _repository = repository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public void AddTopicMedia(TopicMediaViewModel model)
@@ -53,8 +56,12 @@ namespace ASI.Basecode.Services.Services
 
         public List<TopicMediaViewModel> GetAllTopicMediaByTopicId(int topicId) 
         {
-              var media = _repository.GetTopicMedia().Where(t => t.TopicId == topicId)
-                .OrderByDescending(t => t.CreatedTime)
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+            var query = _repository.GetTopicMedia().Where(t => t.TopicId == topicId);
+            if (accountRole != 2)
+                query = query.Where(t => t.AccountId == accountId);
+            var media = query.OrderByDescending(t => t.CreatedTime)
                 .Select(t => new TopicMediaViewModel
                 {
                     Id = t.Id,
@@ -71,7 +78,10 @@ namespace ASI.Basecode.Services.Services
         public TopicMediaViewModel GetTopicMediaById(int id)
         {
             var media = _repository.GetTopicMedia().FirstOrDefault(m => m.Id == id);
-            if (media == null) return null;
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+            if (media == null || (media.AccountId != accountId && accountRole != 2))
+                throw new UnauthorizedAccessException("You are not allowed to view this media.");
             return new TopicMediaViewModel
                 {
                     TopicId = media.TopicId,
@@ -84,7 +94,15 @@ namespace ASI.Basecode.Services.Services
 
         public void DeleteTopicMedia(int id)
         {
-            _repository.DeleteTopicMedia(id);
+            var media = _repository.GetTopicMedia().FirstOrDefault(m => m.Id == id);
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+            if (media != null)
+            {
+                if (media.AccountId != accountId && accountRole != 2)
+                    throw new UnauthorizedAccessException("You are not allowed to delete this media.");
+                _repository.DeleteTopicMedia(id);
+            }
         }
     }
 }
