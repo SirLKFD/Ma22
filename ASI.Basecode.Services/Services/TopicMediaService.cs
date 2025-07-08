@@ -59,7 +59,7 @@ namespace ASI.Basecode.Services.Services
             var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
             var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
             var query = _repository.GetTopicMedia().Where(t => t.TopicId == topicId);
-            if (accountRole != 2)
+            if (accountRole == 0)
                 query = query.Where(t => t.AccountId == accountId);
             var media = query.OrderByDescending(t => t.CreatedTime)
                 .Select(t => new TopicMediaViewModel
@@ -80,7 +80,7 @@ namespace ASI.Basecode.Services.Services
             var media = _repository.GetTopicMedia().FirstOrDefault(m => m.Id == id);
             var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
             var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
-            if (media == null || (media.AccountId != accountId && accountRole != 2))
+            if (media == null || (media.AccountId != accountId && accountRole == 0))
                 throw new UnauthorizedAccessException("You are not allowed to view this media.");
             return new TopicMediaViewModel
                 {
@@ -99,7 +99,7 @@ namespace ASI.Basecode.Services.Services
             var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
             if (media != null)
             {
-                if (media.AccountId != accountId && accountRole != 2)
+                if (media.AccountId != accountId && accountRole == 0)
                     throw new UnauthorizedAccessException("You are not allowed to delete this media.");
                 _repository.DeleteTopicMedia(id);
             }

@@ -72,7 +72,7 @@ namespace ASI.Basecode.Services.Services
                 .Include(t => t.TrainingCategory)
                 .Where(t => t.TrainingCategoryId == categoryId);
 
-            if (accountRole != 2) // Only superadmin sees all
+            if (accountRole == 0) // Only superadmin sees all
                 query = query.Where(t => t.AccountId == accountId);
 
             return query.Select(t => new TrainingViewModel
@@ -101,7 +101,7 @@ namespace ASI.Basecode.Services.Services
             .Include(t => t.SkillLevelNavigation).Include(t => t.TrainingCategory).Include(t => t.Reviews).FirstOrDefault(t => t.Id == id);
             var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
             var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
-            if (training == null || (training.AccountId != accountId && accountRole != 2))
+            if (training == null || (training.AccountId != accountId && accountRole == 0))
                 throw new UnauthorizedAccessException("You are not allowed to view this training.");
 
             return new TrainingViewModel
@@ -146,7 +146,7 @@ namespace ASI.Basecode.Services.Services
                 .Include(t => t.SkillLevelNavigation)
                 .Include(t => t.TrainingCategory)
                 .AsQueryable();
-            if (accountRole != 2)
+            if (accountRole == 0)
                 query = query.Where(t => t.AccountId == accountId);
             return query.Select(t => new TrainingViewModel
             {
@@ -175,7 +175,7 @@ namespace ASI.Basecode.Services.Services
             var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
             if (training != null)
             {
-                if (training.AccountId != accountId && accountRole != 2)
+                if (training.AccountId != accountId && accountRole == 0)
                     throw new UnauthorizedAccessException("You are not allowed to edit this training.");
                 Console.WriteLine($"[Service] Attempting to edit training: {training.TrainingName}, AccountId: {training.AccountId}");
                 if (!_repository.TrainingExists(training.TrainingName))
@@ -198,7 +198,7 @@ namespace ASI.Basecode.Services.Services
             var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
             if (training != null)
             {
-                if (training.AccountId != accountId && accountRole != 2)
+                if (training.AccountId != accountId && accountRole == 0)
                     throw new UnauthorizedAccessException("You are not allowed to delete this training.");
                 _repository.DeleteTraining(training);
             }
@@ -209,7 +209,7 @@ namespace ASI.Basecode.Services.Services
             var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
             var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
             var query = _repository.GetTrainings();
-            if (accountRole != 2)
+            if (accountRole == 0)
                 query = query.Where(t => t.AccountId == accountId);
             if (!string.IsNullOrEmpty(search))
             {
@@ -248,7 +248,7 @@ namespace ASI.Basecode.Services.Services
                 .Include(t => t.TrainingCategory)
                 .AsQueryable();
 
-            if (accountRole != 2)
+            if (accountRole == 0)
                 query = query.Where(t => t.AccountId == accountId);
 
             if (!string.IsNullOrEmpty(search))

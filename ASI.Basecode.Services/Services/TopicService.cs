@@ -66,7 +66,7 @@ namespace ASI.Basecode.Services.Services
             var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
             var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
             var query = _repository.GetTopics().Where(t => t.TrainingId == trainingId);
-            if (accountRole != 2)
+            if (accountRole == 0)
                 query = query.Where(t => t.AccountId == accountId);
             var topics = query.OrderByDescending(t => t.CreatedTime)
                 .Select(t => new TopicViewModel
@@ -98,7 +98,7 @@ namespace ASI.Basecode.Services.Services
             var topic = _repository.GetTopics().FirstOrDefault(t => t.Id == id);
             var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
             var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
-            if (topic == null || (topic.AccountId != accountId && accountRole != 2))
+            if (topic == null || (topic.AccountId != accountId && accountRole == 0))
                 throw new UnauthorizedAccessException("You are not allowed to view this topic.");
             if (topic != null)
                 Console.WriteLine($"[TopicService] Found topic: {topic.TopicName}");
@@ -113,7 +113,7 @@ namespace ASI.Basecode.Services.Services
             var topic = _repository.GetTopicWithAccountById(id);
             var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
             var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
-            if (topic == null || (topic.AccountId != accountId && accountRole != 2))
+            if (topic == null || (topic.AccountId != accountId && accountRole == 0))
                 throw new UnauthorizedAccessException("You are not allowed to view this topic.");
             if (topic != null)
                 Console.WriteLine($"[TopicService] Found topic: {topic.TopicName}");
@@ -146,7 +146,7 @@ namespace ASI.Basecode.Services.Services
             var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
             if (topic != null)
             {
-                if (topic.AccountId != accountId && accountRole != 2)
+                if (topic.AccountId != accountId && accountRole == 0)
                     throw new UnauthorizedAccessException("You are not allowed to edit this topic.");
                 if (_repository.TopicExists(model.TopicName) && model.TopicName != topic.TopicName)
                 {
@@ -167,7 +167,7 @@ namespace ASI.Basecode.Services.Services
             var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
             if (topic != null)
             {
-                if (topic.AccountId != accountId && accountRole != 2)
+                if (topic.AccountId != accountId && accountRole == 0)
                     throw new UnauthorizedAccessException("You are not allowed to delete this topic.");
                 _repository.DeleteTopic(topic);
             }

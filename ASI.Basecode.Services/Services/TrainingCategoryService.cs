@@ -71,7 +71,7 @@ namespace ASI.Basecode.Services.Services
     
             if (trainingCategory != null)
             {
-                 if (trainingCategory.AccountId != accountId && accountRole != 2)
+                 if (trainingCategory.AccountId != accountId && accountRole == 0)
                     throw new UnauthorizedAccessException("You are not allowed to edit this category.");
 
                 Console.WriteLine($"[Service] Attempting to edit category: {trainingCategory.CategoryName}, AccountId: {trainingCategory.AccountId}");
@@ -96,7 +96,7 @@ namespace ASI.Basecode.Services.Services
     
             if (trainingCategory != null )
             {
-                 if (trainingCategory.AccountId != accountId &&  accountRole != 2)
+                 if (trainingCategory.AccountId != accountId &&  accountRole == 0)
                     throw new UnauthorizedAccessException("You are not allowed to delete this category.");
 
                 _repository.DeleteTrainingCategory(trainingCategory);
@@ -115,7 +115,7 @@ namespace ASI.Basecode.Services.Services
             var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
             var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
 
-            if (category == null || (category.AccountId != accountId && accountRole != 2))
+            if (category == null || (category.AccountId != accountId && accountRole == 0))
                 throw new UnauthorizedAccessException("You are not allowed to view this category.");
 
             return new TrainingCategoryViewModel
