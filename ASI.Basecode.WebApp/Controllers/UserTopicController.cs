@@ -3,6 +3,7 @@ using ASI.Basecode.Services.ServiceModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -58,6 +59,14 @@ namespace ASI.Basecode.WebApp.Controllers
             var allTopics = _topicService.GetAllTopicsByTrainingId(topic.TrainingId);
             ViewBag.AllTopics = allTopics;
             return View("~/Views/User/ViewTopic.cshtml", topic);
+        }
+
+        [HttpGet]
+        public IActionResult LoadMoreReviews(int trainingId, int skip = 5, int take = 5)
+        {
+            var training = _trainingService.GetTrainingById(trainingId);
+            var reviews = training.Reviews.Skip(skip).Take(take).ToList();
+            return PartialView("~/Views/User/_ReviewCardPartial.cshtml", reviews);
         }
     }
 }
