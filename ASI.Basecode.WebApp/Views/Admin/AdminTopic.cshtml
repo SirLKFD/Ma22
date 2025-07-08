@@ -421,26 +421,23 @@
     </button>
 </div>
 
+<script type="application/json" id="videoMediaJson">
+    @Html.Raw(Json.Serialize(
+        (mediaList != null
+            ? mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video"))
+                .Select(m => new { url = m.MediaUrl, type = m.MediaType, name = m.Name }).ToList()
+            : new List<object>())
+    ))
+</script>
+<script type="application/json" id="imageMediaJson">
+    @Html.Raw(Json.Serialize(
+        (mediaList != null
+            ? mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image"))
+                .Select(m => new { url = m.MediaUrl, type = m.MediaType, name = m.Name }).ToList()
+            : new List<object>())
+    ))
+</script>
+
 @section Scripts {
     <script src="/html/assets/js/mediaModal.js"></script>
-    <script>
-        // Initialize media arrays for navigation
-        mediaModal.setMediaLists(
-            @Html.Raw(Json.Serialize(
-                (mediaList != null
-                    ? mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video"))
-                        .Select(m => new { url = m.MediaUrl, type = m.MediaType, name = m.Name }).ToList()
-                    : new List<object>())
-            )),
-            @Html.Raw(Json.Serialize(
-                (mediaList != null
-                    ? mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image"))
-                        .Select(m => new { url = m.MediaUrl, type = m.MediaType, name = m.Name }).ToList()
-                    : new List<object>())
-            ))
-        );
-        // Expose for inline onclick
-        window.openMediaModalWithNavigation = mediaModal.openMediaModalWithNavigation;
-        window.closeMediaModal = mediaModal.closeMediaModal;
-    </script>
 }

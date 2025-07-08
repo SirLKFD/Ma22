@@ -69,10 +69,24 @@
             <div class="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                 @foreach (var topic in Model)
                 {
-                    <div class="hover-pointer flex w-full flex-col bg-white p-4 shadow-md transition-all duration-300 hover:scale-110" onclick="window.location.href='@Url.Action("TopicDetails", "UserTopic", new { topicId = topic.Id })'">
-                        <p class="text-xl font-semibold">@topic.TopicName</p>
-                        <p class="text-sm">@topic.Description</p>
-                    </div>
+                    var isEnrolled = ViewBag.IsEnrolled != null && (bool)ViewBag.IsEnrolled;
+                    if (isEnrolled)
+                    {
+                        <div class="hover-pointer flex w-full flex-col bg-white p-4 shadow-md transition-all duration-300 hover:scale-110" onclick="window.location.href='@Url.Action("TopicDetails", "UserTopic", new { topicId = topic.Id })'">
+                            <p class="text-xl font-semibold">@topic.TopicName</p>
+                            <p class="text-sm">@topic.Description</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="flex w-full flex-col bg-gray-200 p-4 shadow-md opacity-60 cursor-not-allowed relative" title="You must enroll to access this topic">
+                            <p class="text-xl font-semibold text-gray-400">@topic.TopicName</p>
+                            <p class="text-sm text-gray-400">@topic.Description</p>
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <span class="text-red-500 font-semibold bg-white bg-opacity-80 rounded px-2 py-1 text-xs">Enroll to access</span>
+                            </div>
+                        </div>
+                    }
                 }
             </div>
         </div>
