@@ -131,7 +131,7 @@ namespace ASI.Basecode.WebApp.Controllers
             if (loginResult == LoginResult.Success && account != null)
             {
                 // Sign in
-                await _signInManager.SignInAsync(account);
+                await _signInManager.SignInAsync(account, true);
 
                 // Set session values
                 _session.SetString("UserName", $"{account.FirstName} {account.LastName}");
