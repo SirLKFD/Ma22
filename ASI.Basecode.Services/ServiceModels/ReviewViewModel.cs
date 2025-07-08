@@ -27,6 +27,8 @@ public class ReviewViewModel
 
     public string AccountLastName { get; set; }
 
+    public string ProfilePicture { get; set; }
+
     public DateTime CreatedTime { get; set; }
 
 }

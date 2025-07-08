@@ -250,5 +250,13 @@ namespace ASI.Basecode.WebApp.Controllers
             ViewData["EnrollmentCount"] = enrollmentCount;
             return View("~/Views/Admin/AdminTrainingTopics.cshtml", topics);
         }
+
+        [HttpGet]
+        public IActionResult LoadMoreReviews(int trainingId, int skip = 5, int take = 5)
+        {
+            var training = _trainingService.GetTrainingById(trainingId);
+            var reviews = training.Reviews.Skip(skip).Take(take).ToList();
+            return PartialView("~/Views/User/_ReviewCardPartial.cshtml", reviews);
+        }
     }
 }

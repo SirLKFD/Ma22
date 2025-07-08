@@ -1,0 +1,37 @@
+@model List<ASI.Basecode.Services.ServiceModels.ReviewViewModel>
+@foreach (var review in Model)
+{
+    <div class="flex w-full flex-row items-start bg-white p-4 shadow-md rounded-lg mb-2">
+        <div class="flex-shrink-0 flex items-center justify-center mr-4">
+            @if (!string.IsNullOrEmpty(review.ProfilePicture))
+            {
+                <img src="@review.ProfilePicture" alt="Profile" class="h-10 w-10 rounded-full object-cover" />
+            }
+            else
+            {
+                <span class="material-symbols-outlined text-[40px] text-gray-400">person</span>
+            }
+        </div>
+        <div class="flex flex-1 flex-col">
+            <div class="flex items-center gap-2 mb-1">
+                <span class="font-semibold">@review.AccountFirstName @review.AccountLastName</span>
+                <span class="text-xs text-gray-400">@review.CreatedTime.ToString("MMM dd, yyyy")</span>
+            </div>
+            <p class="text-base font-semibold mb-1">@review.Title</p>
+            <p class="text-sm text-gray-700">@review.UserReview</p>
+        </div>
+        <div class="flex flex-row items-center justify-end min-w-[90px] ml-4 h-full gap-1">
+            @for (int i = 1; i <= 5; i++)
+            {
+                if (i <= review.ReviewScore)
+                {
+                    <span class="material-symbols-outlined text-[#EAC231] text-2xl">star</span>
+                }
+                else
+                {
+                    <span class="material-symbols-outlined text-gray-300 text-2xl">star</span>
+                }
+            }
+        </div>
+    </div>
+} 

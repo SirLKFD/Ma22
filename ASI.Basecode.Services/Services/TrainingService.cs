@@ -98,7 +98,10 @@ namespace ASI.Basecode.Services.Services
         public TrainingViewModel GetTrainingById(int id)
         {
             var training = _repository.GetTrainings().Include(t => t.DurationNavigation)
-            .Include(t => t.SkillLevelNavigation).Include(t => t.TrainingCategory).Include(t => t.Reviews).FirstOrDefault(t => t.Id == id);
+            .Include(t => t.SkillLevelNavigation).Include(t => t.TrainingCategory)
+            .Include(t => t.Reviews)
+            .ThenInclude(r => r.Account)
+            .FirstOrDefault(t => t.Id == id);
             var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
             var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
             if (training == null || (training.AccountId != accountId && accountRole == 0))
@@ -133,6 +136,7 @@ namespace ASI.Basecode.Services.Services
                     AccountId = t.AccountId,
                     AccountFirstName = t.Account?.FirstName,
                     AccountLastName = t.Account?.LastName,
+                    ProfilePicture = t.Account?.ProfilePicture,
                     CreatedTime = t.CreatedTime
                 }).ToList()
             };
