@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(`/Admin/ViewUserDetails?userId=${id}`)
       .then((response) => {
         if (!response.ok) throw new Error("Unable to fetch user.");
-        console.log;
+        
         return response.text();
       })
       .then((html) => {
