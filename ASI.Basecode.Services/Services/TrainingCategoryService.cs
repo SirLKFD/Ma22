@@ -133,7 +133,25 @@ namespace ASI.Basecode.Services.Services
 
         public List<TrainingCategoryViewModel> GetAllTrainingCategoryViewModels()
         {
-            var categories = _repository.GetTrainingCategories()
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+
+            IQueryable<TrainingCategory> query;
+
+            if (accountRole == 0) // Admin: only their own categories
+            {
+                query = _repository.GetTrainingCategories().Where(c => c.AccountId == accountId);
+            }
+            else if (accountRole == 2) // SuperAdmin: all categories
+            {
+                query = _repository.GetTrainingCategories();
+            }
+            else // fallback: no categories
+            {
+                query = _repository.GetTrainingCategories().Where(c => false);
+            }
+
+            var categories = query
                 .OrderByDescending(c => c.UpdatedTime)
                 .Select(c => new TrainingCategoryViewModel
                 {
