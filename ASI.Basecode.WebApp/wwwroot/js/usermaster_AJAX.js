@@ -140,24 +140,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function viewDetails(id) {
     fetch(`/Admin/ViewUserDetails?userId=${id}`)
-      .then(async (response) => {
-        const text = await response.text();
-        if (!response.ok) {
-          let errorMsg = "Unable to fetch user.";
-          try {
-            const json = JSON.parse(text);
-            errorMsg = json.message || errorMsg;
-          } catch {
-            if (text) errorMsg = text;
-          }
-          console.error("Fetch error:", {
-            status: response.status,
-            statusText: response.statusText,
-            body: text,
-          });
-          throw new Error(errorMsg);
-        }
-        return text;
+      .then((response) => {
+        if (!response.ok) throw new Error("Unable to fetch user.");
+        console.log;
+        return response.text();
       })
       .then((html) => {
         const container = document.getElementById("viewUserModalContainer");
@@ -165,7 +151,6 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch((error) => {
         alert(error.message);
-        console.error("Error in viewDetails:", error);
       });
   }
 
