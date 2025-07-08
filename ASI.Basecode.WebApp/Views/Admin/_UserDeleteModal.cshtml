@@ -8,35 +8,38 @@
 
 <div id="deleteUserModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
 
-    <div class="relative flex h-[700px] w-[1152px] flex-row rounded-xl bg-[#640A16] shadow-lg">
+    <div class="relative flex max-w-4xl flex-col rounded-xl bg-white shadow-lg px-8 py-6 animate-slide-up opacity-0 animate-fade-in">
         <div class="absolute left-5 top-5">
             <a onclick="closeDeleteProfile()" class="hover-pointer">
-                <span class="material-symbols-outlined text-[50px] text-white">arrow_circle_left</span>
+                <span class="material-symbols-outlined text-[50px] ">arrow_circle_left</span>
             </a>
         </div>
-        <div class="mt-24 flex w-full flex-col items-center">
-            <h1 class="mb-5 text-4xl text-white">
-                Are you sure you want to delete this User?
+        <div class="mt-10 flex w-full flex-col items-center">
+            <h1 class="mb-5 text-3xl font-bold uppercase">
+                Delete this User?
             </h1>
-            <div class="mb-4 flex h-[200px] w-[200px] items-center justify-center overflow-hidden rounded-full bg-[#FFE9C6]">
+            <div class="mb-4 flex h-[200px] w-[200px] items-center justify-center overflow-hidden rounded-full border-4 border-[#FFE9C6] bg-[#FFE9C6] shadow-lg">
                 <img id="deleteUserProfilePic" src="" alt="Profile Picture" class="hidden h-full w-full rounded-full object-cover" />
                 <span id="deleteUserProfileEmoji" class="text-[100px]">👤</span>
             </div>
             <div class="mb-4 flex flex-col items-center justify-center gap-2">
-                <h2 id="deleteUserName" class="text-2xl text-white">NamePlaceholder</h2>
-                <h2 id="deleteUserId" class="text-white">ID Placeholder</h2>
+                <h2 id="deleteUserName" class="text-xl ">NamePlaceholder</h2>
+                <h2 id="deleteUserId" class="">ID Placeholder</h2>
+            </div>
+            <div class="flex bg-[#640A16] rounded-lg text-white mb-4 p-2 space-x-2 text-center">
+                <span class="material-symbols-outlined !text-[50px]">warning</span>
+                <p>WARNING! All user data will be permanently deleted.<br />
+                This action cannot be reversed</p>
             </div>
             <div class="flex flex-col gap-2">
-                <button id="confirmDeleteBtn" class="rounded-lg bg-[#EAC231] px-[200px] py-2">
+                <button id="confirmDeleteBtn" class="rounded-lg bg-[#EAC231] px-[200px] py-2 hover:bg-[#cfa221]">
                     Confirm
                 </button>
-                <button onclick="closeDeleteProfile()" class="rounded-lg bg-[#FFE9C6] px-[200px] py-2">
+                <button onclick="closeDeleteProfile()" class="rounded-lg bg-[#FFE9C6] hover:bg-[#e6c89c] px-[200px] py-2">
                     Cancel
                 </button>
             </div>
         </div>
-
-
 
     </div>
 

@@ -3,7 +3,10 @@
 @{
     ViewData["Title"] = "Ma22 | Profiles";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    var filter = Context.Request.Query["filter"].ToString() ?? "all";
+    var filter = string.IsNullOrWhiteSpace(Context.Request.Query["filter"]) ? "all" : Context.Request.Query["filter"].ToString();
+    var isAll = filter == "all";
+    var isAdmin = filter == "admin";
+    var isGuest = filter == "guest";
 }
 
 @if (TempData["Success"] != null)
@@ -45,19 +48,19 @@
 
 <!-- Filter Tabs and Add User -->
 <div class="mx-20 mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-    <div class="flex gap-6 text-base font-medium text-gray-600">
-        <a href="@Url.Action("UserMaster", new { page = 1, filter = "all" })" class="transition hover:text-black">All (@Model.TotalUsers)</a>
-        <a href="@Url.Action("UserMaster", new { page = 1, filter = "admin" })" class="transition hover:text-black">Admin (@Model.TotalAdmins)</a>
-        <a href="@Url.Action("UserMaster", new { page = 1, filter = "guest" })" class="transition hover:text-black">Guest (@Model.TotalGuests)</a>
+    <div class="flex items-center gap-6 text-base font-medium text-gray-600">
+        <a href="@Url.Action("UserMaster", new { page = 1, filter = "all" })" class="transition hover:text-black @(isAll ? "bg-[#640A16] text-white p-2 rounded-lg" : "")">All (@Model.TotalUsers)</a>
+        <a href="@Url.Action("UserMaster", new { page = 1, filter = "admin" })" class="transition hover:text-black @(isAdmin ? "bg-[#640A16] text-white p-2 rounded-lg" : "")">Admin (@Model.TotalAdmins)</a>
+        <a href="@Url.Action("UserMaster", new { page = 1, filter = "guest" })" class="transition hover:text-black @(isGuest ? "bg-[#640A16] text-white p-2 rounded-lg" : "")">Guest (@Model.TotalGuests)</a>
     </div>
 
-    <button onclick="openModal()" class="rounded-full bg-[#EAC231] px-5 py-2 text-sm font-semibold text-black shadow-md transition hover:bg-[#cfa221]">
+    <button onclick="openModal()" class="rounded-full bg-[#EAC231] px-4 py-2 text-sm font-semibold text-black shadow-md transition hover:bg-[#cfa221]">
         Add User +
     </button>
 </div>
 
 <!-- Table -->
-<div class="mx-20 overflow-x-auto rounded-xl bg-white shadow-lg">
+<div class="mx-20 overflow-x-auto rounded-xl bg-white shadow-lg animate-slide-up opacity-0 animate-fade-in">
     <table class="w-full text-left text-sm text-black">
         <thead class="bg-[#640A16] text-sm uppercase tracking-wide text-white">
             <tr>
@@ -126,11 +129,17 @@
 
             @for (int i = 1; i <= Model.TotalPages; i++)
             {
+                var isCurrent = i == Model.CurrentPage;
+                var pageClass = isCurrent
+                ? "bg-[#EAC231] text-black font-semibold"
+                : "bg-white text-gray-600 hover:bg-gray-100 hover:text-black";
+
                 <li>
                     <a href="@Url.Action("UserMaster", new { page = i, filter = filter })"
-                       class="border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black @(i == Model.CurrentPage ? "bg-[#EAC231] text-black font-semibold" : "")">@i</a>
+                       class="border border-gray-300 px-3 py-2 transition @pageClass">@i</a>
                 </li>
             }
+
 
             @if (Model.CurrentPage < Model.TotalPages)
             {
