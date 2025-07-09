@@ -165,7 +165,7 @@
                     {
                         <li>
                             <a class="rounded-l-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100"
-                               href="@(isCategory? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = ViewBag.CurrentPage - 1, search = search }) : Url.Action("AdminTraining", new { page = ViewBag.CurrentPage - 1, search = search }))">
+                               href="@(isCategory? $"/admin/TrainingCategoryDetails?categoryId={categoryId}&page={ViewBag.CurrentPage - 1}&search={search}" : $"/admin/AdminTraining?page={ViewBag.CurrentPage - 1}&search={search}")">
                                 Previous
                             </a>
                         </li>
@@ -174,7 +174,7 @@
                     {
                         <li>
                             <a class="rounded-md border border-gray-300 px-3 @(i == ViewBag.CurrentPage ? "bg-[#EAC231] font-bold" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") py-2 transition"
-                               href="@(isCategory? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = i, search = search }) : Url.Action("AdminTraining", new { page = i, search = search }))">
+                               href="@(isCategory? $"/admin/TrainingCategoryDetails?categoryId={categoryId}&page={i}&search={search}" : $"/admin/AdminTraining?page={i}&search={search}")">
                                 @i
                             </a>
                         </li>
@@ -183,7 +183,7 @@
                     {
                         <li>
                             <a class="rounded-r-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100"
-                               href="@(isCategory? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = ViewBag.CurrentPage + 1, search = search }) : Url.Action("AdminTraining", new { page = ViewBag.CurrentPage + 1, search = search }))">
+                               href="@(isCategory? $"/admin/TrainingCategoryDetails?categoryId={categoryId}&page={ViewBag.CurrentPage + 1}&search={search}" : $"/admin/AdminTraining?page={ViewBag.CurrentPage + 1}&search={search}")">
                                 Next
                             </a>
                         </li>

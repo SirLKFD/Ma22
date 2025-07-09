@@ -93,7 +93,7 @@
                     {
                         <li>
                             <a class="rounded-l-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100"
-                               href="@Url.Action("AdminTrainingCategory", new { page = ViewBag.CurrentPage - 1, search = ViewBag.Search })">
+                               href="/admin/AdminTrainingCategory?page=@(ViewBag.CurrentPage - 1)&search=@ViewBag.Search">
                                 Previous
                             </a>
                         </li>
@@ -102,7 +102,7 @@
                     {
                         <li>
                             <a class="rounded-md border border-gray-300 px-3 @(i == ViewBag.CurrentPage ? "bg-[#EAC231] font-bold" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") py-2 transition"
-                               href="@Url.Action("AdminTrainingCategory", new { page = i, search = ViewBag.Search })">
+                               href="/admin/AdminTrainingCategory?page=@i&search=@ViewBag.Search">
                                 @i
                             </a>
                         </li>
@@ -111,7 +111,7 @@
                     {
                         <li>
                             <a class="rounded-r-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100"
-                               href="@Url.Action("AdminTrainingCategory", new { page = ViewBag.CurrentPage + 1, search = ViewBag.Search })">
+                               href="/admin/AdminTrainingCategory?page=@(ViewBag.CurrentPage + 1)&search=@ViewBag.Search">
                                 Next
                             </a>
                         </li>
