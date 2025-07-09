@@ -1,65 +1,58 @@
-﻿@model TrainingViewModel
+@model TrainingViewModel
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-
 <div id="deleteTraining" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm hidden">
-    <div class="flex max-h-[700px] w-full max-w-3xl flex-col rounded-xl bg-white text-black shadow-lg p-6">
+    <div class="flex max-h-[700px] w-full max-w-2xl flex-col rounded-xl bg-white text-black shadow-lg p-6 animate-slide-up opacity-0 animate-fade-in">
         <div class="flex">
             <a onclick="closeDeleteTraining()" class="hover-pointer">
                 <span class="material-symbols-outlined text-[50px]">arrow_circle_left</span>
             </a>
         </div>
-        <div class="flex align-items-center justify-center w-full mt-5 mb-3">
-            <h1 class="text-2xl font-weight-bold">Are you sure you want to delete this training?</h1>
+        <div class="flex align-items-center justify-center w-full mb-3">
+            <h1 class="text-3xl font-weight-bold">Delete Training?</h1>
         </div>
-
 
         <!-- Dummy Card -->
         <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col max-h-[300px] w-[450px] align-self-center mb-3">
             <!-- Image -->
-            <div class="h-[140px]">
-                <img class="w-full h-full object-cover outline outline-1 outline-black" id="CoverPicturePreview" alt="Cover Image" />
+            <div class="h-[140px] relative">
+                <img id="CoverPicturePreview" class="w-full h-full object-cover outline outline-1 outline-black hidden" alt="Cover Image" />
+                <div id="NoCoverPicturePreview" class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#640A16] via-[#8B1538] to-[#640A16] text-center text-sm font-medium text-white">
+                    <span class="material-symbols-outlined text-4xl opacity-50">image</span>
+                    <p class="ml-2">No Cover Image</p>
+                </div>
             </div>
 
             <!-- Content -->
             <div class="p-4 flex flex-col flex-grow">
-                <!-- Title and Actions -->
                 <div class="flex justify-between items-center mb-2">
-                    <h2 id="TrainingNameEdit" class="text-xl font-semibold text-gray-800" ></h2>
-
+                    <h2 id="TrainingNameEdit" class="text-xl font-semibold text-gray-800"></h2>
                 </div>
 
-                <!-- Description -->
-                    <p id="DescriptionEdit" class="text-sm text-gray-600 line-clamp-3"></p>
+                <p id="DescriptionEdit" class="text-sm text-gray-600 line-clamp-3"></p>
 
-                <!-- Footer -->
                 <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
                     <div>
                         <p><strong>Modified:</strong> <span id="ModifiedPreview"></span></p>
                         <p><strong>By:</strong> <span id="ByPreview"></span></p>
                     </div>
-                    <button class="bg-[#640A16] text-white font-weight-bold px-4 py-2 rounded-full text-xs hover:bg-[#4e0712] transition">
-                        Access
-                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="flex items-center bg-[#640A16] text-white rounded-xl w-[450px] align-self-center p-2 space-x-2 mb-5">
+        <div class="flex items-center bg-[#640A16] text-white rounded-xl w-[450px] align-self-center p-2 space-x-2 mb-3">
             <span class="material-symbols-outlined text-[#EAC231] !text-[50px]">warning</span>
             <p>WARNING! Deleting this will also remove the topics under this training.</p>
         </div>
 
         <form asp-action="DeleteTraining" asp-controller="AdminTraining" method="post" class="align-self-center">
             <input type="hidden" asp-for="Id" name="Id" id="deleteTrainingId" />
-            <input type="hidden" aso-for="TrainingName" name="trainingName" id="deleteTrainingName"/>
-            <button class="bg-[#FFE9C6] w-[450px] text-black  py-2 rounded-xl font-weight-bold ">
+            <input type="hidden" asp-for="TrainingName" name="trainingName" id="deleteTrainingName" />
+            <button class="bg-[#FFE9C6] hover:bg-[#e6c89c] w-[450px] text-black py-2 rounded-xl font-weight-bold">
                 Confirm
             </button>
         </form>
-
     </div>
-
 </div>
 
 <script>
@@ -76,7 +69,18 @@
         document.getElementById('ModifiedPreview').textContent = formattedTime;
         document.getElementById('ByPreview').textContent = accountFirstName + " " + accountLastName;
 
-        document.getElementById('deleteTraining').classList.remove('hidden');
+        const imageElement = document.getElementById('CoverPicturePreview');
+        const noImageDiv = document.getElementById('NoCoverPicturePreview');
 
+        if (coverPicture && coverPicture.trim() !== '') {
+            imageElement.src = coverPicture;
+            imageElement.classList.remove('hidden');
+            noImageDiv.classList.add('hidden');
+        } else {
+            imageElement.classList.add('hidden');
+            noImageDiv.classList.remove('hidden');
+        }
+
+        document.getElementById('deleteTraining').classList.remove('hidden');
     }
 </script>
