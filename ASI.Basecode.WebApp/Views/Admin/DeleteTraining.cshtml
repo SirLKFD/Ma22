@@ -52,6 +52,7 @@
 
         <form asp-action="DeleteTraining" asp-controller="AdminTraining" method="post" class="align-self-center">
             <input type="hidden" asp-for="Id" name="Id" id="deleteTrainingId" />
+            <input type="hidden" aso-for="TrainingName" name="trainingName" id="deleteTrainingName"/>
             <button class="bg-[#FFE9C6] w-[450px] text-black  py-2 rounded-xl font-weight-bold ">
                 Confirm
             </button>
@@ -68,6 +69,7 @@
         console.log({ id, trainingName, description });
 
         document.getElementById('deleteTrainingId').value = id;
+        document.getElementById('deleteTrainingName').value = trainingName;
         document.getElementById('TrainingNameEdit').textContent = trainingName;
         document.getElementById('DescriptionEdit').textContent = description;
         document.getElementById('CoverPicturePreview').src = coverPicture;

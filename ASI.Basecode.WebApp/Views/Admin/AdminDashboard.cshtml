@@ -1,0 +1,140 @@
+@model AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Ma22 | Admin Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<!-- Title Section -->
+<div class="mx-auto mt-10 w-[95%] max-w-7xl ">
+    <h1 class="text-4xl font-bold uppercase tracking-tight text-[#640A16] mb-12">Admin Dashboard</h1>
+
+    <!-- Stat Cards -->
+    <div class="flex flex-col md:flex-row gap-4 mb-8">
+        <div class="flex-1 bg-white text-[#640A16] rounded-xl p-8 shadow flex items-center gap-4">
+            <span class="material-symbols-outlined text-5xl rounded-full bg-[#FFE9C6] p-4">groups</span>
+            <div>
+                <div class="text-lg font-semibold">Total Enrollees</div>
+                <div class="text-3xl font-bold mt-1">@Model.EnrolleeCount</div>
+            </div>
+        </div>
+        <div class="flex-1 bg-white text-[#640A16] rounded-xl p-8 shadow flex items-center gap-4">
+            <span class="material-symbols-outlined text-5xl rounded-full bg-[#FFE9C6] p-4">category</span>
+            <div>
+                <div class="text-lg font-semibold">Total Categories</div>
+                <div class="text-3xl font-bold mt-1">@Model.CategoryCount</div>
+            </div>
+        </div>
+        <div class="flex-1 bg-white text-[#640A16] rounded-xl p-8 shadow flex items-center gap-4">
+            <span class="material-symbols-outlined text-5xl rounded-full bg-[#FFE9C6] p-4">menu_book</span>
+            <div>
+                <div class="text-lg font-semibold">Total Trainings</div>
+                <div class="text-3xl font-bold mt-1">@Model.TrainingCount</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Most/Least Enrolled -->
+    <div class="flex flex-col md:flex-row gap-4 mb-8">
+        <div class="flex-1 bg-white rounded-xl p-8 shadow flex items-center gap-4">
+            <span class="material-symbols-outlined text-4xl rounded-full bg-[#EAC231] text-white p-3">trending_up</span>
+            <div>
+                <div class="text-lg font-semibold text-[#640A16]">Most Enrolled Training</div>
+                <div class="text-xl font-bold text-black mt-1">@Model.MostEnrolledTrainingName</div>
+            </div>
+        </div>
+        <div class="flex-1 bg-white rounded-xl p-8 shadow flex items-center gap-4">
+            <span class="material-symbols-outlined text-4xl rounded-full bg-gray-200 text-[#640A16] p-3">trending_down</span>
+            <div>
+                <div class="text-lg font-semibold text-[#640A16]">Least Enrolled Training</div>
+                <div class="text-xl font-bold text-black mt-1">@Model.LeastEnrolledTrainingName</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logs Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Recently Created -->
+        <div class="bg-white rounded-xl p-8 shadow min-h-[180px] flex flex-col gap-3">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-3xl rounded-full bg-[#EAC231] text-white p-2">add_circle</span>
+                <h3 class="text-xl font-bold text-[#640A16]">Recently Created</h3>
+            </div>
+            <div class="flex flex-col gap-3">
+                @if (Model.RecentCreatedLogs != null && Model.RecentCreatedLogs.Any())
+                {
+                    @foreach (var log in Model.RecentCreatedLogs)
+                    {
+                        <div class="rounded-lg border border-gray-200 bg-[#FFE9C6] p-4 flex flex-col gap-1 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold text-[#640A16]">@log.Entity</span>
+                                <span class="text-xs bg-[#EAC231] text-white rounded px-2 py-0.5 ml-2">@log.ActionType</span>
+                            </div>
+                            <div class="text-base font-bold text-black">@log.EntityName</div>
+                            <div class="text-xs text-gray-600 mt-1">By <span class="font-semibold">@log.AccountName</span> on @log.TimeStamp.ToString("g")</div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <span class="text-gray-500">No recent created logs.</span>
+                }
+            </div>
+        </div>
+        <!-- Recently Updated -->
+        <div class="bg-white rounded-xl p-8 shadow min-h-[180px] flex flex-col gap-3">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-3xl rounded-full bg-[#EAC231] text-white p-2">edit</span>
+                <h3 class="text-xl font-bold text-[#640A16]">Recently Updated</h3>
+            </div>
+            <div class="flex flex-col gap-3">
+                @if (Model.RecentUpdatedLogs != null && Model.RecentUpdatedLogs.Any())
+                {
+                    @foreach (var log in Model.RecentUpdatedLogs)
+                    {
+                        <div class="rounded-lg border border-gray-200 bg-[#FFE9C6] p-4 flex flex-col gap-1 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold text-[#640A16]">@log.Entity</span>
+                                <span class="text-xs bg-[#EAC231] text-white rounded px-2 py-0.5 ml-2">@log.ActionType</span>
+                            </div>
+                            <div class="text-base font-bold text-black">@log.EntityName</div>
+                            <div class="text-xs text-gray-600 mt-1">By <span class="font-semibold">@log.AccountName</span> on @log.TimeStamp.ToString("g")</div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <span class="text-gray-500">No recent updated logs.</span>
+                }
+            </div>
+        </div>
+        <!-- Recently Deleted -->
+        <div class="bg-white rounded-xl p-8 shadow min-h-[180px] flex flex-col gap-3">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-3xl rounded-full bg-[#EAC231] text-white p-2">delete</span>
+                <h3 class="text-xl font-bold text-[#640A16]">Recently Deleted</h3>
+            </div>
+            <div class="flex flex-col gap-3">
+                @if (Model.RecentDeletedLogs != null && Model.RecentDeletedLogs.Any())
+                {
+                    @foreach (var log in Model.RecentDeletedLogs)
+                    {
+                        <div class="rounded-lg border border-gray-200 bg-[#FFE9C6] p-4 flex flex-col gap-1 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold text-[#640A16]">@log.Entity</span>
+                                <span class="text-xs bg-[#EAC231] text-white rounded px-2 py-0.5 ml-2">@log.ActionType</span>
+                            </div>
+                            <div class="text-base font-bold text-black">@log.EntityName</div>
+                            <div class="text-xs text-gray-600 mt-1">By <span class="font-semibold">@log.AccountName</span> on @log.TimeStamp.ToString("g")</div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <span class="text-gray-500">No recent deleted logs.</span>
+                }
+            </div>
+        </div>
+    </div>
+</div>

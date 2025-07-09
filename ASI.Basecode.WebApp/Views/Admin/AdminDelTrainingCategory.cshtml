@@ -51,6 +51,7 @@
 
         <form asp-action="DeleteTrainingCategory" asp-controller="AdminTrainingCategory" method="post" class="align-self-center">
             <input type="hidden" name="id" id="categoryIdToDelete" />
+            <input type="hidden" name="categoryName" id="categoryNameToDelete">
             <button type="submit" class="bg-[#FFE9C6] w-[450px] text-black  py-2 rounded-xl font-weight-bold">
                 Confirm
             </button>
@@ -66,6 +67,7 @@
         const formattedTime = date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
         
         document.getElementById('categoryIdToDelete').value = categoryId;
+        document.getElementById('categoryNameToDelete').value = categoryName;
         document.getElementById('CategoryImage').src = coverPicture;
         document.getElementById('CategoryTitle').textContent = categoryName;
         document.getElementById('CategoryDescription').textContent = description;

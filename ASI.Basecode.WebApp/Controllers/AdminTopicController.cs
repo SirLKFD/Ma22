@@ -27,6 +27,8 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly ITopicMediaService _topicMediaService;
         private readonly IUserService _userService;
 
+        private readonly IAuditLogService _auditLogService;
+
         public AdminTopicController(
             IHttpContextAccessor httpContextAccessor,
             ILoggerFactory loggerFactory,
@@ -34,10 +36,12 @@ namespace ASI.Basecode.WebApp.Controllers
             IMapper mapper = null,
             ITopicService topicService = null,
             ITopicMediaService topicMediaService = null,
+            IAuditLogService auditLogService= null,
             IUserService userService = null
         ) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             _topicService = topicService;
+            _auditLogService = auditLogService;
             _topicMediaService = topicMediaService;
             _userService = userService;
         }
@@ -65,9 +69,12 @@ namespace ASI.Basecode.WebApp.Controllers
                 model.AccountId = accountId.Value;
 
                 _topicService.AddTopic(model);
+               
 
                 var addedTopic = _topicService.GetAllTopicsByTrainingId(model.TrainingId)
                     .OrderByDescending(t => t.UpdatedTime).FirstOrDefault(t => t.TopicName == model.TopicName);
+
+                 _auditLogService.LogAction("Topic", "Create", addedTopic.Id, accountId.Value,addedTopic.TopicName);
 
                 if (addedTopic != null)
                 {
@@ -357,6 +364,7 @@ namespace ASI.Basecode.WebApp.Controllers
             try
             {
                 Console.WriteLine(model);
+                int? accountId = HttpContext.Session.GetInt32("AccountId");
                 var existingTopic = _topicService.GetTopicWithAccountById(model.Id);
                 model.AccountId = existingTopic.AccountId;
                 model.AccountFirstName = existingTopic.AccountFirstName;
@@ -364,8 +372,11 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 _topicService.UpdateTopic(model);
 
+
                 var updatedTopic = _topicService.GetAllTopicsByTrainingId(model.TrainingId)
                     .OrderByDescending(t => t.UpdatedTime).FirstOrDefault(t => t.TopicName == model.TopicName);
+
+                 _auditLogService.LogAction("Topic", "Update", updatedTopic.Id, accountId.Value,updatedTopic.TopicName);
 
                 var allFiles = new List<IFormFile>();
                 if (VideoFilesEdit != null) { allFiles.AddRange(VideoFilesEdit); Console.WriteLine($"[EditTopic] {VideoFilesEdit.Count} video files received."); }
@@ -470,10 +481,13 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpPost]
         public IActionResult DeleteTopic(int id)
         {
+            int? accountId = HttpContext.Session.GetInt32("AccountId");
             var topic = _topicService.GetTopicWithAccountById(id);
             if (topic != null)
             {
+                _auditLogService.LogAction("Topic", "Delete", id, accountId.Value, topic.TopicName);
                 _topicService.DeleteTopic(id);
+                
                 return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = topic.TrainingId });
             }
             return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = topic.TrainingId });

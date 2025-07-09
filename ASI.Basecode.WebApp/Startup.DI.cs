@@ -1,5 +1,6 @@
 ﻿using ASI.Basecode.Data;
 using ASI.Basecode.Data.Interfaces;
+using ASI.Basecode.Data.Models;
 using ASI.Basecode.Data.Repositories;
 using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.ServiceModels;
@@ -40,6 +41,7 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<ITopicService, TopicService>();
             this._services.AddScoped<ITopicMediaService, TopicMediaService>();
             this._services.AddScoped<IReviewService, ReviewService>();
+            this._services.AddScoped<IAuditLogService,AuditLogService>();
 
             // Repositories
             this._services.AddScoped<IUserRepository, UserRepository>();
@@ -48,6 +50,7 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<ITopicRepository, TopicRepository>();
             this._services.AddScoped<ITopicMediaRepository, TopicMediaRepository>();
             this._services.AddScoped<IReviewRepository, ReviewRepository>();
+            this._services.AddScoped<IAuditLogRepository, AuditLogRepository>();
             // Manager Class
             this._services.AddScoped<SignInManager>();
 
@@ -61,6 +64,7 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<IPasswordResetService, PasswordResetService>();
             this._services.AddScoped<IEmailService, EmailService>();
             this._services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
+            this._services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 
             // Enrollment services
             this._services.AddScoped<IEnrollmentService, EnrollmentService>();  

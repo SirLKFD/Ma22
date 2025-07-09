@@ -39,6 +39,7 @@ namespace ASI.Basecode.WebApp
 
                 CreateMap<TopicViewModel, Topic>();
                 CreateMap<TopicMediaViewModel, TopicMedium>();
+                CreateMap<AuditLogViewModel, AuditLog>();
             }
         }
     }
