@@ -6,7 +6,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
 <div id="addTraining" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm hidden">
-    <div class="flex max-h-[800px] w-full max-w-3xl flex-col rounded-xl bg-[#640A16] text-white shadow-lg p-6">
+    <div class="flex max-h-[800px] w-full max-w-3xl flex-col rounded-xl bg-[#640A16] text-white shadow-lg p-6 animate-slide-up opacity-0 animate-fade-in">
         <div class="flex">
             <a onclick="closeAddTraining()" class="hover-pointer">
                 <span class="material-symbols-outlined text-[50px]">arrow_circle_left</span>
@@ -81,8 +81,8 @@
                         <option value="11">More than 1 year</option>
                     </select>
                 </div>
-                <button class="bg-[#FFE9C6] w-2/3 text-black align-self-center py-2 rounded-xl font-weight-bold mt-2">
-                    Save Changes
+                <button class="bg-[#FFE9C6] hover:bg-[#e6c89c] w-2/3 text-black align-self-center py-2 rounded-xl font-weight-bold mt-2">
+                    Add Training
                 </button>
             </div>
         </form>
