@@ -1,6 +1,5 @@
-﻿@model TrainingViewModel
+@model TrainingViewModel
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-
 
 <div id="deleteTraining" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm hidden">
     <div class="flex max-h-[700px] w-full max-w-2xl flex-col rounded-xl bg-white text-black shadow-lg p-6 animate-slide-up opacity-0 animate-fade-in">
@@ -12,7 +11,6 @@
         <div class="flex align-items-center justify-center w-full mb-3">
             <h1 class="text-3xl font-weight-bold">Delete Training?</h1>
         </div>
-
 
         <!-- Dummy Card -->
         <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col max-h-[300px] w-[450px] align-self-center mb-3">
@@ -27,22 +25,17 @@
 
             <!-- Content -->
             <div class="p-4 flex flex-col flex-grow">
-                <!-- Title and Actions -->
                 <div class="flex justify-between items-center mb-2">
-                    <h2 id="TrainingNameEdit" class="text-xl font-semibold text-gray-800" ></h2>
-
+                    <h2 id="TrainingNameEdit" class="text-xl font-semibold text-gray-800"></h2>
                 </div>
 
-                <!-- Description -->
-                    <p id="DescriptionEdit" class="text-sm text-gray-600 line-clamp-3"></p>
+                <p id="DescriptionEdit" class="text-sm text-gray-600 line-clamp-3"></p>
 
-                <!-- Footer -->
                 <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
                     <div>
                         <p><strong>Modified:</strong> <span id="ModifiedPreview"></span></p>
                         <p><strong>By:</strong> <span id="ByPreview"></span></p>
                     </div>
-                    
                 </div>
             </div>
         </div>
@@ -54,13 +47,12 @@
 
         <form asp-action="DeleteTraining" asp-controller="AdminTraining" method="post" class="align-self-center">
             <input type="hidden" asp-for="Id" name="Id" id="deleteTrainingId" />
-            <button class="bg-[#FFE9C6] hover:bg-[#e6c89c] w-[450px] text-black  py-2 rounded-xl font-weight-bold ">
+            <input type="hidden" asp-for="TrainingName" name="trainingName" id="deleteTrainingName" />
+            <button class="bg-[#FFE9C6] hover:bg-[#e6c89c] w-[450px] text-black py-2 rounded-xl font-weight-bold">
                 Confirm
             </button>
         </form>
-
     </div>
-
 </div>
 
 <script>
@@ -70,6 +62,7 @@
         console.log({ id, trainingName, description });
 
         document.getElementById('deleteTrainingId').value = id;
+        document.getElementById('deleteTrainingName').value = trainingName;
         document.getElementById('TrainingNameEdit').textContent = trainingName;
         document.getElementById('DescriptionEdit').textContent = description;
         document.getElementById('CoverPicturePreview').src = coverPicture;
@@ -89,6 +82,5 @@
         }
 
         document.getElementById('deleteTraining').classList.remove('hidden');
-
     }
 </script>

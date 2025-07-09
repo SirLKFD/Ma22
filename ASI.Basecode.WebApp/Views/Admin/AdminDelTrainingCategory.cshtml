@@ -1,6 +1,5 @@
-﻿@model TrainingCategoryViewModel
+@model TrainingCategoryViewModel
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-
 
 <div id="deleteTrainingCategory" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm hidden">
     <div class="flex max-h-[700px] w-full max-w-2xl flex-col rounded-xl bg-white text-black shadow-lg p-6 animate-slide-up opacity-0 animate-fade-in">
@@ -13,7 +12,6 @@
             <h1 class="text-3xl font-weight-bold uppercase">Delete Category?</h1>
         </div>
 
-
         <!-- Dummy Card -->
         <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col w-[400px] align-self-center mb-3">
             <!-- Image -->
@@ -24,7 +22,6 @@
                     <p class="ml-2">No Cover Image</p>
                 </div>
             </div>
-
 
             <!-- Content -->
             <div class="p-4 flex flex-col flex-grow">
@@ -42,7 +39,6 @@
                         <p id="CategoryModified"></p>
                         <p id="CategoryBy"></p>
                     </div>
-                    
                 </div>
             </div>
         </div>
@@ -54,21 +50,21 @@
 
         <form asp-action="DeleteTrainingCategory" asp-controller="AdminTrainingCategory" method="post" class="align-self-center">
             <input type="hidden" name="id" id="categoryIdToDelete" />
-            <button type="submit" class="bg-[#FFE9C6] hover:bg-[#e6c89c] w-[400px] text-black  py-2 rounded-xl font-weight-bold">
+            <input type="hidden" name="categoryName" id="categoryNameToDelete" />
+            <button type="submit" class="bg-[#FFE9C6] hover:bg-[#e6c89c] w-[450px] text-black py-2 rounded-xl font-weight-bold">
                 Confirm
             </button>
         </form>
-        
     </div>
-
-</div> 
+</div>
 
 <script>
-        function openDeleteTrainingCategory(categoryId, coverPicture, categoryName, description, updatedTime, accountFirstName, accountLastName) {
+    function openDeleteTrainingCategory(categoryId, coverPicture, categoryName, description, updatedTime, accountFirstName, accountLastName) {
         const date = new Date(updatedTime);
         const formattedTime = date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
 
         document.getElementById('categoryIdToDelete').value = categoryId;
+        document.getElementById('categoryNameToDelete').value = categoryName;
         document.getElementById('CategoryTitle').textContent = categoryName;
         document.getElementById('CategoryDescription').textContent = description;
         document.getElementById('CategoryModified').textContent = formattedTime;
@@ -88,5 +84,4 @@
 
         document.getElementById('deleteTrainingCategory').classList.remove('hidden');
     }
-
-</script> 
+</script>

@@ -9,5 +9,7 @@ namespace ASI.Basecode.Data.Interfaces
         bool IsEnrolled(int userId, int trainingId);
         List<Enrollment> GetByUserId(int userId);
         List<Enrollment> GetByTrainingId(int trainingId);
+
+        List<Enrollment> GetByTrainingIds(List<int> trainingIds);
     }
 }

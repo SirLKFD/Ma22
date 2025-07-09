@@ -115,8 +115,12 @@ namespace ASI.Basecode.Services.Services
             var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
             var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
 
-            if (category == null || (category.AccountId != accountId && accountRole == 0))
+            if (category == null ||
+                (accountRole == 0 && category.AccountId != accountId) ||
+                (accountRole == 1))
+            {
                 throw new UnauthorizedAccessException("You are not allowed to view this category.");
+            }
 
             return new TrainingCategoryViewModel
             {

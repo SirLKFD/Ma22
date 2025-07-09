@@ -7,6 +7,7 @@
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
     var isProfile = currentController == "Admin" && currentAction == "UserMaster";
     var isCategory = currentController == "AdminTrainingCategory" && currentAction == "AdminTrainingCategory";
+    var isDashboard = currentController == "AdminDashboard" && currentAction == "AdminDashboard";
     var isTraining = currentController == "AdminTraining" && currentAction == "AdminTraining";
     var userId = HttpContextAccessor.HttpContext.Session.GetInt32("AccountId");
     var userRole = HttpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
@@ -22,6 +23,13 @@
 
         <!-- Navigation -->
         <ul class="flex-grow space-y-4 px-2">
+             <li>
+                    <a asp-controller="AdminDashboard" asp-action="AdminDashboard" class="flex justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline @(isDashboard ? "bg-yellow-400 text-black" : "")">
+                        <span class="material-symbols-outlined text-[25px]">dashboard</span>
+                        <span class="hidden text-sm group-hover:inline">Dashboard</span>
+                    </a>
+                </li>
+            <li>
             @if (userRole == 2) 
             {
                 <li>
@@ -31,7 +39,7 @@
                     </a>
                 </li>
             }
-            <li>
+           
                 <a asp-controller="AdminTrainingCategory" asp-action="AdminTrainingCategory" class="flex justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline @(isCategory ? "bg-yellow-400 text-black" : "")">
                     <span class="material-symbols-outlined text-[25px]">category</span>
                     <span class="hidden text-sm group-hover:inline">Training Categories</span>

@@ -26,6 +26,8 @@ namespace ASI.Basecode.WebApp.Controllers
     public class AdminController : ControllerBase<AdminController>
     {
         private readonly IUserService _userService;
+        private readonly IAuditLogService _auditLogService;
+        
 
         /// <summary>
         /// Constructor
@@ -38,9 +40,11 @@ namespace ASI.Basecode.WebApp.Controllers
         public AdminController(IHttpContextAccessor httpContextAccessor,
                               ILoggerFactory loggerFactory,
                               IConfiguration configuration, IUserService userService,
+                              IAuditLogService auditLogService,
                               IMapper mapper = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             _userService = userService;
+            _auditLogService = auditLogService;
         }
 
         /// <summary>
@@ -241,8 +245,11 @@ namespace ASI.Basecode.WebApp.Controllers
                             : existingUser.ProfilePicture;
                         _logger.LogInformation($"Preserving existing profile picture: {model.ProfilePicture}");
                     }
-
+                    int? accountId = HttpContext.Session.GetInt32("AccountId");
                     _userService.UpdateUser(model);
+               
+                    _auditLogService.LogAction("User", "Update", model.Id, accountId.Value, $"{model.FirstName} {model.LastName}" );
+                    
                     _logger.LogInformation("User updated successfully");
 
                     TempData["Success"] = "User updated successfully!";
@@ -266,6 +273,7 @@ namespace ASI.Basecode.WebApp.Controllers
         [Authorize(Roles="2")]
         public IActionResult CreateUser(AdminCreateUserViewModel model, IFormFile ProfilePicture, [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
+            
             if (ModelState.IsValid)
             {
                 try
@@ -291,6 +299,14 @@ namespace ASI.Basecode.WebApp.Controllers
 
                     _userService.AddUser(model); // Insert to DB
 
+                    int? accountId = HttpContext.Session.GetInt32("AccountId");
+                    var newUser = _userService.GetAllUsers()
+                        .OrderByDescending(u => u.Id)
+                        .FirstOrDefault(u => u.EmailId == model.EmailId);
+                    if (newUser != null)
+                        _auditLogService.LogAction("User", "Create", newUser.Id, accountId.Value, $"{newUser.FirstName} {newUser.LastName}");
+                    
+
                     TempData["Success"] = "User added successfully!";
                     return RedirectToAction("UserMaster"); // ✅ Redirect after success
                 }
@@ -310,7 +326,13 @@ namespace ASI.Basecode.WebApp.Controllers
         [Authorize(Roles="0,1,2")]
         public IActionResult DeleteUser(int id)
         {
+            int? accountId = HttpContext.Session.GetInt32("AccountId");
+            var user = _userService.GetUserById(id);
+            _auditLogService.LogAction("User", "Delete", id, accountId.Value, $"{user.FirstName} {user.LastName}");
             _userService.DeleteUser(id);
+          
+            
+            
             return RedirectToAction("UserMaster");
         }
 
