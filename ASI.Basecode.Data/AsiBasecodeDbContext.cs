@@ -273,11 +273,9 @@ namespace ASI.Basecode.Data
                 entity.Property(e => e.CreatedTime).HasColumnType("datetime");
 
                 entity.Property(e => e.MediaType)
-                    .HasMaxLength(50)
                     .IsUnicode(false);
 
                 entity.Property(e => e.MediaUrl)
-                    .HasMaxLength(2083)
                     .IsUnicode(false);
 
                 entity.Property(e => e.UpdatedBy)
