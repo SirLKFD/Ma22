@@ -2,6 +2,7 @@
 using ASI.Basecode.Services.Services;
 using ASI.Basecode.WebApp;
 using ASI.Basecode.WebApp.Extensions.Configuration;
+using ASI.Basecode.WebApp.Middleware;
 using ASI.Basecode.WebApp.Models;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Builder;
@@ -47,6 +48,9 @@ configurer.ConfigureServices(appBuilder.Services);
 // Build app
 var app = appBuilder.Build();
 configurer.ConfigureApp(app, app.Environment);
+
+// Add Database Exception Middleware
+app.UseMiddleware<DatabaseExceptionMiddleware>();
 
 // Routing
 app.MapControllerRoute(

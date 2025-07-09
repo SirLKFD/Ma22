@@ -1,0 +1,29 @@
+﻿@page
+@model ASI.Basecode.WebApp.Pages.ServerErrorModel
+@{
+    ViewData["Title"] = "Ma22 | Server Error";
+}
+@section styles {
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+}
+<div class="login-container">
+    <!-- No left image for error page -->
+    <div class="login-content">
+        <div class="login-card">
+            <!-- Logo in top-right corner -->
+            <div class="logo-container">
+                <img src="~/img/Logo.png" alt="logo" class="logo">
+            </div>
+            <p class="welcome-back">Oops!</p>
+            <h2 class="login-heading text-red-600">Database Server Error</h2>
+            <h3 class="mb-4 text-xl font-medium text-gray-800">We're currently experiencing database connectivity issues.</h3>
+            <p class="mb-1 text-gray-600">Our technical team has been notified and is working to resolve this issue.</p>
+            <p class="mb-6 text-gray-600">Please try again later.</p>
+            <a href="/" class="login-button mt-4 inline-block">
+                Return to Home Page
+            </a>
+        </div>
+    </div>
+</div>
