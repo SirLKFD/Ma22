@@ -173,7 +173,7 @@
                     @for (int i = 1; i <= totalPages; i++)
                     {
                         <li>
-                            <a class="rounded-md border border-gray-300 px-3 @(i == ViewBag.CurrentPage ? "bg-blue-50 text-blue-600" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") py-2 transition"
+                            <a class="rounded-md border border-gray-300 px-3 @(i == ViewBag.CurrentPage ? "bg-[#EAC231] font-bold" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") py-2 transition"
                                href="@(isCategory? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = i, search = search }) : Url.Action("AdminTraining", new { page = i, search = search }))">
                                 @i
                             </a>
