@@ -28,14 +28,14 @@ namespace ASI.Basecode.WebApp.Middleware
                 _logger.LogError(ex, "SQL Server error occurred: {Message}", ex.Message);
                 
                 // Redirect to the server error page
-                context.Response.Redirect("/ServerError");
+                context.Response.Redirect("/Home/ServerError");
             }
             catch (Exception ex) when (IsSqlConnectionException(ex))
             {
                 _logger.LogError(ex, "SQL Server connection error occurred: {Message}", ex.Message);
                 
                 // Redirect to the server error page
-                context.Response.Redirect("/ServerError");
+                context.Response.Redirect("/Home/ServerError");
             }
         }
 

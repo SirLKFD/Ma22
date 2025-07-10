@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ASI.Basecode.WebApp.Models;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -30,6 +31,16 @@ namespace ASI.Basecode.WebApp.Controllers
                 }
             }
             return View("LandingPage");
+        }
+
+        [AllowAnonymous]
+        public IActionResult ServerError()
+        {
+            var model = new ServerErrorModel
+            {
+                Message = "Database connectivity issues"
+            };
+            return View(model);
         }
     }
 }
