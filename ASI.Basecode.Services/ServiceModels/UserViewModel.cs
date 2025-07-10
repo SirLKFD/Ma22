@@ -10,9 +10,11 @@ namespace ASI.Basecode.Services.ServiceModels
         public string EmailId { get; set; }
 
         [Required(ErrorMessage = "First name is required.")]
+        [RegularExpression(@"^[A-Za-z\s'-]+$", ErrorMessage = "First name must not contain numbers or special characters.")]
         public string FirstName { get; set; }
 
         [Required(ErrorMessage = "Last name is required.")]
+        [RegularExpression(@"^[A-Za-z\s'-]+$", ErrorMessage = "Last name must not contain numbers or special characters.")]
         public string LastName { get; set; }
 
         // Optional Contact (no [Required] attribute)
@@ -20,6 +22,10 @@ namespace ASI.Basecode.Services.ServiceModels
         public string? Contact { get; set; }
 
         [Required(ErrorMessage = "Password is required.")]
+        [MinLength(8, ErrorMessage = "Password must be at least 8 characters long.")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$",
+            ErrorMessage = "Password must include at least 1 uppercase letter, 1 number, and 1 special character.")]
+
         public string Password { get; set; }
 
         [Required(ErrorMessage = "Confirmation Password is required.")]

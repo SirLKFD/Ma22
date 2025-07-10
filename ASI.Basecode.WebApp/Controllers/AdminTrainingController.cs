@@ -62,11 +62,12 @@ namespace ASI.Basecode.WebApp.Controllers
             int totalCount;
             var trainings = _trainingService.GetFilteredTrainings(search, categoryId, skillLevelId, page, pageSize, out totalCount);
 
-            var skillLevels = trainings
-                .Select(t => t.SkillLevel)
-                .Distinct()
-                .OrderBy(sl => sl)
-                .ToList();
+            var skillLevels = new Dictionary<int, string>
+            {
+                { 1, "Beginner" },
+                { 2, "Intermediate" },
+                { 3, "Advanced" }
+            };
             ViewBag.SkillLevels = skillLevels;
 
 
@@ -77,7 +78,7 @@ namespace ASI.Basecode.WebApp.Controllers
             ViewBag.PageSize = pageSize;
             ViewBag.CurrentPage = page;
             ViewBag.Search = search;
-            ViewBag.SelectedCategoryId = categoryId;
+            ViewBag.SelectedCategoryId = categoryId; 
             ViewBag.SelectedSkillLevelId = skillLevelId;
 
             return View("~/Views/Admin/AdminTraining.cshtml", trainings);
