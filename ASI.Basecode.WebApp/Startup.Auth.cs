@@ -1,4 +1,5 @@
-﻿using ASI.Basecode.WebApp.Authentication;
+﻿using System;
+using ASI.Basecode.WebApp.Authentication;
 using ASI.Basecode.WebApp.Extensions.Configuration;
 using ASI.Basecode.Resources.Constants;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -39,12 +40,15 @@ namespace ASI.Basecode.WebApp
                     IsEssential = true,
                     SameSite = SameSiteMode.Lax,
                     SecurePolicy = CookieSecurePolicy.SameAsRequest,
-                    Name = $"{this._environment.ApplicationName}_{token.CookieName}"
+                    Name = $"{this._environment.ApplicationName}_{token.CookieName}",
+                    HttpOnly = true
                 };
                 options.LoginPath = new PathString("/Account/Login");
                 options.AccessDeniedPath = new PathString("/html/Forbidden.html");
                 options.ReturnUrlParameter = "ReturnUrl";
                 options.TicketDataFormat = new CustomJwtDataFormat(SecurityAlgorithms.HmacSha256, _tokenValidationParameters, Configuration, tokenProviderOptionsFactory);
+                options.ExpireTimeSpan = TimeSpan.FromDays(14); // Persistent for 14 days
+                options.SlidingExpiration = true;
             });
 
             this._services.AddAuthorization(options =>

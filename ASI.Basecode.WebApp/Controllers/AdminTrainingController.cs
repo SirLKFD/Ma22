@@ -21,7 +21,7 @@ namespace ASI.Basecode.WebApp.Controllers
     /// Admin Training Controller
     /// </summary>
     [Route("admin/[action]")]
-    [Authorize(Roles = "0")]
+    [Authorize(Roles = "0,2")]
     public class AdminTrainingController : ControllerBase<AdminTrainingController>
     {
         private readonly ITrainingService _trainingService;
@@ -250,6 +250,14 @@ namespace ASI.Basecode.WebApp.Controllers
             var enrollmentCount = _enrollmentService.GetEnrollmentCount(trainingId);
             ViewData["EnrollmentCount"] = enrollmentCount;
             return View("~/Views/Admin/AdminTrainingTopics.cshtml", topics);
+        }
+
+        [HttpGet]
+        public IActionResult LoadMoreReviews(int trainingId, int skip = 5, int take = 5)
+        {
+            var training = _trainingService.GetTrainingById(trainingId);
+            var reviews = training.Reviews.Skip(skip).Take(take).ToList();
+            return PartialView("~/Views/User/_ReviewCardPartial.cshtml", reviews);
         }
     }
 }

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using static ASI.Basecode.Resources.Constants.Enums;
-
+using Microsoft.AspNetCore.Http;
 
 namespace ASI.Basecode.Services.Services
 {
@@ -17,12 +17,13 @@ namespace ASI.Basecode.Services.Services
     {
         private readonly ITopicRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
      
-        public TopicService(ITopicRepository repository, IMapper mapper)
+        public TopicService(ITopicRepository repository, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
             _repository = repository;
-       
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public void AddTopic(TopicViewModel model)
@@ -62,8 +63,12 @@ namespace ASI.Basecode.Services.Services
 
         public List<TopicViewModel> GetAllTopicsByTrainingId(int trainingId)
         {
-            var topics = _repository.GetTopics().Where(t => t.TrainingId == trainingId)
-                .OrderByDescending(t => t.CreatedTime)
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+            var query = _repository.GetTopics().Where(t => t.TrainingId == trainingId);
+            if (accountRole == 0)
+                query = query.Where(t => t.AccountId == accountId);
+            var topics = query.OrderByDescending(t => t.CreatedTime)
                 .Select(t => new TopicViewModel
                 {
                     Id = t.Id,
@@ -91,6 +96,10 @@ namespace ASI.Basecode.Services.Services
         {
             Console.WriteLine($"[TopicService] Fetching topic by Id: {id}");
             var topic = _repository.GetTopics().FirstOrDefault(t => t.Id == id);
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+            if (topic == null || (topic.AccountId != accountId && accountRole == 0))
+                throw new UnauthorizedAccessException("You are not allowed to view this topic.");
             if (topic != null)
                 Console.WriteLine($"[TopicService] Found topic: {topic.TopicName}");
             else
@@ -102,8 +111,12 @@ namespace ASI.Basecode.Services.Services
         {
             Console.WriteLine($"[TopicService] Fetching topic with account by Id: {id}");
             var topic = _repository.GetTopicWithAccountById(id);
-            if (topic == null) return null;
-            Console.WriteLine($"[TopicService] Found topic: {topic.TopicName}");
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+            if (topic == null || (topic.AccountId != accountId && accountRole == 0))
+                throw new UnauthorizedAccessException("You are not allowed to view this topic.");
+            if (topic != null)
+                Console.WriteLine($"[TopicService] Found topic: {topic.TopicName}");
             return new TopicViewModel
             {
                 Id = topic.Id,
@@ -129,8 +142,12 @@ namespace ASI.Basecode.Services.Services
         public void UpdateTopic(TopicViewModel model)
         {
             var topic = _repository.GetTopicWithAccountById(model.Id);
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
             if (topic != null)
             {
+                if (topic.AccountId != accountId && accountRole == 0)
+                    throw new UnauthorizedAccessException("You are not allowed to edit this topic.");
                 if (_repository.TopicExists(model.TopicName) && model.TopicName != topic.TopicName)
                 {
                     Console.WriteLine($"[TopicService] ❌ Error: Topic '{model.TopicName}' already exists.");
@@ -146,8 +163,12 @@ namespace ASI.Basecode.Services.Services
         public void DeleteTopic(int id)
         {
             var topic = _repository.GetTopicWithAccountById(id);
+            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
+            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
             if (topic != null)
             {
+                if (topic.AccountId != accountId && accountRole == 0)
+                    throw new UnauthorizedAccessException("You are not allowed to delete this topic.");
                 _repository.DeleteTopic(topic);
             }
         }

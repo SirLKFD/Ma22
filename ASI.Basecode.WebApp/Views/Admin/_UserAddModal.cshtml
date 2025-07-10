@@ -21,8 +21,8 @@
     </div>
 }
 
-<div id="addUserModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
-    <div class="relative flex max-h-[700px] w-full max-w-6xl flex-row rounded-xl bg-[#640A16] shadow-lg">
+<div id="addUserModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm ">
+    <div class="relative flex max-h-[700px] w-full max-w-6xl flex-row rounded-xl bg-[#640A16] shadow-lg animate-slide-up opacity-0 animate-fade-in">
 
         <!-- Left: Profile Upload UI -->
         <div class="flex w-[450px] flex-col items-center justify-center rounded-l-xl bg-white">
@@ -108,6 +108,7 @@
                         <select asp-for="Role" class="w-[400px] rounded-xl border bg-[#EAC231] p-2 font-semibold text-black">
                             <option value="0">Admin</option>
                             <option value="1">Guest</option>
+                            <option value="2">Superadmin</option>
                         </select>
                     </div>
                     <span asp-validation-for="Role" class="ml-32 block text-sm text-[#EAC231]"></span>

@@ -22,6 +22,7 @@ namespace ASI.Basecode.WebApp.Controllers
     /// <summary>
     /// Admin Controller
     /// </summary>
+   
     public class AdminController : ControllerBase<AdminController>
     {
         private readonly IUserService _userService;
@@ -47,8 +48,8 @@ namespace ASI.Basecode.WebApp.Controllers
         /// </summary>
         /// <returns> Home View </returns>
 
-        [Authorize(Roles = "0")]
-
+     
+        [Authorize(Roles="2")]
         public IActionResult UserMaster(int page = 1, string filter = "all", string search = "")
         {
             const int PageSize = 7;
@@ -91,8 +92,9 @@ namespace ASI.Basecode.WebApp.Controllers
             return View(viewModel);
         }
 
-
+        [Authorize(Roles="2")]
         [HttpGet]
+      
         public IActionResult GetFilteredUsers(string filter = "all", int page = 1, string search = "")
         {
             const int PageSize = 8;
@@ -147,6 +149,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles="0,1,2")]
         public IActionResult GetUserForEdit(int userId)
         {
             var user = _userService.GetUserById(userId);
@@ -158,6 +161,8 @@ namespace ASI.Basecode.WebApp.Controllers
             return Json(user);
         }
 
+        [HttpGet]
+        [Authorize(Roles="0,1,2")]
         public IActionResult ViewUserDetails(int userId)
         {
             var user = _userService.GetAllUsers().FirstOrDefault(u => u.Id == userId);
@@ -184,7 +189,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "0")]
+        [Authorize(Roles="0,1,2")]
         public IActionResult UpdateUser(UserEditViewModel model, IFormFile ProfilePicture, string ExistingProfilePicture, [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
             // Add debugging information
@@ -258,7 +263,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "0")]
+        [Authorize(Roles="2")]
         public IActionResult CreateUser(AdminCreateUserViewModel model, IFormFile ProfilePicture, [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
             if (ModelState.IsValid)
@@ -302,6 +307,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles="0,1,2")]
         public IActionResult DeleteUser(int id)
         {
             _userService.DeleteUser(id);

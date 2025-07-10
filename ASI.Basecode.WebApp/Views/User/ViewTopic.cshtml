@@ -34,7 +34,7 @@
                 <div class="ml-4">
                     @if (hasAnyFiles)
                     {
-                        <button onclick="openDownloadModal()" class="flex w-full max-w-[180px] flex-wrap items-center gap-2 rounded-xl bg-[#640A16] px-2 py-2 text-white transition-colors hover:bg-[#4a0810] focus:outline-none focus:ring-2 focus:ring-[#640A16] sm:max-w-xs sm:px-4 md:max-w-none md:flex-nowrap">
+                        <button onclick="mediaModal.openDownloadModal()" class="flex w-full max-w-[180px] flex-wrap items-center gap-2 rounded-xl bg-[#640A16] px-2 py-2 text-white transition-colors hover:bg-[#4a0810] focus:outline-none focus:ring-2 focus:ring-[#640A16] sm:max-w-xs sm:px-4 md:max-w-none md:flex-nowrap">
                             <span class="material-symbols-outlined">download</span>
                             <span class="truncate text-xs sm:text-sm md:text-base">Download Options</span>
                         </button>
@@ -63,9 +63,11 @@
             <div class="mt-2 flex max-w-full overflow-x-auto whitespace-nowrap">
                 @if (mediaList != null && mediaList.Any(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")))
                 {
-                    foreach (var video in mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")))
+                    var videoList = mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video")).ToList();
+                    foreach (var video in videoList)
                     {
-                        <div class="m-2 flex h-[220px] w-[300px] flex-shrink-0 transform cursor-pointer flex-col outline outline-2 outline-black transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-2xl" onclick="openMediaModal('video', '@video.MediaUrl', '@video.MediaType')">
+                        var videoIndex = videoList.IndexOf(video);
+                        <div class="m-2 flex h-[220px] w-[300px] flex-shrink-0 transform cursor-pointer flex-col outline outline-2 outline-black transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-2xl" onclick="openMediaModalWithNavigation('video', @videoIndex)">
                             <div class="flex h-[154px] w-full items-center justify-center overflow-hidden">
                                 <video class="pointer-events-none h-full w-full object-cover">
                                     <source src="@video.MediaUrl" type="@video.MediaType">
@@ -103,7 +105,7 @@
                     var extensionColor = MediaHelper.GetFileExtensionColor(fileExtension);
                     var isPdf = MediaHelper.IsPdfFile(doc.MediaType, doc.Name);
 
-                    <div class="m-2 flex h-[100px] w-full transform cursor-pointer items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-transform duration-200 ease-in-out hover:scale-[102%] hover:shadow-2xl" onclick="openMediaModal('document', '@doc.MediaUrl', '@doc.MediaType', '@isPdf.ToString().ToLower()')">
+                    <div class="m-2 flex h-[100px] w-full transform cursor-pointer items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-transform duration-200 ease-in-out hover:scale-[102%] hover:shadow-2xl" onclick="mediaModal.openDocumentModal('@doc.MediaUrl', '@doc.MediaType', '@isPdf.ToString().ToLower()')">
                         <div class="flex space-x-3">
                             <div class="flex flex-col items-center">
                                 <span class="material-symbols-outlined rounded-xl bg-green-100 p-2 !text-[25px]">docs</span>
@@ -151,11 +153,13 @@
             <div class="mt-2 flex w-full min-w-0 max-w-full overflow-x-auto whitespace-nowrap">
                 @if (mediaList != null && mediaList.Any(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")))
                 {
-                    foreach (var media in mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")))
+                    var imageList = mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image")).ToList();
+                    foreach (var media in imageList)
                     {
+                        var imageIndex = imageList.IndexOf(media);
                         <div class="m-2 flex h-[220px] w-[300px] flex-shrink-0 transform cursor-pointer flex-col outline outline-2 outline-black transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-2xl">
                             <div class="flex h-[120px] w-full items-center justify-center overflow-hidden">
-                                <img src="@media.MediaUrl" alt="@media.Name" class="h-full w-full cursor-pointer object-cover" onclick="openImageModal('@media.MediaUrl')" />
+                                <img src="@media.MediaUrl" alt="@media.Name" class="h-full w-full cursor-pointer object-cover" onclick="openMediaModalWithNavigation('image', @imageIndex)" />
                             </div>
                             <div class="h-[100px] space-y-2 bg-[#640A16] p-2 text-white">
                                 <p class="font-semibold">@(media.Name != null && media.Name.Length > 15 ? media.Name.Substring(0, 15) + "..." : media.Name)</p>
@@ -184,15 +188,27 @@
                 {
                     foreach (var t in allTopics.Where(x => x.Id != Model.Id))
                     {
-                        <div class="mt-4 flex flex-col rounded-xl border border-gray-200 bg-white p-4 text-black shadow-sm">
+                        var isEnrolled = ViewBag.IsEnrolled != null && (bool)ViewBag.IsEnrolled;
+                        <div class="mt-4 flex flex-col rounded-xl border border-gray-200 p-4 shadow-sm @(isEnrolled ? "bg-white text-black" : "bg-gray-200 text-gray-400 opacity-60 cursor-not-allowed")">
                             <div class="flex justify-between">
                                 <h3 class="text-md font-semibold">@t.TopicName</h3>
-                                <a href="@Url.Action("TopicDetails", "UserTopic", new { topicId = t.Id })" class="material-symbols-outlined hover-pointer">open_in_new</a>
+                                @if (isEnrolled)
+                                {
+                                    <a href="@Url.Action("TopicDetails", "UserTopic", new { topicId = t.Id })" class="material-symbols-outlined hover-pointer">open_in_new</a>
+                                }
+                                else
+                                {
+                                    <span class="material-symbols-outlined">lock</span>
+                                }
                             </div>
                             <p class="text-xs">@t.Description</p>
                             <div class="mt-4 flex items-center space-x-4">
                                 <span class="rounded-full bg-[#EAC231] p-2 text-xs font-semibold">@t.MediaCount Lessons</span>
                             </div>
+                            @if (!isEnrolled)
+                            {
+                                <p class="mt-2 text-xs text-red-500">You must enroll to access this topic.</p>
+                            }
                         </div>
                     }
                 }
@@ -208,9 +224,12 @@
 <!-- Download Options Modal -->
 <div id="downloadModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-60">
     <div class="relative box-border max-h-[90vh] w-[95vw] max-w-lg overflow-y-auto rounded-xl bg-white p-2 shadow-2xl sm:p-6 md:w-full">
+        <input type="hidden" name="topicId" value="@Model.Id" />
+        <input type="hidden" id="downloadUrl" value="@Url.Action("DownloadMediaZip", ViewContext.RouteData.Values["controller"].ToString())" />
+        <input type="hidden" id="topicTitle" value="@Model.TopicName" />
         <div class="mb-4 flex items-center justify-between">
             <h2 class="text-2xl font-semibold text-gray-800">Download Options</h2>
-            <button onclick="closeDownloadModal()" class="text-gray-500 hover:text-gray-700">
+            <button onclick="mediaModal.closeDownloadModal()" class="text-gray-500 hover:text-gray-700">
                 <span class="material-symbols-outlined text-2xl">close</span>
             </button>
         </div>
@@ -356,12 +375,12 @@
 
         <!-- Action Buttons -->
         <div class="mt-6 flex justify-end space-x-3">
-            <button onclick="closeDownloadModal()" class="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200">
+            <button onclick="mediaModal.closeDownloadModal()" class="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200">
                 Cancel
             </button>
             @if (hasAnyFiles)
             {
-                <button onclick="processDownload()" class="flex items-center space-x-2 rounded-lg bg-[#640A16] px-4 py-2 text-white transition-colors hover:bg-[#4a0810] focus:outline-none focus:ring-2 focus:ring-[#640A16]">
+                <button onclick="mediaModal.processDownload()" class="flex items-center space-x-2 rounded-lg bg-[#640A16] px-4 py-2 text-white transition-colors hover:bg-[#4a0810] focus:outline-none focus:ring-2 focus:ring-[#640A16]">
                     <span class="material-symbols-outlined !text-[18px]">download</span>
                     <span>Download</span>
                 </button>
@@ -386,173 +405,33 @@
 <!-- Media Preview Modal -->
 <div id="mediaModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-60">
     <span class="absolute right-4 top-2 cursor-pointer select-none text-4xl text-white sm:right-8 sm:top-4" onclick="closeMediaModal()">&times;</span>
+    <!-- Navigation Buttons INSIDE the modal -->
+    <button id="mediaPrevBtn" class="-translate-y-1/2 absolute left-4 top-1/2 z-50 hidden transform rounded-full bg-white/80 p-2 shadow-lg hover:bg-white" aria-label="Previous" onclick="mediaModal.navigateMedia(-1)">
+        <span class="material-symbols-outlined text-3xl text-gray-800">chevron_left</span>
+    </button>
     <div id="modalContent" class="flex max-h-[80vh] max-w-[90vw] items-center justify-center rounded bg-transparent p-4 shadow-lg"></div>
+    <button id="mediaNextBtn" class="-translate-y-1/2 absolute right-4 top-1/2 z-50 hidden transform rounded-full bg-white/80 p-2 shadow-lg hover:bg-white" aria-label="Next" onclick="mediaModal.navigateMedia(1)">
+        <span class="material-symbols-outlined text-3xl text-gray-800">chevron_right</span>
+    </button>
 </div>
 
-<script>
-    function openImageModal(url) {
-        document.getElementById('modalImage').src = url;
-        document.getElementById('imageModal').classList.remove('hidden');
-    }
-    function closeImageModal() {
-        document.getElementById('imageModal').classList.add('hidden');
-        document.getElementById('modalImage').src = '';
-    }
-    document.getElementById('imageModal').addEventListener('click', function(e) {
-        if (e.target === this) closeImageModal();
-    });
-
-    function openMediaModal(type, url, mediaType, isPdf = 'false') {
-        const modal = document.getElementById('mediaModal');
-        const content = document.getElementById('modalContent');
-        if (type === 'video') {
-            content.innerHTML = `<video controls autoplay class="max-h-[70vh] max-w-[80vw] rounded"><source src='${url}' type='${mediaType}'></video>`;
-        } else if (type === 'document') {
-            if (isPdf === 'true') {
-                content.innerHTML = `<iframe src='${url}' class='h-[90vh] w-[60vw] rounded' frameborder='0'></iframe>`;
-            } else {
-                content.innerHTML = `
-                    <div class='flex flex-col items-center space-y-4 text-white'>
-                        <span class='material-symbols-outlined text-6xl'>description</span>
-                        <p class='text-lg'>This document cannot be previewed in the browser.</p>
-                        <p class='text-sm text-gray-300'>Only PDF files can be previewed directly.</p>
-                        <a href='${url}' target='_blank' class='rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700'>Download to View</a>
-                    </div>`;
-            }
-        }
-        modal.classList.remove('hidden');
-    }
-    function closeMediaModal() {
-        document.getElementById('mediaModal').classList.add('hidden');
-        document.getElementById('modalContent').innerHTML = '';
-    }
-    document.getElementById('mediaModal').addEventListener('click', function(e) {
-        if (e.target === this) closeMediaModal();
-    });
-
-    // Download Modal Functions
-    function openDownloadModal() {
-        @if (hasAnyFiles)
-        {
-                <text>document.getElementById('downloadModal').classList.remove('hidden');</text>
-        }
-        else
-        {
-                <text>
-                // Show a tooltip or alert when no files are available
-                alert('No files are available for download in this topic.');
-                </text>
-        }
-    }
-
-    function closeDownloadModal() {
-        document.getElementById('downloadModal').classList.add('hidden');
-        // Reset form
-        const allRadio = document.querySelector('input[name="downloadOption"][value="all"]');
-        if (allRadio) allRadio.checked = true;
-        document.getElementById('selectedContentList').classList.add('hidden');
-        document.getElementById('mediaTypeOptions').classList.add('hidden');
-        const checkboxes = document.querySelectorAll('input[name="selectedMedia"]');
-        checkboxes.forEach(cb => cb.checked = false);
-    }
-
-    // Show/hide content sections based on radio selection
-    document.addEventListener('DOMContentLoaded', function() {
-        const radioButtons = document.querySelectorAll('input[name="downloadOption"]');
-        const selectedContentList = document.getElementById('selectedContentList');
-        const mediaTypeOptions = document.getElementById('mediaTypeOptions');
-
-        radioButtons.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.value === 'selected') {
-                    selectedContentList.classList.remove('hidden');
-                    mediaTypeOptions.classList.add('hidden');
-                } else if (this.value === 'mediaonly') {
-                    selectedContentList.classList.add('hidden');
-                    mediaTypeOptions.classList.remove('hidden');
-                } else {
-                    selectedContentList.classList.add('hidden');
-                    mediaTypeOptions.classList.add('hidden');
-                }
-            });
-        });
-    });
-
-    function processDownload() {
-        const selectedOption = document.querySelector('input[name="downloadOption"]:checked').value;
-        const topicId = @Model.Id;
-
-        if (selectedOption === 'selected') {
-            const selectedCheckboxes = document.querySelectorAll('input[name="selectedMedia"]:checked');
-            if (selectedCheckboxes.length === 0) {
-                alert('Please select at least one file to download.');
-                return;
-            }
-
-            const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
-            downloadFiles(topicId, selectedOption, selectedIds);
-        } else if (selectedOption === 'mediaonly') {
-            const mediaTypeOption = document.querySelector('input[name="mediaTypeOption"]:checked');
-            if (!mediaTypeOption) {
-                alert('Please select a media type to download.');
-                return;
-            }
-            downloadFiles(topicId, mediaTypeOption.value);
-        } else {
-            downloadFiles(topicId, selectedOption);
-        }
-    }
-
-    function downloadFiles(topicId, mode, selectedMediaIds = null) {
-        // Create a form to submit the download request
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '@Url.Action("DownloadMediaZip", "AdminTopic")';
-
-        // Add topicId
-        const topicInput = document.createElement('input');
-        topicInput.type = 'hidden';
-        topicInput.name = 'topicId';
-        topicInput.value = topicId;
-        form.appendChild(topicInput);
-
-        // Add mode
-        const modeInput = document.createElement('input');
-        modeInput.type = 'hidden';
-        modeInput.name = 'mode';
-        modeInput.value = mode;
-        form.appendChild(modeInput);
-
-        // Add selected media IDs if provided
-        if (selectedMediaIds && selectedMediaIds.length > 0) {
-            selectedMediaIds.forEach(id => {
-                const idInput = document.createElement('input');
-                idInput.type = 'hidden';
-                idInput.name = 'selectedMediaIds';
-                idInput.value = id;
-                form.appendChild(idInput);
-            });
-        }
-
-        // Add CSRF token
-        const token = document.querySelector('input[name="__RequestVerificationToken"]');
-        if (token) {
-            const tokenInput = document.createElement('input');
-            tokenInput.type = 'hidden';
-            tokenInput.name = '__RequestVerificationToken';
-            tokenInput.value = token.value;
-            form.appendChild(tokenInput);
-        }
-
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
-
-        closeDownloadModal();
-    }
-
-    // Close modal when clicking outside
-    document.getElementById('downloadModal').addEventListener('click', function(e) {
-        if (e.target === this) closeDownloadModal();
-    });
+<script type="application/json" id="videoMediaJson">
+    @Html.Raw(Json.Serialize(
+        (mediaList != null
+            ? mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("video"))
+                .Select(m => new { url = m.MediaUrl, type = m.MediaType, name = m.Name }).ToList()
+            : new List<object>())
+    ))
 </script>
+<script type="application/json" id="imageMediaJson">
+    @Html.Raw(Json.Serialize(
+        (mediaList != null
+            ? mediaList.Where(m => m.MediaType != null && m.MediaType.ToLower().Contains("image"))
+                .Select(m => new { url = m.MediaUrl, type = m.MediaType, name = m.Name }).ToList()
+            : new List<object>())
+    ))
+</script>
+
+@section Scripts {
+    <script src="/html/assets/js/mediaModal.js"></script>
+}
