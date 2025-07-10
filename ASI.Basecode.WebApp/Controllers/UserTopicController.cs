@@ -31,61 +31,88 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult Topics(int trainingId)
         {
-            var training = _trainingService.GetTrainingById(trainingId);
-            var topics = _topicService.GetAllTopicsByTrainingId(trainingId);
-
-            ViewData["training"] = training;
-
-            var userEmail = HttpContext.Session.GetString("UserEmail");
-            if (!string.IsNullOrEmpty(userEmail))
+            try
             {
-                var user = _userService.GetUserByEmailId(userEmail);
-                if (user != null)
+                var training = _trainingService.GetTrainingById(trainingId);
+                var topics = _topicService.GetAllTopicsByTrainingId(trainingId);
+
+                ViewData["training"] = training;
+
+                var userEmail = HttpContext.Session.GetString("UserEmail");
+                if (!string.IsNullOrEmpty(userEmail))
                 {
-                    bool isEnrolled = _enrollmentService.IsUserEnrolled(user.Id, trainingId);
-                    ViewBag.IsEnrolled = isEnrolled;
+                    var user = _userService.GetUserByEmailId(userEmail);
+                    if (user != null)
+                    {
+                        bool isEnrolled = _enrollmentService.IsUserEnrolled(user.Id, trainingId);
+                        ViewBag.IsEnrolled = isEnrolled;
+                    }
                 }
+
+                var enrollmentCount = _enrollmentService.GetEnrollmentCount(trainingId);
+                ViewData["EnrollmentCount"] = enrollmentCount;
+
+                return View("~/Views/User/UserTopics.cshtml", topics);
             }
-
-            var enrollmentCount = _enrollmentService.GetEnrollmentCount(trainingId);
-            ViewData["EnrollmentCount"] = enrollmentCount;
-
-            return View("~/Views/User/UserTopics.cshtml", topics);
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine($"[Topics] Exception: {ex.Message}");
+                TempData["Error"] = "Failed to load topics: " + ex.Message;
+                return RedirectToAction("ServerError", "Home");
+            }
         }
 
         [HttpGet]
         public IActionResult TopicDetails(int topicId)
         {
-            var topic = _topicService.GetTopicWithAccountById(topicId);
-            var allTopics = _topicService.GetAllTopicsByTrainingId(topic.TrainingId);
-            ViewBag.AllTopics = allTopics;
-            var userEmail = HttpContext.Session.GetString("UserEmail");
-            if (!string.IsNullOrEmpty(userEmail))
+            try
             {
-                var user = _userService.GetUserByEmailId(userEmail);
-                if (user != null)
+                var topic = _topicService.GetTopicWithAccountById(topicId);
+                var allTopics = _topicService.GetAllTopicsByTrainingId(topic.TrainingId);
+                ViewBag.AllTopics = allTopics;
+                var userEmail = HttpContext.Session.GetString("UserEmail");
+                if (!string.IsNullOrEmpty(userEmail))
                 {
-                    bool isEnrolled = _enrollmentService.IsUserEnrolled(user.Id, topic.TrainingId);
-                    ViewBag.IsEnrolled = isEnrolled;
+                    var user = _userService.GetUserByEmailId(userEmail);
+                    if (user != null)
+                    {
+                        bool isEnrolled = _enrollmentService.IsUserEnrolled(user.Id, topic.TrainingId);
+                        ViewBag.IsEnrolled = isEnrolled;
+                    }
+                    else
+                    {
+                        ViewBag.IsEnrolled = false;
+                    }
                 }
                 else
                 {
                     ViewBag.IsEnrolled = false;
                 }
+                return View("~/Views/User/ViewTopic.cshtml", topic);
             }
-            else
+            catch (System.Exception ex)
             {
-                ViewBag.IsEnrolled = false;
+                System.Console.WriteLine($"[TopicDetails] Exception: {ex.Message}");
+                TempData["Error"] = "Failed to load topic details: " + ex.Message;
+                return RedirectToAction("ServerError", "Home");
             }
-            return View("~/Views/User/ViewTopic.cshtml", topic);
         }
 
         [HttpGet]
         public IActionResult LoadMoreReviews(int trainingId, int skip = 5, int take = 5)
         {
-            var training = _trainingService.GetTrainingById(trainingId);
-            var reviews = training.Reviews.Skip(skip).Take(take).ToList();
-            return PartialView("~/Views/User/_ReviewCardPartial.cshtml", reviews);
+            try
+            {
+                var training = _trainingService.GetTrainingById(trainingId);
+                var reviews = training.Reviews.Skip(skip).Take(take).ToList();
+                return PartialView("~/Views/User/_ReviewCardPartial.cshtml", reviews);
+            }
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine($"[LoadMoreReviews] Exception: {ex.Message}");
+                TempData["Error"] = "Failed to load more reviews: " + ex.Message;
+                return RedirectToAction("ServerError", "Home");
+            }
         }
 
         [HttpPost]

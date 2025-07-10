@@ -18,7 +18,7 @@ namespace ASI.Basecode.Services.Services
                 {
                     if (role == "0")
                     {
-                        context.Result = new RedirectToActionResult("AdminTrainingCategory", "AdminTrainingCategory", null);
+                        context.Result = new RedirectToActionResult("AdminDashboard", "AdminDashboard", null);
                     }
                     else if (role == "1")
                     {
@@ -26,7 +26,7 @@ namespace ASI.Basecode.Services.Services
                     }
                     else if(role == "2")
                     {
-                        context.Result = new RedirectToActionResult("UserMaster", "Admin", null);
+                        context.Result = new RedirectToActionResult("AdminDashboard", "AdminDashboard", null);
                     }
                     else
                     {

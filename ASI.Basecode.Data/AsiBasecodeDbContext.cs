@@ -30,6 +30,8 @@ namespace ASI.Basecode.Data
         public virtual DbSet<Review> Reviews { get; set; }
         public virtual DbSet<Enrollment> Enrollments { get; set; }
 
+        public virtual DbSet<AuditLog> AuditLogs { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -115,6 +117,27 @@ namespace ASI.Basecode.Data
                     .HasMaxLength(50)
                     .IsUnicode(false);
             });
+
+           modelBuilder.Entity<AuditLog>(entity =>
+        {
+            entity.ToTable("AuditLog");
+
+            entity.Property(e => e.ActionType)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Entity)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.TimeStamp).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Account).WithMany(p => p.AuditLogs)
+                .HasForeignKey(d => d.AccountId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AuditLog_Accounts");
+        });
+
 
             modelBuilder.Entity<SkillLevel>(entity =>
             {

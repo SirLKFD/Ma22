@@ -38,5 +38,12 @@ namespace ASI.Basecode.Data.Repositories
                 .Where(e => e.TrainingId == trainingId)
                 .ToList();
         }
+
+        public List<Enrollment> GetByTrainingIds(List<int> trainingIds)
+        {
+            return _context.Enrollments
+                .Where(e => trainingIds.Contains(e.TrainingId))
+                .ToList();
+        }
     }
 }

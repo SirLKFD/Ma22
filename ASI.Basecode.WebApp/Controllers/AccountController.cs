@@ -88,12 +88,12 @@ namespace ASI.Basecode.WebApp.Controllers
                 switch (role)
                 {
                     case "0": // Admin role
-                        return RedirectToAction("AdminTrainingCategory", "AdminTrainingCategory");
+                        return RedirectToAction("AdminDashboard", "AdminDashboard");
 
                     case "1": // User role
                         return RedirectToAction("UserDashboard", "User");
                     case "2": // User role
-                        return RedirectToAction("UserMaster", "Admin");
+                        return RedirectToAction("AdminDashboard", "AdminDashboard");
                     default:
                         return RedirectToAction("Login", "Account");
                 }
@@ -116,50 +116,58 @@ namespace ASI.Basecode.WebApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            this._session.SetString("HasSession", "Exist");
-
-            if (!ModelState.IsValid)
+            try
             {
-                return View(model);
-            }
+                this._session.SetString("HasSession", "Exist");
 
-            Account account = null;
-
-            // Authenticate user
-            var loginResult = _userService.AuthenticateUser(model.EmailId, model.Password, ref account);
-
-            if (loginResult == LoginResult.Success && account != null)
-            {
-                // Sign in
-                await _signInManager.SignInAsync(account, true);
-
-                // Set session values
-                _session.SetString("UserName", $"{account.FirstName} {account.LastName}");
-                _session.SetString("UserEmail", account.EmailId);
-                _session.SetInt32("AccountId", account.Id);
-                _session.SetInt32("AccountRole",account.Role);
-                _session.SetString("ProfilePicture", account.ProfilePicture ?? "");
-
-                // Redirect based on role
-                switch ((RoleType)account.Role)
+                if (!ModelState.IsValid)
                 {
-                    case RoleType.Admin:
-                        return RedirectToAction("AdminTrainingCategory", "AdminTrainingCategory");
+                    return View(model);
+                }
 
-                    case RoleType.User:
-                        return RedirectToAction("UserDashboard", "User"); // Replace with actual User landing view
-                    case RoleType.SuperAdmin:
-                        return RedirectToAction("UserMaster", "Admin");
+                Account account = null;
 
-                    default:
-                        TempData["ErrorMessage"] = "Incorrect account role.";
-                        return View(model);
+                // Authenticate user
+                var loginResult = _userService.AuthenticateUser(model.EmailId, model.Password, ref account);
+
+                if (loginResult == LoginResult.Success && account != null)
+                {
+                    // Sign in
+                    await _signInManager.SignInAsync(account, true);
+
+                    // Set session values
+                    _session.SetString("UserName", $"{account.FirstName} {account.LastName}");
+                    _session.SetString("UserEmail", account.EmailId);
+                    _session.SetInt32("AccountId", account.Id);
+                    _session.SetInt32("AccountRole",account.Role);
+                    _session.SetString("ProfilePicture", account.ProfilePicture ?? "");
+
+                    // Redirect based on role
+                    switch ((RoleType)account.Role)
+                    {
+                        case RoleType.Admin:
+                            return RedirectToAction("AdminDashboard", "AdminDashboard");;
+
+                        case RoleType.User:
+                            return RedirectToAction("UserDashboard", "User"); // Replace with actual User landing view
+                        case RoleType.SuperAdmin:
+                            return RedirectToAction("AdminDashboard", "AdminDashboard");
+
+                        default:
+                            TempData["ErrorMessage"] = "Incorrect account role.";
+                            return View(model);
+                    }
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Incorrect Email or Password.";
+                    return View(model);
                 }
             }
-            else
+            catch (Exception)
             {
-                TempData["ErrorMessage"] = "Incorrect Email or Password.";
-                return View(model);
+                // Rethrow so middleware can handle (including SqlException)
+                throw;
             }
         }
 

@@ -14,12 +14,12 @@
 
         <!-- Search + Add -->
         <div class="flex flex-col gap-4 sm:flex-row">
-            <form method="get" asp-action="AdminTrainingCategory" class="relative w-full sm:w-[400px]">
+            <form method="get" asp-action="AdminTrainingCategory" class="relative w-full sm:w-[450px]">
                 <span class="material-symbols-outlined -translate-y-1/2 absolute left-3 top-1/2 text-gray-400">search</span>
                 <input type="search" name="search" value="@ViewBag.Search" placeholder="Search Category..."
                        class="h-12 w-full rounded-full border border-gray-300 bg-white pl-10 pr-[100px] text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
                 <button type="submit"
-                        class="absolute right-2 top-[6px] rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#cfa221]">
+                        class="absolute right-2 top-[6px] rounded-full bg-[#EAC231] px-7 py-2 text-sm font-medium text-black transition hover:bg-[#cfa221]">
                     Search
                 </button>
             </form>
@@ -93,7 +93,7 @@
                     {
                         <li>
                             <a class="rounded-l-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100"
-                               href="@Url.Action("AdminTrainingCategory", new { page = ViewBag.CurrentPage - 1, search = ViewBag.Search })">
+                               href="/admin/AdminTrainingCategory?page=@(ViewBag.CurrentPage - 1)&search=@ViewBag.Search">
                                 Previous
                             </a>
                         </li>
@@ -101,8 +101,8 @@
                     @for (int i = 1; i <= totalPages; i++)
                     {
                         <li>
-                            <a class="rounded-md border border-gray-300 px-3 @(i == ViewBag.CurrentPage ? "bg-blue-50 text-blue-600" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") py-2 transition"
-                               href="@Url.Action("AdminTrainingCategory", new { page = i, search = ViewBag.Search })">
+                            <a class="rounded-md border border-gray-300 px-3 @(i == ViewBag.CurrentPage ? "bg-[#EAC231] font-bold" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") py-2 transition"
+                               href="/admin/AdminTrainingCategory?page=@i&search=@ViewBag.Search">
                                 @i
                             </a>
                         </li>
@@ -111,7 +111,7 @@
                     {
                         <li>
                             <a class="rounded-r-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100"
-                               href="@Url.Action("AdminTrainingCategory", new { page = ViewBag.CurrentPage + 1, search = ViewBag.Search })">
+                               href="/admin/AdminTrainingCategory?page=@(ViewBag.CurrentPage + 1)&search=@ViewBag.Search">
                                 Next
                             </a>
                         </li>

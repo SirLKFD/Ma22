@@ -29,6 +29,8 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly ITopicService _topicService;
         private readonly IEnrollmentService _enrollmentService;
 
+        private readonly IAuditLogService _auditLogService;
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -44,12 +46,14 @@ namespace ASI.Basecode.WebApp.Controllers
                               ITrainingService trainingService = null,
                               ITrainingCategoryService trainingCategoryService = null,
                               ITopicService topicService = null,
+                              IAuditLogService auditLogService = null,
                               IEnrollmentService enrollmentService = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             _trainingService = trainingService;
             _trainingCategoryService = trainingCategoryService;
             _topicService = topicService;
             _enrollmentService = enrollmentService;
+            _auditLogService = auditLogService;
         }
 
         /// <summary>
@@ -138,6 +142,13 @@ namespace ASI.Basecode.WebApp.Controllers
                 }
                 model.AccountId = accountId.Value;
                 _trainingService.AddTraining(model);
+
+                var newTraining = _trainingService.GetAllTrainings().
+                OrderByDescending(c=>c.UpdatedTime)
+                .FirstOrDefault(c => c.AccountId == model.AccountId && c.TrainingName == model.TrainingName);
+
+                _auditLogService.LogAction("Training", "Create", newTraining.Id, accountId.Value,newTraining.TrainingName);
+
                 Console.WriteLine("✅ Training added");
 
                 return RedirectToAction("AdminTraining");
@@ -213,6 +224,8 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 _logger.LogInformation("[UpdateTraining] Calling _trainingService.UpdateTraining for Id={Id}", model.Id);
                 _trainingService.UpdateTraining(model);
+                int? accountId = HttpContext.Session.GetInt32("AccountId");
+                 _auditLogService.LogAction("Training", "Update", existingTraining.Id, accountId.Value,model.TrainingName);
                 _logger.LogInformation("[UpdateTraining] Training updated successfully for Id={Id}", model.Id);
 
                 return RedirectToAction("AdminTraining");
@@ -226,11 +239,15 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "0")]
-        public IActionResult DeleteTraining(int id)
+    
+        public IActionResult DeleteTraining(int id, string trainingName)
         {
             List<TrainingViewModel> trainings = _trainingService.GetAllTrainings();
+            int? accountId = HttpContext.Session.GetInt32("AccountId");
             try{
+          
+
+            _auditLogService.LogAction("Training", "Delete", id, accountId.Value, trainingName);
             _trainingService.DeleteTraining(id);
             return RedirectToAction("AdminTraining");
             }
