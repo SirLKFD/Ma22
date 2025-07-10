@@ -185,21 +185,28 @@ namespace ASI.Basecode.WebApp.Controllers
         [AllowAnonymous]
         public IActionResult Register(UserViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model); 
+            }
+
             try
             {
                 _userService.AddUser(model);
                 return RedirectToAction("Login", "Account");
             }
-            catch(InvalidDataException ex)
+            catch (InvalidDataException ex)
             {
                 TempData["ErrorMessage"] = ex.InnerException?.Message ?? ex.Message;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
             }
-            return View();
+
+            return View(model);
         }
+
 
         /// <summary>
         /// Sign Out current account and return login view.
