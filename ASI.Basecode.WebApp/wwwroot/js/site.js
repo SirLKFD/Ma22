@@ -4,13 +4,13 @@
     const originalFetch = window.fetch;
     window.fetch = async function(...args) {
         const response = await originalFetch.apply(this, args);
-        // If the server redirects to /ServerError, force a client-side redirect
-        if (response.redirected && response.url.includes('/ServerError')) {
-            window.location.href = '/ServerError';
+        // If the server redirects to /Home/ServerError, force a client-side redirect
+        if (response.redirected && response.url.includes('/Home/ServerError')) {
+            window.location.href = '/Home/ServerError';
         }
         // If the server returns a 500 error, redirect as well
         if (response.status === 500) {
-            window.location.href = '/ServerError';
+            window.location.href = '/Home/ServerError';
         }
         return response;
     };
@@ -18,9 +18,9 @@
     // jQuery global AJAX error handler
     if (window.jQuery) {
         $(document).ajaxError(function(event, jqxhr, settings, thrownError) {
-            if (jqxhr.status === 500 || (jqxhr.responseText && jqxhr.responseText.includes('/ServerError'))) {
-                window.location.href = '/ServerError';
-            }
+                    if (jqxhr.status === 500 || (jqxhr.responseText && jqxhr.responseText.includes('/Home/ServerError'))) {
+            window.location.href = '/Home/ServerError';
+        }
         });
     }
 })();

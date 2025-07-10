@@ -1,0 +1,38 @@
+﻿@model ASI.Basecode.WebApp.Models.ServerErrorModel
+@{
+    ViewData["Title"] = "Ma22 | Server Error";
+}
+
+@section styles {
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+}
+
+<div class="font-[Poppins] flex min-h-screen items-center justify-center">
+    <div class="flex w-full max-w-5xl flex-col items-center space-y-6 overflow-hidden rounded-xl bg-white p-6 shadow-lg md:flex-row md:space-x-10 md:space-y-0 md:p-10">
+
+        <!-- Sad Server Image -->
+        <div class="flex w-full justify-center md:w-1/2">
+            <img src="~/img/sadserver.png" alt="Sad Server" class="max-h-72 object-contain md:max-h-96">
+        </div>
+
+        <!-- Error Card -->
+        <div class="w-full md:w-1/2">
+            <!-- Logo in top-right corner -->
+            <div class="mb-4 flex justify-end">
+                <img src="~/img/Logo.png" alt="logo" class="h-10">
+            </div>
+
+            <p class="text-xl font-semibold text-gray-800">Oops!</p>
+            <h2 class="mb-2 text-2xl font-bold text-red-600 md:text-3xl">Database Server Error</h2>
+            <h3 class="mb-4 text-lg text-gray-700">We're currently experiencing database connectivity issues.</h3>
+            <p class="mb-1 text-gray-600">Our technical team has been notified and is working to resolve this issue.</p>
+            <p class="mb-6 text-gray-600">Please try again later.</p>
+
+            <a href="/" class="rounded-lg bg-red-600 px-5 py-2 text-white transition-all hover:bg-red-700">
+                Return to Home Page
+            </a>
+        </div>
+    </div>
+</div>
