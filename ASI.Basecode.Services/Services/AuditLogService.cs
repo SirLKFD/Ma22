@@ -51,6 +51,7 @@ namespace ASI.Basecode.Services.Services
 
             logsQuery = logsQuery.Where(l => l.AccountId == accountId || 
                                            (l.Entity == "User" && l.ActionType == "Create" && l.EntityName.StartsWith("Enrolled to") && 
+                                            adminTrainingIds.Contains(l.EntityId)) || (l.Entity == "User" && l.ActionType == "Create" && l.EntityName.StartsWith("Reviewed") && 
                                             adminTrainingIds.Contains(l.EntityId)));
         }
         else if (accountRole == 2)
