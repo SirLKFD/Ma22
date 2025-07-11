@@ -11,14 +11,17 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly IEnrollmentService _enrollmentService;
         private readonly IUserService _userService;
 
-        public EnrollmentController(IEnrollmentService enrollmentService, IUserService userService)
+        private readonly IAuditLogService _auditLogService;
+
+        public EnrollmentController(IEnrollmentService enrollmentService, IUserService userService, IAuditLogService auditLogService)
         {
+            _auditLogService = auditLogService;
             _enrollmentService = enrollmentService;
             _userService = userService;
         }
 
         [HttpPost]
-        public IActionResult Enroll(int trainingId)
+        public IActionResult Enroll(int trainingId, string trainingName)
         {
             var userEmail = HttpContext.Session.GetString("UserEmail");
             if (string.IsNullOrEmpty(userEmail))
@@ -33,6 +36,7 @@ namespace ASI.Basecode.WebApp.Controllers
             }
 
             _enrollmentService.EnrollUser(user.Id, trainingId);
+            _auditLogService.LogAction("User", "Create", user.Id, user.Id, $"Enrolled to {trainingName}");
             TempData["EnrollSuccess"] = true;
             return RedirectToAction("Topics", "UserTopic", new { trainingId = trainingId });
         }
