@@ -43,7 +43,15 @@ namespace ASI.Basecode.Services.Services
 
         if (accountRole == 0)
         {
-            logsQuery = logsQuery.Where(l => l.AccountId == accountId);
+            // For admins, include their own logs plus enrollment logs for trainings they created
+            var adminTrainingIds = _trainingService.GetAllTrainings()
+                .Where(t => t.AccountId == accountId)
+                .Select(t => t.Id)
+                .ToList();
+
+            logsQuery = logsQuery.Where(l => l.AccountId == accountId || 
+                                           (l.Entity == "User" && l.ActionType == "Create" && l.EntityName.StartsWith("Enrolled to") && 
+                                            adminTrainingIds.Contains(l.EntityId)));
         }
         else if (accountRole == 2)
         {
