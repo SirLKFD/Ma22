@@ -16,6 +16,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using static ASI.Basecode.Resources.Constants.Enums;
+using System.Linq;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -30,6 +31,8 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly IPasswordResetService _passwordResetService;
         private readonly IEmailService _emailService;
         private readonly ILogger<AccountController> _logger;
+        private readonly IAuditLogService _auditLogService;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
@@ -57,6 +60,7 @@ namespace ASI.Basecode.WebApp.Controllers
                             TokenProviderOptionsFactory tokenProviderOptionsFactory,
                             IPasswordResetService passwordResetService,
                             IEmailService emailService,
+                            IAuditLogService auditLogService,
                             ILogger<AccountController> logger) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             this._sessionManager = new SessionManager(this._session);
@@ -68,6 +72,7 @@ namespace ASI.Basecode.WebApp.Controllers
             this._passwordResetService = passwordResetService;
             this._emailService = emailService;
             this._logger = logger;
+            this._auditLogService = auditLogService;
         }
 
         /// <summary>
@@ -188,6 +193,13 @@ namespace ASI.Basecode.WebApp.Controllers
             try
             {
                 _userService.AddUser(model);
+                var newUser = _userService.GetAllUsers()
+                           .AsEnumerable()
+                           .OrderByDescending(u => u.Id)
+                           .FirstOrDefault(u => u.EmailId == model.EmailId);
+                        
+                _auditLogService.LogAction("User", "Create", newUser.Id, newUser.Id, $"{newUser.FirstName} {newUser.LastName}");
+                
                 return RedirectToAction("Login", "Account");
             }
             catch(InvalidDataException ex)

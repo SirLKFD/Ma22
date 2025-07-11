@@ -203,6 +203,7 @@
                 {
                     <form method="post" asp-controller="Enrollment" asp-action="Enroll">
                         <input type="hidden" name="trainingId" value="@training.Id" />
+                        <input type="hidden" name="trainingName" value="@training.TrainingName">
                         <button type="submit" class="w-full rounded-lg bg-[#EAC231] px-32 py-2 font-semibold">
                             Enroll Now
                         </button>
