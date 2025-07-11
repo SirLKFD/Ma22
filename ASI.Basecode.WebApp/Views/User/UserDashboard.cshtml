@@ -7,7 +7,7 @@
 
 <div class="flex h-[90vh] mb-20 w-full items-center justify-center  animate-slide-up opacity-0 animate-fade-in">
     <!-- Left Image -->
-    <div class="sm:w-[45%] ">
+    <div class="sm:w-[45%] float">
         <img src="~/img/bg_3.png" alt="Learning Illustration" class="h-auto w-full object-contain" />
     </div>
 
@@ -48,17 +48,17 @@
     </div>
 </div>
 
-<div class=" mx-20 mb-10 flex flex-col gap-2 ">
+<div class=" mx-20 mb-10 flex flex-col gap-2 " data-aos="fade-up" data-aos-anchor-placement="top-bottom">
     <h1 id="target-section" class="font-weight-bold text-4xl">Trainings to get you started</h1>
     <p>Learn new skills or improve existing ones at your own pace.</p>
 </div>
 
-<div class="mx-20 mb-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+<div class="mx-20 mb-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3" >
     @if (Model != null && Model.Any())
     {
         foreach (var training in Model.Take(6))
         {
-            <div class="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md transition hover:shadow-xl">
+            <div class="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md transition hover:shadow-xl" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
                 <!-- Cover Image -->
                 <div class="h-[180px]">
                     @if (!string.IsNullOrEmpty(training.CoverPicture))
