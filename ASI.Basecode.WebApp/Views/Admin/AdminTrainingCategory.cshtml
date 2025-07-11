@@ -87,31 +87,38 @@
     {
         var totalPages = (int)Math.Ceiling((decimal)ViewBag.TotalCount / ViewBag.PageSize);
         <div class="mt-10 flex justify-end">
-            <nav>
-                <ul class="inline-flex gap-1 text-sm">
+            <nav aria-label="Page navigation">
+                <ul class="flex gap-1 text-sm">
                     @if (ViewBag.CurrentPage > 1)
                     {
                         <li>
-                            <a class="rounded-l-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100"
-                               href="/admin/AdminTrainingCategory?page=@(ViewBag.CurrentPage - 1)&search=@ViewBag.Search">
-                                Previous
+                            <a href="@Url.Action("AdminTrainingCategory", new { page = ViewBag.CurrentPage - 1, search = ViewBag.Search })"
+                               class="rounded-l-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">
+                                Prev
                             </a>
                         </li>
                     }
+
                     @for (int i = 1; i <= totalPages; i++)
                     {
+                        var isCurrent = i == ViewBag.CurrentPage;
+                        var pageClass = isCurrent
+                        ? "bg-[#EAC231] text-black font-semibold"
+                        : "bg-white text-gray-600 hover:bg-gray-100 hover:text-black";
+
                         <li>
-                            <a class="rounded-md border border-gray-300 px-3 @(i == ViewBag.CurrentPage ? "bg-[#EAC231] font-bold" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") py-2 transition"
-                               href="/admin/AdminTrainingCategory?page=@i&search=@ViewBag.Search">
+                            <a href="@Url.Action("AdminTrainingCategory", new { page = i, search = ViewBag.Search })"
+                               class="border border-gray-300 px-3 py-2 transition @pageClass">
                                 @i
                             </a>
                         </li>
                     }
+
                     @if (ViewBag.CurrentPage < totalPages)
                     {
                         <li>
-                            <a class="rounded-r-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100"
-                               href="/admin/AdminTrainingCategory?page=@(ViewBag.CurrentPage + 1)&search=@ViewBag.Search">
+                            <a href="@Url.Action("AdminTrainingCategory", new { page = ViewBag.CurrentPage + 1, search = ViewBag.Search })"
+                               class="rounded-r-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">
                                 Next
                             </a>
                         </li>

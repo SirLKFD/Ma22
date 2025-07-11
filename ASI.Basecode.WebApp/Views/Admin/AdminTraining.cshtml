@@ -42,16 +42,48 @@
             }
             else
             {
-                <form method="get" asp-action="AdminTraining" class="relative w-full sm:w-[400px]">
-                    <span class="material-symbols-outlined -translate-y-1/2 absolute left-3 top-1/2 text-gray-400">search</span>
-                    <input type="search" name="search" value="@search"
-                           placeholder="Search Trainings..."
-                           class="h-12 w-full rounded-full border border-gray-300 bg-white pl-10 pr-[140px] text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
-                    <button type="submit"
-                            class="absolute right-2 top-[6px] rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#cfa221]">
-                        Search
-                    </button>
+                <form method="get" asp-action="AdminTraining" class="relative w-full" autocomplete="off">
+                    <div id="search-wrapper" class="relative transition-all duration-300">
+                        <span class="material-symbols-outlined -translate-y-1/2 absolute left-3 top-1/2 text-gray-400">search</span>
+                        <input type="search" name="search" value="@search" id="search-input"
+                               placeholder="Search Trainings..."
+                               class="h-12 w-full rounded-full border border-gray-300 bg-white pl-10 pr-[140px] text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
+
+                        <button type="submit"
+                                class="absolute right-2 top-[6px] rounded-full bg-[#EAC231] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#cfa221]">
+                            Search
+                        </button>
+
+                        <!-- Collapsible Filter Pills -->
+                        <div id="filter-pills-inside" class="hidden absolute left-0 right-0 mt-2 rounded-xl border border-gray-300 bg-white p-4 shadow-lg z-10">
+                            @if (trainingCategories != null)
+                            {
+                                <div class="mb-2 text-xs font-semibold text-gray-500">Categories</div>
+                                <div class="mb-4 flex flex-wrap gap-2">
+                                    @foreach (var category in trainingCategories)
+                                    {
+                                        <a href="@Url.Action("AdminTraining", new { search = search, categoryId = category.Id, skillLevelId = skillLevelId })"
+                                           class="rounded-full border border-gray-400 px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 @(selectedCategoryId == category.Id ? "bg-blue-200 text-blue-800" : "")">
+                                            @category.CategoryName
+                                        </a>
+                                    }
+                                </div>
+                            }
+
+                            <div class="mb-2 text-xs font-semibold text-gray-500">Skill Levels</div>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach (var level in skillLevels)
+                                {
+                                    <a href="@Url.Action("AdminTraining", new { search = search, categoryId = selectedCategoryId, skillLevelId = level.Key })"
+                                       class="rounded-full border border-gray-400 px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 @(skillLevelId == level.Key ? "bg-blue-200 text-blue-800" : "")">
+                                        @level.Value
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
                 </form>
+
             }
             <button class="rounded-full bg-[#EAC231] px-6 py-2 text-sm font-semibold text-black shadow-md transition hover:bg-[#cfa221]"
                     onclick="addTraining()">
@@ -159,32 +191,43 @@
     {
         var totalPages = (int)Math.Ceiling((decimal)ViewBag.TotalCount / ViewBag.PageSize);
         <div class="mt-10 flex justify-end">
-            <nav>
-                <ul class="inline-flex gap-1 text-sm">
+            <nav aria-label="Page navigation">
+                <ul class="flex gap-1 text-sm">
                     @if (ViewBag.CurrentPage > 1)
                     {
                         <li>
-                            <a class="rounded-l-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100"
-                               href="@(isCategory? $"/admin/TrainingCategoryDetails?categoryId={categoryId}&page={ViewBag.CurrentPage - 1}&search={search}" : $"/admin/AdminTraining?page={ViewBag.CurrentPage - 1}&search={search}")">
-                                Previous
+                            <a href="@(isCategory
+                                ? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = ViewBag.CurrentPage - 1, search = search })
+                                : Url.Action("AdminTraining", new { page = ViewBag.CurrentPage - 1, search = search, categoryId = selectedCategoryId, skillLevelId = skillLevelId }))"
+                                class="rounded-l-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">
+                                    Prev
                             </a>
                         </li>
                     }
                     @for (int i = 1; i <= totalPages; i++)
                     {
+                        var isCurrent = i == ViewBag.CurrentPage;
+                        var pageClass = isCurrent
+                        ? "bg-[#EAC231] text-black font-semibold"
+                        : "bg-white text-gray-600 hover:bg-gray-100 hover:text-black";
+
                         <li>
-                            <a class="rounded-md border border-gray-300 px-3 @(i == ViewBag.CurrentPage ? "bg-[#EAC231] font-bold" : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800") py-2 transition"
-                               href="@(isCategory? $"/admin/TrainingCategoryDetails?categoryId={categoryId}&page={i}&search={search}" : $"/admin/AdminTraining?page={i}&search={search}")">
-                                @i
+                            <a href="@(isCategory
+                                ? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = i, search = search })
+                                : Url.Action("AdminTraining", new { page = i, search = search, categoryId = selectedCategoryId, skillLevelId = skillLevelId }))"
+                                class="border border-gray-300 px-3 py-2 transition @pageClass">
+                                    @i
                             </a>
                         </li>
                     }
                     @if (ViewBag.CurrentPage < totalPages)
                     {
                         <li>
-                            <a class="rounded-r-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100"
-                               href="@(isCategory? $"/admin/TrainingCategoryDetails?categoryId={categoryId}&page={ViewBag.CurrentPage + 1}&search={search}" : $"/admin/AdminTraining?page={ViewBag.CurrentPage + 1}&search={search}")">
-                                Next
+                            <a href="@(isCategory
+                                ? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = ViewBag.CurrentPage + 1, search = search })
+                                : Url.Action("AdminTraining", new { page = ViewBag.CurrentPage + 1, search = search, categoryId = selectedCategoryId, skillLevelId = skillLevelId }))"
+                                class="rounded-r-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">
+                                    Next
                             </a>
                         </li>
                     }
@@ -214,4 +257,20 @@
     function closeDeleteTraining() {
         document.getElementById('deleteTraining').classList.add('hidden');
     }
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('search-input');
+        const filterBox = document.getElementById('filter-pills-inside');
+
+        searchInput.addEventListener('focus', () => {
+            filterBox.classList.remove('hidden');
+        });
+
+        searchInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                if (!document.activeElement.closest('#filter-pills-inside')) {
+                    filterBox.classList.add('hidden');
+                }
+            }, 300); 
+        });
+    });
 </script>

@@ -86,7 +86,7 @@ namespace ASI.Basecode.WebApp.Authentication
                 new Claim(ClaimTypes.NameIdentifier, user.EmailId, ClaimValueTypes.String, Const.Issuer),
                 new Claim(ClaimTypes.Name, user.FirstName, ClaimValueTypes.String, Const.Issuer),
                 new Claim(ClaimTypes.Name, user.LastName, ClaimValueTypes.String, Const.Issuer),
-                new Claim(ClaimTypes.Name, user.Contact, ClaimValueTypes.String, Const.Issuer),
+                new Claim(ClaimTypes.Name, user.Contact ?? "", ClaimValueTypes.String, Const.Issuer),
                 new Claim(ClaimTypes.Name, user.CreatedBy, ClaimValueTypes.String, Const.Issuer),
                 new Claim(ClaimTypes.Role, user.Role.ToString(), ClaimValueTypes.String, Const.Issuer)
 

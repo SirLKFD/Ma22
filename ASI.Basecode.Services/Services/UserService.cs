@@ -101,6 +101,7 @@ namespace ASI.Basecode.Services.Services
         public void AddUser(UserViewModel model)
         {
             var user = new Account();
+
             if (!_repository.UserExists(model.EmailId))
             {
                 _mapper.Map(model, user);
@@ -110,6 +111,8 @@ namespace ASI.Basecode.Services.Services
                 user.CreatedBy = System.Environment.UserName;
                 user.UpdatedBy = System.Environment.UserName;
 
+                user.Role = (int)RoleType.User;
+
                 _repository.AddUser(user);
             }
             else
@@ -118,7 +121,7 @@ namespace ASI.Basecode.Services.Services
             }
         }
 
-         public void AddUser(AdminCreateUserViewModel model)
+        public void AddUser(AdminCreateUserViewModel model)
         {
             var user = new Account();
             if (!_repository.UserExists(model.EmailId))
