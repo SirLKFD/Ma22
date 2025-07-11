@@ -1,353 +1,155 @@
 ﻿@{
-    Layout = null;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    // Layout = null;
     ViewData["Title"] = "Ma22";
 }
-<!-- No layout, just plain HTML -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>@ViewData["Title"]</title>
-    <style>
-        @@import url('https://fonts.googleapis.com/css2?family=Righteous&family=Satisfy:wght@400&family=Fredoka+One:wght@400&display=swap');
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<div class="flex h-screen flex-col gap-20 bg-white p-20">
 
-        body {
-            font-family: 'Fredoka One', cursive;
-            background: linear-gradient(45deg, #ffb3ba 0%, #bae1ff 50%, #ffffba 100%);
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-            /* Atomic age pattern overlay */
-            body::before {
-                content: '';
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-image: radial-gradient(circle at 25% 25%, rgba(255, 107, 107, 0.1) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(107, 255, 107, 0.1) 0%, transparent 50%), radial-gradient(circle at 75% 25%, rgba(107, 107, 255, 0.1) 0%, transparent 50%), radial-gradient(circle at 25% 75%, rgba(255, 255, 107, 0.1) 0%, transparent 50%);
-                background-size: 200px 200px;
-                animation: atomicFloat 15s ease-in-out infinite;
-                pointer-events: none;
-                z-index: 1;
-            }
-
-        @@keyframes atomicFloat {
-            0%, 100%
-
-        {
-            transform: translateY(0px) rotate(0deg);
-        }
-
-        50% {
-            transform: translateY(-20px) rotate(180deg);
-        }
-
-        }
-
-        /* Boomerang shapes */
-        .boomerang {
-            position: absolute;
-            width: 100px;
-            height: 20px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            border-radius: 50px 0;
-            transform: rotate(45deg);
-            opacity: 0.3;
-            animation: spin 10s linear infinite;
-        }
-
-            .boomerang:nth-child(1) {
-                top: 10%;
-                left: 10%;
-                animation-delay: -2s;
-            }
-
-            .boomerang:nth-child(2) {
-                top: 70%;
-                right: 10%;
-                animation-delay: -5s;
-                background: linear-gradient(45deg, #95e1d3, #f8b500);
-            }
-
-            .boomerang:nth-child(3) {
-                top: 40%;
-                left: 5%;
-                animation-delay: -8s;
-                background: linear-gradient(45deg, #fce38a, #f38ba8);
-            }
-
-        @@keyframes spin {
-            from
-
-        {
-            transform: rotate(45deg);
-        }
-
-        to {
-            transform: rotate(405deg);
-        }
-
-        }
-
-        .container {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .atomic-logo {
-            position: relative;
-            margin-bottom: 3rem;
-        }
-
-        .atomic-circle {
-            width: 120px;
-            height: 120px;
-            border: 4px solid #ff6b6b;
-            border-radius: 50%;
-            position: relative;
-            margin: 0 auto 2rem;
-            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,107,107,0.2) 100%);
-            animation: atomicSpin 8s linear infinite;
-        }
-
-            .atomic-circle::before,
-            .atomic-circle::after {
-                content: '';
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                border: 3px solid #4ecdc4;
-                border-radius: 50%;
-                top: -4px;
-                left: -4px;
-            }
-
-            .atomic-circle::before {
-                transform: rotate(60deg);
-                border-color: #95e1d3;
-            }
-
-            .atomic-circle::after {
-                transform: rotate(-60deg);
-                border-color: #fce38a;
-            }
-
-        .atomic-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 20px;
-            height: 20px;
-            background: radial-gradient(circle, #ff6b6b, #d63447);
-            border-radius: 50%;
-            box-shadow: 0 0 20px rgba(255, 107, 107, 0.6);
-        }
-
-        @@keyframes atomicSpin {
-            from
-
-        {
-            transform: rotate(0deg);
-        }
-
-        to {
-            transform: rotate(360deg);
-        }
-
-        }
-
-        h1 {
-            font-family: 'Righteous', cursive;
-            font-size: clamp(2.5rem, 8vw, 5rem);
-            color: #2c3e50;
-            margin-bottom: 1.5rem;
-            text-shadow: 3px 3px 0px #fff, 6px 6px 0px rgba(255, 107, 107, 0.3);
-            transform: perspective(500px) rotateX(15deg);
-            animation: textFloat 3s ease-in-out infinite alternate;
-        }
-
-        @@keyframes textFloat {
-            from
-
-        {
-            transform: perspective(500px) rotateX(15deg) translateY(0px);
-        }
-
-        to {
-            transform: perspective(500px) rotateX(15deg) translateY(-10px);
-        }
-
-        }
-
-        .subtitle {
-            font-family: 'Satisfy', cursive;
-            font-size: 1.5rem;
-            color: #e74c3c;
-            margin-bottom: 3rem;
-            transform: rotate(-2deg);
-        }
-
-        .retro-button {
-            display: inline-block;
-            padding: 1rem 2.5rem;
-            background: linear-gradient(45deg, #ff6b6b 0%, #ee5a52 50%, #ff6b6b 100%);
-            color: white;
-            text-decoration: none;
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.2rem;
-            border-radius: 50px;
-            box-shadow: 0 8px 0 #d63447, 0 15px 20px rgba(0,0,0,0.2);
-            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-            .retro-button::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-                transition: left 0.5s;
-            }
-
-            .retro-button:hover::before {
-                left: 100%;
-            }
-
-            .retro-button:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 12px 0 #d63447, 0 20px 25px rgba(0,0,0,0.3);
-            }
-
-            .retro-button:active {
-                transform: translateY(5px);
-                box-shadow: 0 3px 0 #d63447, 0 8px 15px rgba(0,0,0,0.2);
-            }
-
-        /* Atomic particles floating around */
-        .particle {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: radial-gradient(circle, #4ecdc4, #45b7aa);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-            .particle:nth-child(4) {
-                top: 20%;
-                left: 80%;
-                animation-delay: -1s;
-                background: radial-gradient(circle, #fce38a, #f9ca24);
-            }
-
-            .particle:nth-child(5) {
-                top: 80%;
-                left: 20%;
-                animation-delay: -3s;
-                background: radial-gradient(circle, #95e1d3, #6dd5ed);
-            }
-
-            .particle:nth-child(6) {
-                top: 60%;
-                right: 30%;
-                animation-delay: -4s;
-                background: radial-gradient(circle, #f8b500, #f0932b);
-            }
-
-        @@keyframes float {
-            0%, 100%
-
-        {
-            transform: translateY(0px) scale(1);
-            opacity: 0.7;
-        }
-
-        50% {
-            transform: translateY(-30px) scale(1.2);
-            opacity: 1;
-        }
-
-        }
-
-        .diner-sign {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            background: #ff6b6b;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-family: 'Satisfy', cursive;
-            font-size: 1rem;
-            transform: rotate(15deg);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        /* Responsive design */
-        @@media (max-width: 768px) {
-            .atomic-circle
-
-        {
-            width: 80px;
-            height: 80px;
-        }
-
-        .diner-sign {
-            position: static;
-            margin-bottom: 2rem;
-            transform: rotate(0deg);
-        }
-
-        .boomerang {
-            display: none;
-        }
-
-        }</style>
-</head>
-<body>
-    <div class="boomerang"></div>
-    <div class="boomerang"></div>
-    <div class="boomerang"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-
-    <div class="diner-sign">Kinuha ra sa mga CSS </div>
-
-    <div class="container">
-        <div class="atomic-logo">
-            <div class="atomic-circle">
-                <div class="atomic-center"></div>
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+            <img src="/img/Logo.png" class="h-[50px] w-[50px]"/>
+            <div class="flex flex-col">
+                <h1 class="text-2xl font-bold">Ma22</h1>
+                <p class="text-sm">Clear. Reliable. Easy to Understand.</p>
             </div>
-            <h1>Welcome to Ma22 (Temporary)</h1>
-            <div class="subtitle">Knowledge for Every Juan</div>
+
+        </div>
+        <div class="flex items-center gap-20">
+            <a onclick="scrollToHome()" class="hover-pointer">
+                Home
+            </a>
+            <a onclick="scrollToProduct()" class="hover-pointer" >
+                Product
+            </a>
+            <a onclick="scrollToTestimonials()" class="hover-pointer">
+                Testimonials
+            </a>
+            <a href="@Url.Action("Login", "Account")" class="rounded-lg bg-[#640A16] p-2 text-white" >
+                Log In
+            </a>
         </div>
 
-        <a href="@Url.Action("Login", "Account")" class="retro-button">
-            Lezgoo!!!
-        </a>
     </div>
-</body>
-</html>
+
+    <div id="target-section-home" class="flex w-full justify-center space-x-10">
+        <div class="flex w-fit items-center justify-center">
+            <div class="flex flex-col gap-5">
+                <h1 class="text-6xl font-bold">
+                    Clear. Reliable.<br />
+                    Easy to Understand.
+                </h1>
+                <p class="text-lg font-semibold text-gray-500">
+                    Your gateway to reliable and
+                    accessible, simplified knowledge
+                </p>
+                <a asp-controller="Account" asp-action="Register" class="w-fit rounded-lg bg-[#640A16] p-2 text-white">
+                    Get Started
+                </a>
+            </div>
+        </div>
+        <img src="~/img/bg_5.png" class="w-[35%]" />
+    </div>
+</div>
+
+
+
+
+<div id ="target-section-product" class="flex flex-col p-20">
+
+    <div class="mb-5 flex flex-col items-center justify-center">
+        
+        <div class="flex flex-col gap-2">
+
+            <h2 class="text-center text-5xl font-bold">
+                What we Offer
+            </h2>
+            <p class="text-center text-sm">We offer a platform for dedicated individuals to hone their skills <br /> and knowledge.</p>
+        </div>
+        
+    </div>
+    <div class="flex items-stretch justify-center gap-10">
+        <div class="flex w-1/4 flex-col items-center justify-center gap-5 rounded-xl bg-white p-4 transition duration-300 hover:scale-105" >
+            <img src="~/img/bg_4.png" class="w-[50%]"/>
+            <p class="text-xl font-bold">
+                Trainings that Work
+            </p>
+            <p class="text-center text-sm">We offer trainings that work by delivering practical, engaging sessions designed to build real-world skills. </p>
+        </div>
+        <div class="flex w-1/4 flex-col items-center justify-center gap-5 rounded-xl bg-white p-4 transition duration-300 hover:scale-105">
+            <img src="~/img/bg_2.png" class="w-[70%]" />
+            <p class="text-xl font-bold">
+                In-Depth Teaching of Topics
+            </p>
+            <p class="text-center text-sm">We break down complex ideas into practical lessons that learners can easily understand and apply.</p>
+        </div>
+        <div class="flex w-1/4 flex-col items-center gap-5 rounded-xl bg-white p-4 transition duration-300 hover:scale-105">
+            <img src="~/img/bg_1.png" class="w-[70%]" />
+            <p class="text-xl font-bold">
+                Comprehensive Content
+            </p>
+            <p class="text-center text-sm">We offer comprehensive content that includes not only videos but also documents and images to help you learn more effectively.</p>
+        </div>
+    </div>
+</div>
+
+<div id="target-section-testimonials" class="flex flex-col bg-white p-20">
+
+    <div class="mb-5 flex flex-col items-center">
+
+        <div class="flex flex-col gap-2">
+
+            <h2 class="text-5xl font-bold">
+                What our Users Say
+            </h2>
+            
+        </div>
+
+    </div>
+    <div class="flex items-stretch justify-center gap-10">
+        <div class="flex h-[400px] w-1/4 flex-col rounded-xl border-2 border-black">
+            <span class="material-symbols-outlined rounded-tl-lg rounded-tr-lg border-b-2 border-black bg-[#EAC231] px-4 !text-[40px]">more_horiz</span>
+            <p class="p-4 text-sm">“I'm a testimonial. Click to edit me and add text that says something nice about you and your services. Let your customers review you and tell their friends how great you are.”</p>
+        </div>
+        <div class="flex h-[400px] w-1/4 flex-col rounded-xl border-2 border-black">
+            <span class="material-symbols-outlined rounded-tl-lg rounded-tr-lg border-b-2 border-black bg-[#EAC231] px-4 !text-[40px]">more_horiz</span>
+            <p class="p-4 text-sm">“I'm a testimonial. Click to edit me and add text that says something nice about you and your services. Let your customers review you and tell their friends how great you are.”</p>
+        </div>
+        <div class="flex h-[400px] w-1/4 flex-col rounded-xl border-2 border-black">
+            <span class="material-symbols-outlined rounded-tl-lg rounded-tr-lg border-b-2 border-black bg-[#EAC231] px-4 !text-[40px]">more_horiz</span>
+            <p class="p-4 text-sm">“I'm a testimonial. Click to edit me and add text that says something nice about you and your services. Let your customers review you and tell their friends how great you are.”</p>
+        </div>
+    </div>
+</div>
+
+<div class="flex flex-col items-center justify-center gap-10 p-20">
+    <div class="flex text-center">
+        <h1 class="text-5xl font-bold">Unlock Your Potential and Elevate Your Knowledge With Our Learning Hub</h1>
+    </div>
+    <a asp-controller="Account" asp-action="Register" class="rounded-lg bg-[#640A16] px-4 py-2 text-white">
+        Get Started
+    </a>
+    <img src="/img/bg_8.png" class="w-[50%]"/>
+
+</div>
+
+<script>
+    function scrollToProduct() {
+          document.getElementById("target-section-product").scrollIntoView({
+            behavior: "smooth"
+          });
+    }
+
+        function scrollToHome() {
+          document.getElementById("target-section-home").scrollIntoView({
+            behavior: "smooth"
+          });
+    }
+
+        function scrollToTestimonials() {
+          document.getElementById("target-section-testimonials").scrollIntoView({
+            behavior: "smooth"
+          });
+    }
+</script>

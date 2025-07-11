@@ -411,7 +411,6 @@ namespace ASI.Basecode.WebApp.Controllers
             return View(model);
         }
 
-        // Reset Password TEMPORARY MOCKUP
         [HttpGet]
         [AllowAnonymous]
         [ServiceFilter(typeof(RoleBasedFilterService))]
