@@ -1,22 +1,22 @@
-@model TrainingCategoryViewModel
+﻿@model TrainingCategoryViewModel
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-<div id="deleteTrainingCategory" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm hidden">
-    <div class="flex max-h-[700px] w-full max-w-2xl flex-col rounded-xl bg-white text-black shadow-lg p-6 animate-slide-up opacity-0 animate-fade-in">
+<div id="deleteTrainingCategory" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+    <div class="animate-slide-up animate-fade-in flex max-h-[700px] w-full max-w-2xl flex-col rounded-xl bg-white p-6 text-black opacity-0 shadow-lg">
         <div class="flex">
             <a onclick="closeDeleteTrainingCategory()" class="hover-pointer">
                 <span class="material-symbols-outlined text-[50px]">arrow_circle_left</span>
             </a>
         </div>
-        <div class="flex align-items-center justify-center w-full mb-3">
-            <h1 class="text-3xl font-weight-bold uppercase">Delete Category?</h1>
+        <div class="align-items-center mb-3 flex w-full justify-center">
+            <h1 class="font-weight-bold text-3xl uppercase">Delete Category?</h1>
         </div>
 
         <!-- Dummy Card -->
-        <div class="bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden outline outline-1 outline-black flex flex-col w-[400px] align-self-center mb-3">
+        <div class="align-self-center mb-3 flex w-[400px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md outline outline-1 outline-black">
             <!-- Image -->
-            <div class="h-[140px] relative">
-                <img id="CategoryImage" class="w-full h-full object-cover outline outline-1 outline-black hidden" alt="Cover Image" />
+            <div class="relative h-[140px]">
+                <img id="CategoryImage" class="hidden h-full w-full object-cover outline outline-1 outline-black" alt="Cover Image" />
                 <div id="CategoryNoImage" class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#640A16] via-[#8B1538] to-[#640A16] text-center text-sm font-medium text-white">
                     <span class="material-symbols-outlined text-4xl opacity-50">image</span>
                     <p class="ml-2">No Cover Image</p>
@@ -24,17 +24,17 @@
             </div>
 
             <!-- Content -->
-            <div class="p-4 flex flex-col flex-grow">
+            <div class="flex flex-grow flex-col p-4">
                 <!-- Title and Actions -->
-                <div class="flex justify-between items-center mb-2">
+                <div class="mb-2 flex items-center justify-between">
                     <h2 id="CategoryTitle" class="text-xl font-semibold text-gray-800"></h2> 
                 </div>
 
                 <!-- Description -->
-                <p id="CategoryDescription" class="text-sm text-gray-600 line-clamp-3"></p>
+                <p id="CategoryDescription" class="line-clamp-3 text-sm text-gray-600"></p>
 
                 <!-- Footer -->
-                <div class="flex justify-between items-end text-xs text-gray-500 mt-auto pt-4">
+                <div class="mt-auto flex items-end justify-between pt-4 text-xs text-gray-500">
                     <div>
                         <p id="CategoryModified"></p>
                         <p id="CategoryBy"></p>
@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        <div class="flex items-center bg-[#640A16] text-white rounded-xl w-[400px] align-self-center p-2 space-x-2 mb-3">
+        <div class="align-self-center mb-3 flex w-[400px] items-center space-x-2 rounded-xl bg-[#640A16] p-2 text-white">
             <span class="material-symbols-outlined text-[#EAC231] !text-[50px]">warning</span>
             <p>WARNING! Deleting this will also remove the trainings under this category.</p>
         </div>
@@ -51,7 +51,7 @@
         <form asp-action="DeleteTrainingCategory" asp-controller="AdminTrainingCategory" method="post" class="align-self-center">
             <input type="hidden" name="id" id="categoryIdToDelete" />
             <input type="hidden" name="categoryName" id="categoryNameToDelete" />
-            <button type="submit" class="bg-[#FFE9C6] hover:bg-[#e6c89c] w-[450px] text-black py-2 rounded-xl font-weight-bold">
+            <button type="submit" class="font-weight-bold w-[450px] rounded-xl bg-[#FFE9C6] py-2 text-black hover:bg-[#e6c89c]">
                 Confirm
             </button>
         </form>
@@ -85,3 +85,4 @@
         document.getElementById('deleteTrainingCategory').classList.remove('hidden');
     }
 </script>
+

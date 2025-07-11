@@ -1,4 +1,4 @@
-@model AdminDashboardViewModel
+﻿@model AdminDashboardViewModel
 
 @{
     ViewData["Title"] = "Ma22 | Admin Dashboard";
@@ -7,58 +7,58 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
 <!-- Title Section -->
-<div class="mx-auto mt-10 w-[95%] max-w-7xl ">
-    <h1 class="text-4xl font-bold uppercase tracking-tight text-[#640A16] mb-12">Admin Dashboard</h1>
+<div class="mx-auto mt-10 w-[95%] max-w-7xl">
+    <h1 class="mb-12 text-4xl font-bold uppercase tracking-tight text-[#000]">Admin Dashboard</h1>
 
     <!-- Stat Cards -->
-    <div class="flex flex-col md:flex-row gap-4 mb-8">
-        <div class="flex-1 bg-white text-[#640A16] rounded-xl p-8 shadow flex items-center gap-4">
-            <span class="material-symbols-outlined text-5xl rounded-full bg-[#FFE9C6] p-4">groups</span>
+    <div class="mb-8 flex flex-col gap-4 md:flex-row">
+        <div class="flex flex-1 items-center gap-4 rounded-xl bg-white p-8 text-[#640A16] shadow">
+            <span class="material-symbols-outlined rounded-full bg-[#FFE9C6] p-4 text-5xl">groups</span>
             <div>
                 <div class="text-lg font-semibold">Total Enrollees</div>
-                <div class="text-3xl font-bold mt-1">@Model.EnrolleeCount</div>
+                <div class="mt-1 text-3xl font-bold text-[#000]">@Model.EnrolleeCount</div>
             </div>
         </div>
-        <div class="flex-1 bg-white text-[#640A16] rounded-xl p-8 shadow flex items-center gap-4">
-            <span class="material-symbols-outlined text-5xl rounded-full bg-[#FFE9C6] p-4">category</span>
+        <div class="flex flex-1 items-center gap-4 rounded-xl bg-white p-8 text-[#640A16] shadow">
+            <span class="material-symbols-outlined rounded-full bg-[#FFE9C6] p-4 text-5xl">category</span>
             <div>
                 <div class="text-lg font-semibold">Total Categories</div>
-                <div class="text-3xl font-bold mt-1">@Model.CategoryCount</div>
+                <div class="mt-1 text-3xl font-bold text-[#000]">@Model.CategoryCount</div>
             </div>
         </div>
-        <div class="flex-1 bg-white text-[#640A16] rounded-xl p-8 shadow flex items-center gap-4">
-            <span class="material-symbols-outlined text-5xl rounded-full bg-[#FFE9C6] p-4">menu_book</span>
+        <div class="flex flex-1 items-center gap-4 rounded-xl bg-white p-8 text-[#640A16] shadow">
+            <span class="material-symbols-outlined rounded-full bg-[#FFE9C6] p-4 text-5xl">menu_book</span>
             <div>
                 <div class="text-lg font-semibold">Total Trainings</div>
-                <div class="text-3xl font-bold mt-1">@Model.TrainingCount</div>
+                <div class="mt-1 text-3xl font-bold text-[#000]">@Model.TrainingCount</div>
             </div>
         </div>
     </div>
 
     <!-- Most/Least Enrolled -->
-    <div class="flex flex-col md:flex-row gap-4 mb-8">
-        <div class="flex-1 bg-white rounded-xl p-8 shadow flex items-center gap-4">
-            <span class="material-symbols-outlined text-4xl rounded-full bg-[#EAC231] text-white p-3">trending_up</span>
+    <div class="mb-8 flex flex-col gap-4 md:flex-row">
+        <div class="flex flex-1 items-center gap-4 rounded-xl bg-white p-8 shadow">
+            <span class="material-symbols-outlined rounded-full bg-[#EAC231] p-3 text-4xl text-white">trending_up</span>
             <div>
                 <div class="text-lg font-semibold text-[#640A16]">Most Enrolled Training</div>
-                <div class="text-xl font-bold text-black mt-1">@Model.MostEnrolledTrainingName</div>
+                <div class="mt-1 text-xl font-bold text-black">@Model.MostEnrolledTrainingName</div>
             </div>
         </div>
-        <div class="flex-1 bg-white rounded-xl p-8 shadow flex items-center gap-4">
-            <span class="material-symbols-outlined text-4xl rounded-full bg-gray-200 text-[#640A16] p-3">trending_down</span>
+        <div class="flex flex-1 items-center gap-4 rounded-xl bg-white p-8 shadow">
+            <span class="material-symbols-outlined rounded-full bg-gray-200 p-3 text-4xl text-[#640A16]">trending_down</span>
             <div>
                 <div class="text-lg font-semibold text-[#640A16]">Least Enrolled Training</div>
-                <div class="text-xl font-bold text-black mt-1">@Model.LeastEnrolledTrainingName</div>
+                <div class="mt-1 text-xl font-bold text-black">@Model.LeastEnrolledTrainingName</div>
             </div>
         </div>
     </div>
 
     <!-- Logs Section -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
         <!-- Recently Created -->
-        <div class="bg-white rounded-xl p-8 shadow min-h-[180px] flex flex-col gap-3">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="material-symbols-outlined text-3xl rounded-full bg-[#EAC231] text-white p-2">add_circle</span>
+        <div class="flex min-h-[180px] flex-col gap-3 rounded-xl bg-white p-8 shadow">
+            <div class="mb-2 flex items-center gap-2">
+                <span class="material-symbols-outlined rounded-full bg-[#EAC231] p-2 text-3xl text-white">add_circle</span>
                 <h3 class="text-xl font-bold text-[#640A16]">Recently Created</h3>
             </div>
             <div class="flex flex-col gap-3">
@@ -66,13 +66,13 @@
                 {
                     @foreach (var log in Model.RecentCreatedLogs)
                     {
-                        <div class="rounded-lg border border-gray-200 bg-[#FFE9C6] p-4 flex flex-col gap-1 shadow-sm">
+                        <div class="flex flex-col gap-1 rounded-lg border border-gray-200 bg-[#FFE9C6] p-4 shadow-sm">
                             <div class="flex items-center gap-2">
                                 <span class="font-semibold text-[#640A16]">@log.Entity</span>
-                                <span class="text-xs bg-[#EAC231] text-white rounded px-2 py-0.5 ml-2">@log.ActionType</span>
+                                <span class="ml-2 rounded bg-[#EAC231] px-2 py-0.5 text-xs text-white">@log.ActionType</span>
                             </div>
                             <div class="text-base font-bold text-black">@log.EntityName</div>
-                            <div class="text-xs text-gray-600 mt-1">By <span class="font-semibold">@log.AccountName</span> on @log.TimeStamp.ToString("g")</div>
+                            <div class="mt-1 text-xs text-gray-600">By <span class="font-semibold">@log.AccountName</span> on @log.TimeStamp.ToString("g")</div>
                         </div>
                     }
                 }
@@ -83,9 +83,9 @@
             </div>
         </div>
         <!-- Recently Updated -->
-        <div class="bg-white rounded-xl p-8 shadow min-h-[180px] flex flex-col gap-3">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="material-symbols-outlined text-3xl rounded-full bg-[#EAC231] text-white p-2">edit</span>
+        <div class="flex min-h-[180px] flex-col gap-3 rounded-xl bg-white p-8 shadow">
+            <div class="mb-2 flex items-center gap-2">
+                <span class="material-symbols-outlined rounded-full bg-[#EAC231] p-2 text-3xl text-white">edit</span>
                 <h3 class="text-xl font-bold text-[#640A16]">Recently Updated</h3>
             </div>
             <div class="flex flex-col gap-3">
@@ -93,13 +93,13 @@
                 {
                     @foreach (var log in Model.RecentUpdatedLogs)
                     {
-                        <div class="rounded-lg border border-gray-200 bg-[#FFE9C6] p-4 flex flex-col gap-1 shadow-sm">
+                        <div class="flex flex-col gap-1 rounded-lg border border-gray-200 bg-[#FFE9C6] p-4 shadow-sm">
                             <div class="flex items-center gap-2">
                                 <span class="font-semibold text-[#640A16]">@log.Entity</span>
-                                <span class="text-xs bg-[#EAC231] text-white rounded px-2 py-0.5 ml-2">@log.ActionType</span>
+                                <span class="ml-2 rounded bg-[#EAC231] px-2 py-0.5 text-xs text-white">@log.ActionType</span>
                             </div>
                             <div class="text-base font-bold text-black">@log.EntityName</div>
-                            <div class="text-xs text-gray-600 mt-1">By <span class="font-semibold">@log.AccountName</span> on @log.TimeStamp.ToString("g")</div>
+                            <div class="mt-1 text-xs text-gray-600">By <span class="font-semibold">@log.AccountName</span> on @log.TimeStamp.ToString("g")</div>
                         </div>
                     }
                 }
@@ -110,9 +110,9 @@
             </div>
         </div>
         <!-- Recently Deleted -->
-        <div class="bg-white rounded-xl p-8 shadow min-h-[180px] flex flex-col gap-3">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="material-symbols-outlined text-3xl rounded-full bg-[#EAC231] text-white p-2">delete</span>
+        <div class="flex min-h-[180px] flex-col gap-3 rounded-xl bg-white p-8 shadow">
+            <div class="mb-2 flex items-center gap-2">
+                <span class="material-symbols-outlined rounded-full bg-[#EAC231] p-2 text-3xl text-white">delete</span>
                 <h3 class="text-xl font-bold text-[#640A16]">Recently Deleted</h3>
             </div>
             <div class="flex flex-col gap-3">
@@ -120,13 +120,13 @@
                 {
                     @foreach (var log in Model.RecentDeletedLogs)
                     {
-                        <div class="rounded-lg border border-gray-200 bg-[#FFE9C6] p-4 flex flex-col gap-1 shadow-sm">
+                        <div class="flex flex-col gap-1 rounded-lg border border-gray-200 bg-[#FFE9C6] p-4 shadow-sm">
                             <div class="flex items-center gap-2">
                                 <span class="font-semibold text-[#640A16]">@log.Entity</span>
-                                <span class="text-xs bg-[#EAC231] text-white rounded px-2 py-0.5 ml-2">@log.ActionType</span>
+                                <span class="ml-2 rounded bg-[#EAC231] px-2 py-0.5 text-xs text-white">@log.ActionType</span>
                             </div>
                             <div class="text-base font-bold text-black">@log.EntityName</div>
-                            <div class="text-xs text-gray-600 mt-1">By <span class="font-semibold">@log.AccountName</span> on @log.TimeStamp.ToString("g")</div>
+                            <div class="mt-1 text-xs text-gray-600">By <span class="font-semibold">@log.AccountName</span> on @log.TimeStamp.ToString("g")</div>
                         </div>
                     }
                 }
