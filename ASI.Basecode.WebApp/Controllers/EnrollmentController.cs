@@ -36,7 +36,7 @@ namespace ASI.Basecode.WebApp.Controllers
             }
 
             _enrollmentService.EnrollUser(user.Id, trainingId);
-            _auditLogService.LogAction("User", "Create", user.Id, user.Id, $"Enrolled to {trainingName}");
+            _auditLogService.LogAction("User", "Create", trainingId, user.Id, $"Enrolled to {trainingName}");
             TempData["EnrollSuccess"] = true;
             return RedirectToAction("Topics", "UserTopic", new { trainingId = trainingId });
         }
