@@ -19,10 +19,14 @@ namespace ASI.Basecode.WebApp.Controllers
     public class ReviewController : Controller
     {
         private readonly IReviewService _reviewService;
+        private readonly IAuditLogService _auditLogService;
+        private readonly ITrainingService _trainingService;
 
-        public ReviewController(IReviewService reviewService)
+        public ReviewController(IReviewService reviewService,IAuditLogService auditLogService,ITrainingService trainingService)
         {
             _reviewService = reviewService;
+            _auditLogService = auditLogService;
+            _trainingService = trainingService;
         }
 
         [HttpPost]
@@ -45,6 +49,9 @@ namespace ASI.Basecode.WebApp.Controllers
                 try
                 {
                     _reviewService.AddReview(model);
+                    var newTraining = _trainingService.GetTrainingById(model.TrainingId);
+                    _auditLogService.LogAction("User", "Create", model.TrainingId, model.AccountId, $"Reviewed {newTraining.TrainingName}");
+            
                 }
                 catch (Exception ex)
                 {
