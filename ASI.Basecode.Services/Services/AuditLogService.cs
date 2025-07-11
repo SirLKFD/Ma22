@@ -43,7 +43,9 @@ namespace ASI.Basecode.Services.Services
 
         if (accountRole == 0)
         {
-            logsQuery = logsQuery.Where(l => l.AccountId == accountId);
+            // For regular users, include their own logs plus enrollment logs that contain training names
+            logsQuery = logsQuery.Where(l => l.AccountId == accountId || 
+                                           (l.Entity == "User" && l.ActionType == "Create" && l.EntityName.StartsWith("Enrolled to")));
         }
         else if (accountRole == 2)
         {
