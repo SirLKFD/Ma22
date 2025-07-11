@@ -224,6 +224,15 @@ namespace ASI.Basecode.WebApp.Controllers
             }
         }
 
+        [HttpGet]
+        [Authorize(Roles="0,1,2")]
+        public IActionResult GetUserEditModal(int userId)
+        {
+            // You can pass userId to the view via ViewData or ViewBag if needed
+            ViewData["EditUserId"] = userId;
+            return PartialView("_UserEditModal");
+        }
+
         [HttpPost]
         [Authorize(Roles="0,1,2")]
         public IActionResult UpdateUser(UserEditViewModel model, IFormFile ProfilePicture, string ExistingProfilePicture, [FromServices] CloudinaryDotNet.Cloudinary cloudinary)

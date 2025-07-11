@@ -35,14 +35,14 @@
 
 
 
-    <div class="flex flex-row bg-[#FFE9C6] min-h-screen">
+    <div class="flex min-h-screen flex-row bg-[#FFE9C6]">
             <!-- Sidebar -->
-            <div class="w-24 hover:w-64 transition-all duration-300 bg-[#640A16] text-white">
+            <div class="w-24 bg-[#640A16] text-white transition-all duration-300 hover:w-64">
                 <partial name="_Sidebar" />
             </div>
 
             <!-- Main Content -->
-        <div class="flex-1 page-wrapper @((IsSectionDefined("NoPadding") ? "" : "p-6")) min-w-0">
+        <div class="page-wrapper min-w-0 @((IsSectionDefined("NoPadding") ? "" : "p-6")) flex-1">
                 <main>
                     @RenderBody()
                 </main>
@@ -87,6 +87,7 @@
 
     <!-- Global Feedback Form -->
     <div id="viewUserModalContainer"></div>
+    <div id="editUserModalContainer"></div>
     <script src="~/js/youtrackBugForm.js" asp-append-version="true"></script>
 </body>
 </html>
