@@ -55,9 +55,7 @@ namespace ASI.Basecode.Services.Services
             _logger.LogInformation("Generating verification token for email: {Email}", email);
             var token = GenerateSecureToken();
             var expiration = DateTime.UtcNow.AddHours(1);
-            
-            // For email verification, we'll use a special approach
-            // We'll create a token with AccountId = 0 to indicate it's for email verification
+    
             var resetToken = new PasswordResetToken
             {
                 // Special value for email verification

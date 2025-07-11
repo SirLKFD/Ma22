@@ -32,6 +32,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly IEmailService _emailService;
         private readonly ILogger<AccountController> _logger;
         private readonly IAuditLogService _auditLogService;
+        private readonly IRegistrationService _registrationService;
 
 
         /// <summary>
@@ -49,6 +50,7 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="passwordResetService">The password reset service.</param>
         /// <param name="emailService">The email service.</param>
         /// <param name="logger">The logger.</param>
+        /// <param name="registrationService">The registration service.</param>
         public AccountController(
                             SignInManager signInManager,
                             IHttpContextAccessor httpContextAccessor,
@@ -61,7 +63,8 @@ namespace ASI.Basecode.WebApp.Controllers
                             IPasswordResetService passwordResetService,
                             IEmailService emailService,
                             IAuditLogService auditLogService,
-                            ILogger<AccountController> logger) : base(httpContextAccessor, loggerFactory, configuration, mapper)
+                            ILogger<AccountController> logger,
+                            IRegistrationService registrationService) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             this._sessionManager = new SessionManager(this._session);
             this._signInManager = signInManager;
@@ -73,6 +76,7 @@ namespace ASI.Basecode.WebApp.Controllers
             this._emailService = emailService;
             this._logger = logger;
             this._auditLogService = auditLogService;
+            this._registrationService = registrationService;
         }
 
         /// <summary>
@@ -181,104 +185,9 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         [AllowAnonymous]
         [ServiceFilter(typeof(RoleBasedFilterService))]
-        public async Task<ActionResult> Register(string token = null)
+        public async Task<ActionResult> Register()
         {
-             // Handle email verification token if present
-            if (!string.IsNullOrEmpty(token))
-            {
-                _logger.LogInformation("Email verification token received in GET: {Token}", token);
-                
-                if (await _passwordResetService.ValidateResetTokenAsync(token))
-                {
-                    // Check if this is an email verification token (AccountId = 0)
-                    var resetTokenRepo = (ASI.Basecode.Data.Interfaces.IPasswordResetTokenRepository)HttpContext.RequestServices.GetService(typeof(ASI.Basecode.Data.Interfaces.IPasswordResetTokenRepository));
-                    var tokenEntity = resetTokenRepo.GetByToken(token);
-                    
-                    if (tokenEntity != null && tokenEntity.AccountId == null)
-                    {
-                        // This is an email verification token, create the user account
-                     
-                        var pendingEmail = _session.GetString("PendingRegistration_EmailId");
-                        var pendingFirstName = _session.GetString("PendingRegistration_FirstName");
-                        var pendingLastName = _session.GetString("PendingRegistration_LastName");
-                        var pendingContact = _session.GetString("PendingRegistration_Contact");
-                        var pendingPassword = _session.GetString("PendingRegistration_Password");
-                        
-                        if (!string.IsNullOrEmpty(pendingEmail) && !string.IsNullOrEmpty(pendingFirstName) && 
-                            !string.IsNullOrEmpty(pendingLastName) && !string.IsNullOrEmpty(pendingPassword))
-                        {
-                           
-                            // Create the user account
-                            var userViewModel = new UserViewModel
-                            {
-                                EmailId = pendingEmail,
-                                FirstName = pendingFirstName,
-                                LastName = pendingLastName,
-                                Contact = pendingContact,
-                                Password = pendingPassword,
-                                ConfirmPassword = pendingPassword
-                            };
-                             Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(userViewModel));
-                            try
-                            {
-                                _userService.AddUser(userViewModel);
-                                
-                                // Mark token as used
-                                var result = await _passwordResetService.VerifyEmailAsync(token);
-                                
-                                // Clear session data
-                                _session.Remove("PendingRegistration_EmailId");
-                                _session.Remove("PendingRegistration_FirstName");
-                                _session.Remove("PendingRegistration_LastName");
-                                _session.Remove("PendingRegistration_Contact");
-                                _session.Remove("PendingRegistration_Password");
-                                
-                                if (result)
-                                {
-                                    TempData["SuccessMessage"] = "Email verified successfully! Your account has been created. You can now log in.";
-                                    _logger.LogInformation("Email verification and account creation successful for email: {Email}", pendingEmail);
-                                }
-                                else
-                                {
-                                    TempData["ErrorMessage"] = "Email verification failed. Please try again.";
-                                    _logger.LogWarning("Email verification failed for email: {Email}", pendingEmail);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.LogError(ex, "Error creating user account during email verification for email: {Email}", pendingEmail);
-                                TempData["ErrorMessage"] = "Account creation failed. Please try registering again.";
-                            }
-                        }
-                        else
-                        {
-                            TempData["ErrorMessage"] = "Registration data not found. Please try registering again.";
-                            _logger.LogWarning("Pending registration data not found for token: {Token}", token);
-                        }
-                    }
-                    else
-                    {
-                        // This is a regular password reset token
-                        var result = await _passwordResetService.VerifyEmailAsync(token);
-                        if (result)
-                        {
-                            TempData["SuccessMessage"] = "Email verified successfully! You can now log in.";
-                            _logger.LogInformation("Email verification successful for token: {Token}", token);
-                            return RedirectToAction("Login", "Account");
-                        }
-                        else
-                        {
-                            TempData["ErrorMessage"] = "Email verification failed. Please try again.";
-                            _logger.LogWarning("Email verification failed for token: {Token}", token);
-                        }
-                    }
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Invalid or expired verification token.";
-                    _logger.LogWarning("Invalid verification token: {Token}", token);
-                }
-            }
+         
             return View();
         }
 
@@ -287,59 +196,29 @@ namespace ASI.Basecode.WebApp.Controllers
         public async Task<IActionResult> Register(UserViewModel model)
         {
             if (!ModelState.IsValid)
-            {
-                return View(model); 
-            }
+                return View(model);
+            
+            var token = Guid.NewGuid().ToString();
+            var verificationLink = Url.Action("VerifyEmail", "Account", new { token = token }, Request.Scheme);
+            var (success, message) = await _registrationService.RegisterPendingUserAsync(model, token, verificationLink);
+            TempData[success ? "SuccessMessage" : "ErrorMessage"] = message;
+            if (success)
+                return RedirectToAction("Login", "Account");
+            else
+                return View(model);
+        }
 
-            try
-            {
-                // Check if user already exists
-                if (_userService.GetUserByEmail(model.EmailId) != null)
-                {
-                    TempData["ErrorMessage"] = "An account with this email already exists.";
-                    return View(model);
-                }
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> VerifyEmail(string token)
+        {
+            var (success, errorMessage) = await _registrationService.VerifyEmailAsync(token);
+            if (success)
+                TempData["SuccessMessage"] = "Email verified successfully! You can now log in.";
+            else
+                TempData["ErrorMessage"] = errorMessage;
 
-   
-                _session.SetString("PendingRegistration_EmailId", model.EmailId);
-                _session.SetString("PendingRegistration_FirstName", model.FirstName);
-                _session.SetString("PendingRegistration_LastName", model.LastName);
-                _session.SetString("PendingRegistration_Contact", model.Contact ?? "");
-                _session.SetString("PendingRegistration_Password", model.Password);
-
-                var token = await _passwordResetService.GenerateVerificationTokenAsync(model.EmailId);
-                if (token != null)
-                {
-                    var verificationLink = Url.Action("Login", "Account", new { token = token }, Request.Scheme);
-                    var dynamicData = new System.Collections.Generic.Dictionary<string, string>
-                    {
-                    
-                        { "FirstName",model.FirstName  },
-                        { "AddUser", verificationLink  }
-                    };
-                    _logger.LogInformation("Sending verification email to {Email} with link: {ResetLink}", model.EmailId, verificationLink);
-                    await _emailService.SendEmailAsync(model.EmailId, "d-f2ac2a117037485cb26979d784ab74f3", dynamicData);
-                    
-                    TempData["SuccessMessage"] = "Registration successful! Please check your email to verify your account.";
-                }
-                else
-                {
-                    _logger.LogWarning("Register: Failed to generate verification token for email: {Email}", model.EmailId);
-                    TempData["ErrorMessage"] = "Registration failed. Please try again.";
-                }
-              
-            }
-            catch (InvalidDataException ex)
-            {
-                TempData["ErrorMessage"] = ex.InnerException?.Message ?? ex.Message;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error during user registration for email: {Email}", model.EmailId);
-                TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
-            }
-
-            return View(model);
+            return RedirectToAction("Login");
         }
 
 

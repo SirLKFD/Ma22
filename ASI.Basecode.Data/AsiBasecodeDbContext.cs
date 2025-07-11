@@ -26,6 +26,7 @@ namespace ASI.Basecode.Data
         public virtual DbSet<Training> Trainings { get; set; }
         public virtual DbSet<TrainingCategory> TrainingCategories { get; set; }
         public virtual DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+        public virtual DbSet<PendingUserRegistration> PendingUserRegistrations { get; set; }
 
         public virtual DbSet<Review> Reviews { get; set; }
         public virtual DbSet<Enrollment> Enrollments { get; set; }
@@ -341,6 +342,51 @@ namespace ASI.Basecode.Data
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_PasswordResetTokens_Accounts");
+            });
+
+            modelBuilder.Entity<PendingUserRegistration>(entity =>
+            {
+                entity.ToTable("PendingUserRegistrations");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.EmailId)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                
+                entity.Property(e => e.FirstName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.LastName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                
+                entity.Property(e => e.Contact)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                
+
+                entity.Property(e => e.PasswordHash)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.VerificationToken)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.TokenExpiration)
+                    .IsRequired();
+                
+
+                 entity.Property(e => e.IsVerified)
+                    .IsRequired();
+
             });
 
             modelBuilder.Entity<Review>(entity =>
