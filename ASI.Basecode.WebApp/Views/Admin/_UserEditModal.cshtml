@@ -25,6 +25,7 @@
                 <h2 id="editUserId" class="text-sm">ID: </h2>
                 <h2 id="editUserCreated" class="text-sm">Account Created: </h2>
                 <h2 id="editUserEmail" class="text-sm">user@email.com</h2>
+                
             </div>
         </div>
 
@@ -33,6 +34,7 @@
 
             <form id="editUserForm" asp-action="UpdateUser" method="post" enctype="multipart/form-data" class="space-y-4">
                 <input type="hidden" id="editUserIdInput" name="Id" value="0" />
+                <input type="hidden" name="fromSidebar" value="true" />
 
                 <input type="hidden" id="editExistingProfilePicture" name="ExistingProfilePicture" value="" />
 
@@ -89,17 +91,24 @@
                     <span id="editPasswordError" class="text-[#EAC231] text-sm block hidden"></span>
                 </div>
 
-                <div>
-                    <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Role</label>
-                        <select id="editRole" name="Role" class="w-[400px] border rounded-xl p-2 bg-[#EAC231] text-black font-semibold" required>
-                            <option value="0">Admin</option>
-                            <option value="1">Guest</option>
-                            <option value="2">Superadmin</option>
-                        </select>
+                @{
+                    var userRole = Context.Session.GetInt32("AccountRole");
+                }
+
+                @if (userRole == 2)
+                {
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-white w-32">Role</label>
+                            <select id="editRole" name="Role" class="w-[400px] border rounded-xl p-2 bg-[#EAC231] text-black font-semibold" required>
+                                <option value="0">Admin</option>
+                                <option value="1">Guest</option>
+                                <option value="2">Superadmin</option>
+                            </select>
+                        </div>
+                        <span id="editRoleError" class="text-[#EAC231] text-sm block hidden"></span>
                     </div>
-                    <span id="editRoleError" class="text-[#EAC231] text-sm block hidden"></span>
-                </div>
+                }
 
                 <div class="flex justify-center pt-4">
                     <button type="submit" class="bg-[#FFE9C6] hover:bg-[#e6c89c] w-[400px] text-black font-bold px-6 py-2 rounded">Save Changes</button>

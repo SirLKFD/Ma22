@@ -66,8 +66,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Handle profile picture
             const profileImage = document.getElementById("editProfileImage");
-            const placeholder = document.getElementById("editProfilePlaceholder");
-            const container = document.getElementById("editProfileImageContainer");
+            const placeholder = document.getElementById(
+              "editProfilePlaceholder"
+            );
+            const container = document.getElementById(
+              "editProfileImageContainer"
+            );
             const existingProfilePictureInput = document.getElementById(
               "editExistingProfilePicture"
             );
@@ -155,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(`/Admin/ViewUserDetails?userId=${id}`)
       .then((response) => {
         if (!response.ok) throw new Error("Unable to fetch user.");
-        
+
         return response.text();
       })
       .then((html) => {
@@ -240,6 +244,39 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("Failed to delete user.");
       });
   }
+
+  // Attach AJAX submit handler for the edit user form
+  document.addEventListener("submit", function (e) {
+    var form = e.target;
+    if (form && form.id === "editUserForm") {
+      e.preventDefault();
+
+      var formData = new FormData(form);
+
+      fetch(form.action, {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            // Close the modal
+            closeEditDetails();
+            // Optionally show a success toast
+            if (window.toastr)
+              toastr.success(data.message || "User updated successfully!");
+            window.location.reload();
+          } else {
+            // Show error message
+            if (window.toastr) toastr.error(data.message || "Update failed.");
+          }
+        })
+        .catch(() => {
+          if (window.toastr)
+            toastr.error("An error occurred while updating the user.");
+        });
+    }
+  });
 
   // Make functions globally available
   window.openModal = openModal;
