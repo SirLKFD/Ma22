@@ -25,6 +25,9 @@ namespace ASI.Basecode.WebApp.Controllers
 
         private readonly IEnrollmentService _enrollmentService;  
 
+        private readonly IAuditLogService _auditLogService;
+      
+
 
         public UserController(
             ITrainingService trainingService,
@@ -32,6 +35,7 @@ namespace ASI.Basecode.WebApp.Controllers
             ITopicService topicService,
             IUserService userService,
             IEnrollmentService enrollmentService,
+            IAuditLogService auditLogService,
             ILogger<UserController> logger)
         {
             _trainingService = trainingService;
@@ -39,6 +43,7 @@ namespace ASI.Basecode.WebApp.Controllers
             _topicService = topicService;
             _userService = userService;
             _enrollmentService = enrollmentService;
+            _auditLogService = auditLogService;
             _logger = logger;
         }
 
@@ -193,8 +198,8 @@ namespace ASI.Basecode.WebApp.Controllers
                         }
 
                         _userService.UpdateUser(model);
-                        _logger.LogInformation("User updated successfully");
-
+                        _auditLogService.LogAction("User", "Update", model.Id, model.Id, $"{model.FirstName} {model.LastName}");
+                        Console.WriteLine("log complete");
                         TempData["Success"] = "User updated successfully!";
                         return RedirectToAction("UserProfile");
                     }
@@ -225,9 +230,14 @@ namespace ASI.Basecode.WebApp.Controllers
               if (!ModelState.IsValid)
             {
                 Console.WriteLine($"Failed to Delete {idToDelete}");
+
                 return RedirectToAction("UserProfile");
             }
 
+            var user = _userService.GetUserById(idToDelete);
+
+            _auditLogService.LogAction("User", "Delete", idToDelete, idToDelete, $"{user.FirstName} {user.LastName}");
+            Console.WriteLine("log complete");
             _userService.DeleteUser(idToDelete);
            
             HttpContext.Session.Clear();
@@ -289,6 +299,52 @@ namespace ASI.Basecode.WebApp.Controllers
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        [HttpGet]
+        public IActionResult TestAuditLog()
+        {
+            try
+            {
+                var currentUserId = HttpContext.Session.GetInt32("AccountId");
+                if (currentUserId.HasValue)
+                {
+                    _auditLogService.LogAction("Test", "TestAction", 999, currentUserId.Value, "Test Entity");
+                    _logger.LogInformation("Test audit log created successfully");
+                    return Json(new { success = true, message = "Test audit log created", userId = currentUserId.Value });
+                }
+                else
+                {
+                    _logger.LogWarning("Could not create test audit log: AccountId not found in session");
+                    return Json(new { success = false, message = "AccountId not found in session" });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in test audit log: {ex.Message}");
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult CheckDatabaseConnection()
+        {
+            try
+            {
+                // Try to get a count of audit logs to test database connection
+                var auditLogs = _auditLogService.GetRecentLogs("Test", 1);
+                return Json(new { 
+                    success = true, 
+                    message = "Database connection successful", 
+                    auditLogCount = auditLogs.Count,
+                    sessionAccountId = HttpContext.Session.GetInt32("AccountId")
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Database connection test failed: {ex.Message}");
+                return Json(new { success = false, message = ex.Message, stackTrace = ex.StackTrace });
             }
         }
     }
