@@ -7,7 +7,7 @@ public partial class PasswordResetToken
 {
     public int TokenId { get; set; }
 
-    public int AccountId { get; set; }
+    public int? AccountId { get; set; }
 
     public string Token { get; set; }
 

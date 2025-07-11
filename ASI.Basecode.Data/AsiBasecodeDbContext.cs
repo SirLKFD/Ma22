@@ -338,6 +338,7 @@ namespace ASI.Basecode.Data
                 entity.HasOne(e => e.Account)
                     .WithMany(p => p.PasswordResetTokens)
                     .HasForeignKey(e => e.AccountId)
+                    .IsRequired(false)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_PasswordResetTokens_Accounts");
             });
