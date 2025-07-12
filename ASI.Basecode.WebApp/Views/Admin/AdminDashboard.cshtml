@@ -37,31 +37,31 @@
 
     <!-- Most/Least Enrolled -->
     <div class="mb-8 flex flex-col gap-4 md:flex-row">
-        <div class="flex flex-1 items-center gap-4 rounded-xl bg-white p-8 shadow">
+        <a href="@(Model.MostEnrolledTrainingId.HasValue ? Url.Action("AdminTrainingTopics", "AdminTraining", new { trainingId = Model.MostEnrolledTrainingId }) : "#")" class="flex flex-1 items-center gap-4 rounded-xl bg-white p-8 shadow transition hover:scale-105 cursor-pointer @(Model.MostEnrolledTrainingId.HasValue ? "" : "pointer-events-none opacity-60")" style="text-decoration: none;">
             <span class="material-symbols-outlined rounded-full bg-[#EAC231] p-3 text-4xl text-white">trending_up</span>
             <div>
                 <div class="text-lg font-semibold text-[#640A16]">Most Enrolled Training</div>
                 <div class="mt-1 text-xl font-bold text-black">@Model.MostEnrolledTrainingName</div>
             </div>
-        </div>
-        <div class="flex flex-1 items-center gap-4 rounded-xl bg-white p-8 shadow">
+        </a>
+        <a href="@(Model.LeastEnrolledTrainingId.HasValue ? Url.Action("AdminTrainingTopics", "AdminTraining", new { trainingId = Model.LeastEnrolledTrainingId }) : "#")" class="flex flex-1 items-center gap-4 rounded-xl bg-white p-8 shadow transition hover:scale-105 cursor-pointer @(Model.LeastEnrolledTrainingId.HasValue ? "" : "pointer-events-none opacity-60")" style="text-decoration: none;">
             <span class="material-symbols-outlined rounded-full bg-gray-200 p-3 text-4xl text-[#640A16]">trending_down</span>
             <div>
                 <div class="text-lg font-semibold text-[#640A16]">Least Enrolled Training</div>
                 <div class="mt-1 text-xl font-bold text-black">@Model.LeastEnrolledTrainingName</div>
             </div>
-        </div>
+        </a>
     </div>
 
     <!-- Logs Section -->
     <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
         <!-- Recently Created -->
-        <div class="flex min-h-[180px] flex-col gap-3 rounded-xl bg-white p-8 shadow">
+        <div class="flex min-h-[180px] flex-col gap-3 rounded-xl bg-white p-8 shadow max-h-[32rem]">
             <div class="mb-2 flex items-center gap-2">
                 <span class="material-symbols-outlined rounded-full bg-[#EAC231] p-2 text-3xl text-white">add_circle</span>
                 <h3 class="text-xl font-bold text-[#640A16]">Recently Created</h3>
             </div>
-            <div class="flex flex-col gap-3">
+            <div class="flex flex-col gap-3 max-h-[24rem] overflow-y-auto">
                 @if (Model.RecentCreatedLogs != null && Model.RecentCreatedLogs.Any())
                 {
                     @foreach (var log in Model.RecentCreatedLogs)
@@ -83,15 +83,15 @@
             </div>
         </div>
         <!-- Recently Updated -->
-        <div class="flex min-h-[180px] flex-col gap-3 rounded-xl bg-white p-8 shadow">
+        <div class="flex min-h-[180px] flex-col gap-3 rounded-xl bg-white p-8 shadow max-h-[32rem]">
             <div class="mb-2 flex items-center gap-2">
                 <span class="material-symbols-outlined rounded-full bg-[#EAC231] p-2 text-3xl text-white">edit</span>
                 <h3 class="text-xl font-bold text-[#640A16]">Recently Updated</h3>
             </div>
-            <div class="flex flex-col gap-3">
+            <div class="flex flex-col gap-3 max-h-[24rem] overflow-y-auto">
                 @if (Model.RecentUpdatedLogs != null && Model.RecentUpdatedLogs.Any())
                 {
-                    @foreach (var log in Model.RecentUpdatedLogs)
+                    @foreach (var log in Model.RecentUpdatedLogs.Take(5))
                     {
                         <div class="flex flex-col gap-1 rounded-lg border border-gray-200 bg-[#FFE9C6] p-4 shadow-sm">
                             <div class="flex items-center gap-2">
@@ -110,15 +110,15 @@
             </div>
         </div>
         <!-- Recently Deleted -->
-        <div class="flex min-h-[180px] flex-col gap-3 rounded-xl bg-white p-8 shadow">
+        <div class="flex min-h-[180px] flex-col gap-3 rounded-xl bg-white p-8 shadow max-h-[32rem]">
             <div class="mb-2 flex items-center gap-2">
                 <span class="material-symbols-outlined rounded-full bg-[#EAC231] p-2 text-3xl text-white">delete</span>
                 <h3 class="text-xl font-bold text-[#640A16]">Recently Deleted</h3>
             </div>
-            <div class="flex flex-col gap-3">
+            <div class="flex flex-col gap-3 max-h-[24rem] overflow-y-auto">
                 @if (Model.RecentDeletedLogs != null && Model.RecentDeletedLogs.Any())
                 {
-                    @foreach (var log in Model.RecentDeletedLogs)
+                    @foreach (var log in Model.RecentDeletedLogs.Take(5))
                     {
                         <div class="flex flex-col gap-1 rounded-lg border border-gray-200 bg-[#FFE9C6] p-4 shadow-sm">
                             <div class="flex items-center gap-2">
