@@ -21,8 +21,8 @@
     </div>
 }
 
-<div id="addUserModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm ">
-    <div class="relative flex max-h-[700px] w-full max-w-6xl flex-row rounded-xl bg-[#640A16] shadow-lg animate-slide-up opacity-0 animate-fade-in">
+<div id="addUserModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+    <div class="animate-slide-up animate-fade-in relative flex max-h-[700px] w-full max-w-6xl flex-row rounded-xl bg-[#640A16] opacity-0 shadow-lg">
 
         <!-- Left: Profile Upload UI -->
         <div class="flex w-[450px] flex-col items-center justify-center rounded-l-xl bg-white">
@@ -80,7 +80,7 @@
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="w-32 text-white">Contact No.</label>
+                        <label class="w-32 text-white">Contact No.(Optional) </label>
                         <input name="Contact" class="w-[400px] rounded-xl border p-2" />
                     </div>
                     <span asp-validation-for="Contact" class="block text-sm text-[#EAC231]"></span>
@@ -104,6 +104,14 @@
 
                 <div>
                     <div class="flex items-center justify-between">
+                        <label class="w-32 text-white">Confirm Password</label>
+                        <input asp-for="ConfirmPassword" type="password" class="w-[400px] rounded-xl border p-2" />
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="block text-sm text-[#EAC231]"></span>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between">
                         <label class="w-32 text-white">Role</label>
                         <select asp-for="Role" class="w-[400px] rounded-xl border bg-[#EAC231] p-2 font-semibold text-black">
                             <option value="0">Admin</option>
@@ -115,7 +123,7 @@
                 </div>
 
                 <div class="flex justify-center pt-4">
-                    <button type="submit" class="w-[400px] rounded bg-[#FFE9C6] hover:bg-[#e6c89c] px-6 py-2 font-bold text-black">Add User</button>
+                    <button type="submit" class="w-[400px] rounded bg-[#FFE9C6] px-6 py-2 font-bold text-black hover:bg-[#e6c89c]">Add User</button>
                 </div>
             </form>
         </div>

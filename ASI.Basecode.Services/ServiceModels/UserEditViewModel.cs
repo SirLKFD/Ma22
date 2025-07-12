@@ -26,6 +26,9 @@ namespace ASI.Basecode.Services.ServiceModels
 
         public string Password { get; set; } // Optional for edit
 
+        [Compare("Password", ErrorMessage = "Password and Confirm Password must match.")]
+        public string ConfirmPassword { get; set; }
+
         [Required(ErrorMessage = "Role is required.")]
         public int Role { get; set; }
 

@@ -4,35 +4,37 @@
     ViewData["Title"] = "Edit User Modal Page";
 }
 
-<div id="editUserModal" class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center hidden z-50">
-    <div class="flex flex-row bg-[#640A16] rounded-xl w-full max-w-6xl max-h-[80vh] shadow-lg relative animate-slide-up opacity-0 animate-fade-in">
-        <div class="w-[450px] flex flex-col items-center justify-center bg-white rounded-l-xl">
-            <div class="absolute top-5 left-5">
+<div id="editUserModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+    <div class="animate-slide-up animate-fade-in relative flex max-h-[80vh] w-full max-w-6xl flex-row rounded-xl bg-[#640A16] opacity-0 shadow-lg">
+        <div class="flex w-[450px] flex-col items-center justify-center rounded-l-xl bg-white">
+            <div class="absolute left-5 top-5">
                 <a onclick="closeEditDetails()" class="hover-pointer">
                     <span class="material-symbols-outlined text-[50px]">arrow_circle_left</span>
                 </a>
             </div>
 
-            <label for="editProfilePictureInput" class="cursor-pointer block w-[250px] h-[250px] mt-[-50px] mb-3">
-                <div id="editProfileImageContainer" class="flex items-center justify-center bg-[#FFE9C6] w-full h-full rounded-full border-4 border-[#FFE9C6] bg-[#FFE9C6] shadow-lg">
+            <label for="editProfilePictureInput" class="mt-[-50px] mb-3 block h-[250px] w-[250px] cursor-pointer">
+                <div id="editProfileImageContainer" class="flex h-full w-full items-center justify-center rounded-full border-4 border-[#FFE9C6] bg-[#FFE9C6] bg-[#FFE9C6] shadow-lg">
                     <h1 id="editProfilePlaceholder" class="text-5xl">+</h1>
                     <img id="editProfileImage" src="" alt="Profile" class="hidden h-full w-full rounded-full object-cover" />
                 </div>
             </label>
 
             <div class="flex flex-col items-center gap-1">
-                <h1 id="editUserName" class="uppercase text-2xl">User Name</h1>
+                <h1 id="editUserName" class="text-2xl uppercase">User Name</h1>
                 <h2 id="editUserId" class="text-sm">ID: </h2>
                 <h2 id="editUserCreated" class="text-sm">Account Created: </h2>
                 <h2 id="editUserEmail" class="text-sm">user@email.com</h2>
+                
             </div>
         </div>
 
-        <div class="p-5 flex-1">
-            <h2 class="text-2xl font-bold mb-4 text-white uppercase">Edit Profile Details</h2>
+        <div class="flex-1 p-5">
+            <h2 class="mb-4 text-2xl font-bold uppercase text-white">Edit Profile Details</h2>
 
             <form id="editUserForm" asp-action="UpdateUser" method="post" enctype="multipart/form-data" class="space-y-4">
                 <input type="hidden" id="editUserIdInput" name="Id" value="0" />
+                <input type="hidden" name="fromSidebar" value="true" />
 
                 <input type="hidden" id="editExistingProfilePicture" name="ExistingProfilePicture" value="" />
 
@@ -44,65 +46,80 @@
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">First Name</label>
-                        <input id="editFirstName" name="FirstName" class="w-[400px] border rounded-xl p-2" required />
+                        <label class="w-32 text-white">First Name</label>
+                        <input id="editFirstName" name="FirstName" class="w-[400px] rounded-xl border p-2" required />
                     </div>
-                    <span id="editFirstNameError" class="text-[#EAC231] text-sm block hidden"></span>
+                    <span id="editFirstNameError" class="block hidden text-sm text-[#EAC231]"></span>
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Last Name</label>
-                        <input id="editLastName" name="LastName" class="w-[400px] border rounded-xl p-2" required />
+                        <label class="w-32 text-white">Last Name</label>
+                        <input id="editLastName" name="LastName" class="w-[400px] rounded-xl border p-2" required />
                     </div>
-                    <span id="editLastNameError" class="text-[#EAC231] text-sm block hidden"></span>
+                    <span id="editLastNameError" class="block hidden text-sm text-[#EAC231]"></span>
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Birthdate</label>
-                        <input type="date" id="editBirthdate" name="Birthdate" class="w-[400px] border rounded-xl p-2" />
+                        <label class="w-32 text-white">Birthdate</label>
+                        <input type="date" id="editBirthdate" name="Birthdate" class="w-[400px] rounded-xl border p-2" />
                     </div>
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Contact No.</label>
-                        <input id="editContact" name="Contact" class="w-[400px] border rounded-xl p-2" />
+                        <label class="w-32 text-white">Contact No. (Optional)</label>
+                        <input id="editContact" name="Contact" class="w-[400px] rounded-xl border p-2" />
                     </div>
-                    <span id="editContactError" class="text-[#EAC231] text-sm block hidden"></span>
+                    <span id="editContactError" class="block hidden text-sm text-[#EAC231]"></span>
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Email</label>
-                        <input id="editEmail" name="EmailId" type="email" class="w-[400px] border rounded-xl p-2" required />
+                        <label class="w-32 text-white">Email</label>
+                        <input id="editEmail" name="EmailId" type="email" class="w-[400px] rounded-xl border p-2" required />
                     </div>
-                    <span id="editEmailError" class="text-[#EAC231] text-sm block hidden"></span>
+                    <span id="editEmailError" class="block hidden text-sm text-[#EAC231]"></span>
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Password</label>
-                        <input id="editPassword" name="Password" type="password" class="w-[400px] border rounded-xl p-2" placeholder="Leave blank to keep current password" />
+                        <label class="w-32 text-white">Password</label>
+                        <input id="editPassword" name="Password" type="password" class="w-[400px] rounded-xl border p-2" placeholder="Leave blank to keep current password" />
                     </div>
-                    <span id="editPasswordError" class="text-[#EAC231] text-sm block hidden"></span>
+                    <span id="editPasswordError" class="block hidden text-sm text-[#EAC231]"></span>
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label class="text-white w-32">Role</label>
-                        <select id="editRole" name="Role" class="w-[400px] border rounded-xl p-2 bg-[#EAC231] text-black font-semibold" required>
-                            <option value="0">Admin</option>
-                            <option value="1">Guest</option>
-                            <option value="2">Superadmin</option>
-                        </select>
+                        <label class="w-32 text-white">Confirm Password</label>
+                        <input id="editConfirmPassword" name="ConfirmPassword" type="password" class="w-[400px] rounded-xl border p-2" placeholder="Re-enter password to confirm" />
                     </div>
-                    <span id="editRoleError" class="text-[#EAC231] text-sm block hidden"></span>
+                    <span id="editConfirmPasswordError" class="block hidden text-sm text-[#EAC231]"></span>
                 </div>
+
+                @{
+                    var userRole = Context.Session.GetInt32("AccountRole");
+                }
+
+                @if (userRole == 2)
+                {
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <label class="w-32 text-white">Role</label>
+                            <select id="editRole" name="Role" class="w-[400px] rounded-xl border bg-[#EAC231] p-2 font-semibold text-black" required>
+                                <option value="0">Admin</option>
+                                <option value="1">Guest</option>
+                                <option value="2">Superadmin</option>
+                            </select>
+                        </div>
+                        <span id="editRoleError" class="block hidden text-sm text-[#EAC231]"></span>
+                    </div>
+                }
 
                 <div class="flex justify-center pt-4">
-                    <button type="submit" class="bg-[#FFE9C6] hover:bg-[#e6c89c] w-[400px] text-black font-bold px-6 py-2 rounded">Save Changes</button>
+                    <button type="submit" class="w-[400px] rounded bg-[#FFE9C6] px-6 py-2 font-bold text-black hover:bg-[#e6c89c]">Save Changes</button>
                 </div>
             </form>
         </div>

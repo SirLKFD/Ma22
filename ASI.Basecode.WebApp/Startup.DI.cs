@@ -70,6 +70,9 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<IEnrollmentService, EnrollmentService>();  
             this._services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 
+            //Registration services
+            this._services.AddScoped<IPendingUserRegistrationRepository, PendingUserRegistrationRepository>();
+            this._services.AddScoped<IRegistrationService, RegistrationService>();
         }
     }
 }
