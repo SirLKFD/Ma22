@@ -58,7 +58,7 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             try
             {
-                const int PageSize = 7;
+                const int PageSize = 10;
 
                 var allUsers = _userService.GetAllUsers().ToList();
 
@@ -111,7 +111,7 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             try
             {
-                const int PageSize = 8;
+                const int PageSize = 10;
 
                 var allUsers = _userService.GetAllUsers().ToList();
 

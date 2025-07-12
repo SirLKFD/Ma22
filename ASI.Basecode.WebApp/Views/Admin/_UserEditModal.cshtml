@@ -91,6 +91,14 @@
                     <span id="editPasswordError" class="text-[#EAC231] text-sm block hidden"></span>
                 </div>
 
+                <div>
+                    <div class="flex items-center justify-between">
+                        <label class="text-white w-32">Confirm Password</label>
+                        <input id="editConfirmPassword" name="ConfirmPassword" type="password" class="w-[400px] border rounded-xl p-2" placeholder="Re-enter password to confirm" />
+                    </div>
+                    <span id="editConfirmPasswordError" class="text-[#EAC231] text-sm block hidden"></span>
+                </div>
+
                 @{
                     var userRole = Context.Session.GetInt32("AccountRole");
                 }
