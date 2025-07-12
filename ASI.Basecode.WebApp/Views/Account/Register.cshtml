@@ -3,6 +3,7 @@
 @{
     ViewBag.LoginView = true;
     ViewData["Title"] = "Ma22 | Register";
+
 }
 @section styles {
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -89,6 +90,11 @@
         var errorMessage = '@TempData["ErrorMessage"]';
         if (errorMessage) {
             toastr.error(errorMessage);
+        }
+
+        var successMessage = '@TempData["SuccessMessage"]';
+        if (successMessage) {
+            toastr.success(successMessage);
         }
     </script>
 }

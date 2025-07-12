@@ -8,7 +8,7 @@ namespace ASI.Basecode.Services.Interfaces
     public interface IUserService
     {
         LoginResult AuthenticateUser(string emailid, string password, ref Account user);
-        void AddUser(UserViewModel model);
+        void AddUser(UserViewModel model, bool? register);
         void AddUser(AdminCreateUserViewModel model);
         List<UserListViewModel> GetAllUsers();
         UserEditViewModel GetUserById(int id);

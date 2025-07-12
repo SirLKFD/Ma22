@@ -98,14 +98,19 @@ namespace ASI.Basecode.Services.Services
             };
         }
 
-        public void AddUser(UserViewModel model)
+        public void AddUser(UserViewModel model, bool? register)
         {
             var user = new Account();
 
             if (!_repository.UserExists(model.EmailId))
             {
                 _mapper.Map(model, user);
+                if (register.HasValue && register.Value){
+                user.Password = model.Password;
+                }
+                else{
                 user.Password = PasswordManager.EncryptPassword(model.Password);
+                }
                 user.CreatedTime = DateTime.Now;
                 user.UpdatedTime = DateTime.Now;
                 user.CreatedBy = System.Environment.UserName;

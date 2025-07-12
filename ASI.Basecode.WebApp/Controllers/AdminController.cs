@@ -224,87 +224,119 @@ namespace ASI.Basecode.WebApp.Controllers
             }
         }
 
+        [HttpGet]
+        [Authorize(Roles="0,1,2")]
+        public IActionResult GetUserEditModal(int userId)
+        {
+            // You can pass userId to the view via ViewData or ViewBag if needed
+            ViewData["EditUserId"] = userId;
+            return PartialView("_UserEditModal");
+        }
+
         [HttpPost]
         [Authorize(Roles="0,1,2")]
-        public IActionResult UpdateUser(UserEditViewModel model, IFormFile ProfilePicture, string ExistingProfilePicture, [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
+        public IActionResult UpdateUser(UserEditViewModel model, IFormFile ProfilePicture, string ExistingProfilePicture, [FromServices] CloudinaryDotNet.Cloudinary cloudinary, bool? fromSidebar)
         {
+            var accountRole = HttpContext.Session.GetInt32("AccountRole");
             try
             {
-                // Add debugging information
                 _logger.LogInformation($"UpdateUser called - User ID: {model.Id}");
                 _logger.LogInformation($"ProfilePicture file: {(ProfilePicture != null ? ProfilePicture.FileName : "null")}");
                 _logger.LogInformation($"ExistingProfilePicture: {ExistingProfilePicture}");
                 _logger.LogInformation($"Model ProfilePicture: {model.ProfilePicture}");
 
-                if (ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
-                    try
+                    _logger.LogWarning("Model state is invalid");
+                    if (fromSidebar == true)
                     {
-                        // Get the existing user to preserve current profile picture if no new file is uploaded
-                        var existingUser = _userService.GetUserById(model.Id);
-                        if (existingUser == null)
-                        {
-                            TempData["FormError"] = "User not found.";
-                            return RedirectToAction("UserMaster");
-                        }
-
-                        _logger.LogInformation($"Existing user profile picture: {existingUser.ProfilePicture}");
-
-                        if (ProfilePicture != null && ProfilePicture.Length > 0)
-                        {
-                            _logger.LogInformation("Uploading new profile picture to Cloudinary");
-                            using var stream = ProfilePicture.OpenReadStream();
-                            var uploadParams = new ImageUploadParams
-                            {
-                                File = new FileDescription(ProfilePicture.FileName, stream),
-                                Folder = "user_profiles"
-                            };
-
-                            var uploadResult = cloudinary.Upload(uploadParams);
-
-                            if (uploadResult.Error != null)
-                            {
-                                throw new Exception("Cloudinary upload failed: " + uploadResult.Error.Message);
-                            }
-
-                            model.ProfilePicture = uploadResult.SecureUrl?.ToString();
-                            _logger.LogInformation($"New profile picture URL: {model.ProfilePicture}");
-                        }
-                        else
-                        {
-                            // Preserve the existing profile picture if no new file is uploaded
-                            // Use the hidden input value first, then fall back to the existing user's profile picture
-                            model.ProfilePicture = !string.IsNullOrEmpty(ExistingProfilePicture) 
-                                ? ExistingProfilePicture 
-                                : existingUser.ProfilePicture;
-                            _logger.LogInformation($"Preserving existing profile picture: {model.ProfilePicture}");
-                        }
-                        int? accountId = HttpContext.Session.GetInt32("AccountId");
-                        _userService.UpdateUser(model);
-                   
-                        _auditLogService.LogAction("User", "Update", model.Id, accountId.Value, $"{model.FirstName} {model.LastName}" );
-                        
-                        _logger.LogInformation("User updated successfully");
-
-                        TempData["Success"] = "User updated successfully!";
-                        return RedirectToAction("UserMaster");
+                        return Json(new { success = false, message = "Validation failed. Please check your inputs." });
                     }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"Error updating user: {ex.Message}");
-                        TempData["FormError"] = "Error: " + ex.Message;
-                        return RedirectToAction("UserMaster");
-                    }
+                    TempData["FormError"] = "Validation failed. Please check your inputs.";
+                    return RedirectToAction("UserMaster");
                 }
 
-                // If model is invalid, redirect with error
-                _logger.LogWarning("Model state is invalid");
-                TempData["FormError"] = "Validation failed. Please check your inputs.";
-                return RedirectToAction("UserMaster");
+                try
+                {
+                    var existingUser = _userService.GetUserById(model.Id);
+                    if (existingUser == null)
+                    {
+                        if (fromSidebar == true)
+                        {
+                            return Json(new { success = false, message = "User not found." });
+                        }
+                        TempData["FormError"] = "User not found.";
+                        return RedirectToAction("UserMaster");
+                    }
+
+                    _logger.LogInformation($"Existing user profile picture: {existingUser.ProfilePicture}");
+
+                    if (ProfilePicture != null && ProfilePicture.Length > 0)
+                    {
+                        _logger.LogInformation("Uploading new profile picture to Cloudinary");
+                        using var stream = ProfilePicture.OpenReadStream();
+                        var uploadParams = new ImageUploadParams
+                        {
+                            File = new FileDescription(ProfilePicture.FileName, stream),
+                            Folder = "user_profiles"
+                        };
+
+                        var uploadResult = cloudinary.Upload(uploadParams);
+
+                        if (uploadResult.Error != null)
+                        {
+                            throw new Exception("Cloudinary upload failed: " + uploadResult.Error.Message);
+                        }
+
+                        model.ProfilePicture = uploadResult.SecureUrl?.ToString();
+                        _logger.LogInformation($"New profile picture URL: {model.ProfilePicture}");
+                    }
+                    else
+                    {
+                        model.ProfilePicture = !string.IsNullOrEmpty(ExistingProfilePicture)
+                            ? ExistingProfilePicture
+                            : existingUser.ProfilePicture;
+                        _logger.LogInformation($"Preserving existing profile picture: {model.ProfilePicture}");
+                    }
+                    int? accountId = HttpContext.Session.GetInt32("AccountId");
+                    _userService.UpdateUser(model);
+                    _auditLogService.LogAction("User", "Update", model.Id, accountId.Value, $"{model.FirstName} {model.LastName}");
+                    _logger.LogInformation("User updated successfully");
+
+                    // If the updated user is the current user, update session values
+                    if (accountId.HasValue && accountId.Value == model.Id)
+                    {
+                        HttpContext.Session.SetString("UserName", $"{model.FirstName} {model.LastName}");
+                        HttpContext.Session.SetString("UserEmail", model.EmailId);
+                        HttpContext.Session.SetInt32("AccountRole", model.Role);
+                        HttpContext.Session.SetString("ProfilePicture", model.ProfilePicture ?? "");
+                    }
+
+                    if (fromSidebar == true)
+                    {
+                        return Json(new { success = true, message = "User updated successfully!" });
+                    }
+                    TempData["Success"] = "User updated successfully!";
+                    return RedirectToAction("UserMaster");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error updating user: {ex.Message}");
+                    if (fromSidebar == true)
+                    {
+                        return Json(new { success = false, message = "Error: " + ex.Message });
+                    }
+                    TempData["FormError"] = "Error: " + ex.Message;
+                    return RedirectToAction("UserMaster");
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error in UpdateUser: {ex.Message}");
+                if (fromSidebar == true)
+                {
+                    return Json(new { success = false, message = "Error: " + ex.Message });
+                }
                 return RedirectToAction("ServerError", "Home");
             }
         }

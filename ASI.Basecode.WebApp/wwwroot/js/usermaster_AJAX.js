@@ -24,83 +24,100 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function editDetails(userId) {
-    // Fetch user data and populate the edit modal
-    fetch(`/Admin/GetUserForEdit?userId=${userId}`)
+    // Fetch the edit modal HTML and user data, then inject and populate
+    fetch(`/Admin/GetUserEditModal?userId=${userId}`)
       .then((response) => {
-        if (!response.ok) throw new Error("Unable to fetch user data.");
-        return response.json();
+        if (!response.ok) throw new Error("Unable to fetch edit modal.");
+        return response.text();
       })
-      .then((user) => {
-        // Populate the edit modal with user data
-        const editUserIdInput = document.getElementById("editUserIdInput");
-        const editFirstName = document.getElementById("editFirstName");
-        const editLastName = document.getElementById("editLastName");
-        const editEmail = document.getElementById("editEmail");
-        const editContact = document.getElementById("editContact");
-        const editRole = document.getElementById("editRole");
-        const editBirthdate = document.getElementById("editBirthdate");
+      .then((html) => {
+        const container = document.getElementById("editUserModalContainer");
+        if (container) container.innerHTML = html;
+        // After injecting, fetch user data and populate fields
+        fetch(`/Admin/GetUserForEdit?userId=${userId}`)
+          .then((response) => {
+            if (!response.ok) throw new Error("Unable to fetch user data.");
+            return response.json();
+          })
+          .then((user) => {
+            // Populate the edit modal with user data
+            const editUserIdInput = document.getElementById("editUserIdInput");
+            const editFirstName = document.getElementById("editFirstName");
+            const editLastName = document.getElementById("editLastName");
+            const editEmail = document.getElementById("editEmail");
+            const editContact = document.getElementById("editContact");
+            const editRole = document.getElementById("editRole");
+            const editBirthdate = document.getElementById("editBirthdate");
 
-        if (editUserIdInput) editUserIdInput.value = user.id;
-        if (editFirstName) editFirstName.value = user.firstName;
-        if (editLastName) editLastName.value = user.lastName;
-        if (editEmail) editEmail.value = user.emailId;
-        if (editContact) editContact.value = user.contact || "";
-        if (editRole) editRole.value = user.role;
+            if (editUserIdInput) editUserIdInput.value = user.id;
+            if (editFirstName) editFirstName.value = user.firstName;
+            if (editLastName) editLastName.value = user.lastName;
+            if (editEmail) editEmail.value = user.emailId;
+            if (editContact) editContact.value = user.contact || "";
+            if (editRole) editRole.value = user.role;
 
-        // Handle birthdate
-        if (editBirthdate && user.birthdate) {
-          const birthdate = new Date(user.birthdate);
-          editBirthdate.value = birthdate.toISOString().split("T")[0];
-        } else if (editBirthdate) {
-          editBirthdate.value = "";
-        }
+            // Handle birthdate
+            if (editBirthdate && user.birthdate) {
+              const birthdate = new Date(user.birthdate);
+              editBirthdate.value = birthdate.toISOString().split("T")[0];
+            } else if (editBirthdate) {
+              editBirthdate.value = "";
+            }
 
-        // Handle profile picture
-        const profileImage = document.getElementById("editProfileImage");
-        const placeholder = document.getElementById("editProfilePlaceholder");
-        const container = document.getElementById("editProfileImageContainer");
-        const existingProfilePictureInput = document.getElementById(
-          "editExistingProfilePicture"
-        );
+            // Handle profile picture
+            const profileImage = document.getElementById("editProfileImage");
+            const placeholder = document.getElementById(
+              "editProfilePlaceholder"
+            );
+            const container = document.getElementById(
+              "editProfileImageContainer"
+            );
+            const existingProfilePictureInput = document.getElementById(
+              "editExistingProfilePicture"
+            );
 
-        if (user.profilePicture) {
-          if (profileImage) {
-            profileImage.src = user.profilePicture;
-            profileImage.classList.remove("hidden");
-          }
-          if (placeholder) placeholder.classList.add("hidden");
-          if (container) container.style.background = "transparent";
-          if (existingProfilePictureInput)
-            existingProfilePictureInput.value = user.profilePicture;
-        } else {
-          if (profileImage) profileImage.classList.add("hidden");
-          if (placeholder) placeholder.classList.remove("hidden");
-          if (container) container.style.background = "#FFE9C6";
-          if (existingProfilePictureInput)
-            existingProfilePictureInput.value = "";
-        }
+            if (user.profilePicture) {
+              if (profileImage) {
+                profileImage.src = user.profilePicture;
+                profileImage.classList.remove("hidden");
+              }
+              if (placeholder) placeholder.classList.add("hidden");
+              if (container) container.style.background = "transparent";
+              if (existingProfilePictureInput)
+                existingProfilePictureInput.value = user.profilePicture;
+            } else {
+              if (profileImage) profileImage.classList.add("hidden");
+              if (placeholder) placeholder.classList.remove("hidden");
+              if (container) container.style.background = "#FFE9C6";
+              if (existingProfilePictureInput)
+                existingProfilePictureInput.value = "";
+            }
 
-        // Update user info display
-        const editUserName = document.getElementById("editUserName");
-        const editUserId = document.getElementById("editUserId");
-        const editUserEmail = document.getElementById("editUserEmail");
-        const editUserCreated = document.getElementById("editUserCreated");
+            // Update user info display
+            const editUserName = document.getElementById("editUserName");
+            const editUserId = document.getElementById("editUserId");
+            const editUserEmail = document.getElementById("editUserEmail");
+            const editUserCreated = document.getElementById("editUserCreated");
 
-        if (editUserName)
-          editUserName.textContent = `${user.firstName} ${user.lastName}`;
-        if (editUserId) editUserId.textContent = `ID: ${user.id}`;
-        if (editUserEmail) editUserEmail.textContent = user.emailId;
+            if (editUserName)
+              editUserName.textContent = `${user.firstName} ${user.lastName}`;
+            if (editUserId) editUserId.textContent = `ID: ${user.id}`;
+            if (editUserEmail) editUserEmail.textContent = user.emailId;
 
-        if (editUserCreated && user.createdTime) {
-          const createdDate = new Date(user.createdTime);
-          editUserCreated.textContent = `Account Created: ${createdDate.toLocaleDateString()}`;
-        } else if (editUserCreated) {
-          editUserCreated.textContent = "Account Created: N/A";
-        }
+            if (editUserCreated && user.createdTime) {
+              const createdDate = new Date(user.createdTime);
+              editUserCreated.textContent = `Account Created: ${createdDate.toLocaleDateString()}`;
+            } else if (editUserCreated) {
+              editUserCreated.textContent = "Account Created: N/A";
+            }
 
-        // Show the edit modal
-        const editModal = document.getElementById("editUserModal");
-        if (editModal) editModal.classList.remove("hidden");
+            // Show the edit modal
+            const editModal = document.getElementById("editUserModal");
+            if (editModal) editModal.classList.remove("hidden");
+          })
+          .catch((error) => {
+            alert(error.message);
+          });
       })
       .catch((error) => {
         alert(error.message);
@@ -142,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(`/Admin/ViewUserDetails?userId=${id}`)
       .then((response) => {
         if (!response.ok) throw new Error("Unable to fetch user.");
-        
+
         return response.text();
       })
       .then((html) => {
@@ -227,6 +244,39 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("Failed to delete user.");
       });
   }
+
+  // Attach AJAX submit handler for the edit user form
+  document.addEventListener("submit", function (e) {
+    var form = e.target;
+    if (form && form.id === "editUserForm") {
+      e.preventDefault();
+
+      var formData = new FormData(form);
+
+      fetch(form.action, {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            // Close the modal
+            closeEditDetails();
+            // Optionally show a success toast
+            if (window.toastr)
+              toastr.success(data.message || "User updated successfully!");
+            window.location.reload();
+          } else {
+            // Show error message
+            if (window.toastr) toastr.error(data.message || "Update failed.");
+          }
+        })
+        .catch(() => {
+          if (window.toastr)
+            toastr.error("An error occurred while updating the user.");
+        });
+    }
+  });
 
   // Make functions globally available
   window.openModal = openModal;
