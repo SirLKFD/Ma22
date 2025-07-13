@@ -46,7 +46,10 @@
                 <div class="flex items-center gap-6 text-sm text-slate-500">
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined">group</span>
-                        <span>@ViewData["EnrollmentCount"] students enrolled</span>
+                        <a href="@Url.Action("ManageEnrollments", "Enrollment", new { trainingId = training.Id })" 
+                           class="hover:text-[#640A16] hover:underline transition cursor-pointer">
+                            <span class="font-semibold">@ViewData["EnrollmentCount"]</span> students enrolled
+                        </a>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined">import_contacts</span>
