@@ -45,5 +45,16 @@ namespace ASI.Basecode.Data.Repositories
                 .Where(e => trainingIds.Contains(e.TrainingId))
                 .ToList();
         }
+
+        public Enrollment GetById(int id)
+        {
+            return _context.Enrollments.FirstOrDefault(e => e.Id == id);
+        }
+
+        public void Delete(Enrollment enrollment)
+        {
+            _context.Enrollments.Remove(enrollment);
+            _context.SaveChanges();
+        }
     }
 }
