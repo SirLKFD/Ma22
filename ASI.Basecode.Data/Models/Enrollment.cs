@@ -8,5 +8,9 @@ namespace ASI.Basecode.Data.Models
         public int AccountId { get; set; } 
         public int TrainingId { get; set; }
         public DateTime EnrolledAt { get; set; } 
+
+        public virtual Account Account { get; set; }
+
+        public virtual Training Training { get; set; }
     }
 }

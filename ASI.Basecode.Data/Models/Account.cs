@@ -44,5 +44,7 @@ public partial class Account
 
     public virtual ICollection<Training> Training { get; set; } = new List<Training>();
 
+    public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
+
     public virtual ICollection<TrainingCategory> TrainingCategories { get; set; } = new List<TrainingCategory>();
 }

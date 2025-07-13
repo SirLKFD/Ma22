@@ -410,7 +410,7 @@ namespace ASI.Basecode.WebApp.Controllers
             {
                 int? accountId = HttpContext.Session.GetInt32("AccountId");
                 var user = _userService.GetUserById(id);
-                _auditLogService.LogAction("User", "Delete", id, accountId.Value, $"{user.FirstName} {user.LastName}");
+              /*   _auditLogService.LogAction("User", "Delete", id, accountId.Value, $"{user.FirstName} {user.LastName}"); */
                 _userService.DeleteUser(id);
               
                 

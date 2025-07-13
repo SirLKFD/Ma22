@@ -94,7 +94,7 @@ namespace ASI.Basecode.Data
 
                 entity.HasOne(d => d.RoleNavigation).WithMany(p => p.Accounts)
                     .HasForeignKey(d => d.Role)
-                    .OnDelete(DeleteBehavior.Cascade)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Accounts_Roles");
             });
 
@@ -107,6 +107,27 @@ namespace ASI.Basecode.Data
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("Duration");
+            });
+
+            modelBuilder.Entity<Enrollment>(entity =>
+            {
+                entity.ToTable("Enrollments");
+
+                entity.Property(e => e.Id);
+
+                 entity.Property(e => e.EnrolledAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account).WithMany(p => p.Enrollments)
+                .HasForeignKey(d => d.AccountId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .HasConstraintName("FK_Enrollments_Accounts");
+
+                entity.HasOne(d => d.Training)
+                    .WithMany(t => t.Enrollments) // <-- Specify the navigation property
+                    .HasForeignKey(d => d.TrainingId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_Enrollments_Trainings");
+                
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -127,10 +148,17 @@ namespace ASI.Basecode.Data
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false);
+                
             entity.Property(e => e.Entity)
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false);
+            
+             entity.Property(e => e.EntityName)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
+
             entity.Property(e => e.TimeStamp).HasColumnType("datetime");
 
             entity.HasOne(d => d.Account).WithMany(p => p.AuditLogs)
@@ -202,6 +230,7 @@ namespace ASI.Basecode.Data
                     .HasForeignKey(d => d.TrainingCategoryId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Trainings_TrainingCategories");
+                
             });
 
             modelBuilder.Entity<TrainingCategory>(entity =>
@@ -272,13 +301,13 @@ namespace ASI.Basecode.Data
 
                 entity.HasOne(d => d.Account).WithMany(p => p.Topics)
                     .HasForeignKey(d => d.AccountId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Table_1_Accounts");
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_Topics_Accounts");
 
                 entity.HasOne(d => d.Training).WithMany(p => p.Topics)
                     .HasForeignKey(d => d.TrainingId)
                     .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK_Table_1_Trainings");
+                    .HasConstraintName("FK_Topics_Trainings");
             });
 
             modelBuilder.Entity<TopicMedium>(entity =>
@@ -312,12 +341,12 @@ namespace ASI.Basecode.Data
                 entity.HasOne(d => d.Account).WithMany(p => p.TopicMedia)
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.NoAction)
-                    .HasConstraintName("FK_Table_2_Accounts");
+                    .HasConstraintName("FK_TopicMedia_Accounts");
 
                 entity.HasOne(d => d.Topic).WithMany(p => p.TopicMedia)
                     .HasForeignKey(d => d.TopicId)
                     .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK_Table_2_Table_1");
+                    .HasConstraintName("FK_TopicMedia_Topics");
             });
 
             modelBuilder.Entity<PasswordResetToken>(entity =>
@@ -340,7 +369,7 @@ namespace ASI.Basecode.Data
                     .WithMany(p => p.PasswordResetTokens)
                     .HasForeignKey(e => e.AccountId)
                     .IsRequired(false)
-                    .OnDelete(DeleteBehavior.Cascade)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_PasswordResetTokens_Accounts");
             });
 
@@ -399,7 +428,7 @@ namespace ASI.Basecode.Data
                 entity.HasOne(d => d.Account)
                 .WithMany(a => a.Reviews) // <-- Specify the navigation property
                 .HasForeignKey(d => d.AccountId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .HasConstraintName("FK_Reviews_Accounts");
 
                 entity.HasOne(d => d.Training)
@@ -413,6 +442,7 @@ namespace ASI.Basecode.Data
             OnModelCreatingPartial(modelBuilder);
         }
 
+    
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

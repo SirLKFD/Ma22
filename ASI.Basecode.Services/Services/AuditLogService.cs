@@ -45,14 +45,15 @@ namespace ASI.Basecode.Services.Services
         {
             // For admins, include their own logs plus enrollment logs for trainings they created
             var adminTrainingIds = _trainingService.GetAllTrainings()
-                .Where(t => t.AccountId == accountId)
+                .Where(t => t.AccountId == (accountId ?? -1))
                 .Select(t => t.Id)
                 .ToList();
 
-            logsQuery = logsQuery.Where(l => l.AccountId == accountId || 
-                                           (l.Entity == "User" && l.ActionType == "Create" && l.EntityName.StartsWith("Enrolled to") && 
-                                            adminTrainingIds.Contains(l.EntityId)) || (l.Entity == "User" && l.ActionType == "Create" && l.EntityName.StartsWith("Reviewed") && 
-                                            adminTrainingIds.Contains(l.EntityId)));
+            logsQuery = logsQuery.Where(l =>
+                l.AccountId == (accountId ?? -1) ||
+                (l.Entity == "User" && l.ActionType == "Create" && l.EntityName.StartsWith("Enrolled to") && l.EntityId.HasValue && adminTrainingIds.Contains(l.EntityId.Value)) ||
+                (l.Entity == "User" && l.ActionType == "Create" && l.EntityName.StartsWith("Reviewed") && l.EntityId.HasValue && adminTrainingIds.Contains(l.EntityId.Value))
+            );
         }
         else if (accountRole == 2)
         {
@@ -82,8 +83,8 @@ namespace ASI.Basecode.Services.Services
             {
                 Entity = log.Entity,
                 ActionType = log.ActionType,
-                EntityId = log.EntityId,
-                AccountId = log.AccountId,
+                EntityId = log.EntityId ?? -1,
+                AccountId = log.AccountId ?? -1,
                 AccountName = accountName,
                 EntityName = log.EntityName,
                 TimeStamp = log.TimeStamp
@@ -93,7 +94,7 @@ namespace ASI.Basecode.Services.Services
         return result;
     }
 
-    public void LogAction(string entity, string actionType, int entityId, int userId, string entityName)
+    public void LogAction(string entity, string actionType, int entityId, int? userId, string entityName)
     {
         try
         {
@@ -103,14 +104,14 @@ namespace ASI.Basecode.Services.Services
                 EntityName = entityName,
                 ActionType = actionType,
                 EntityId = entityId,
-                AccountId = userId,
+                AccountId = userId ?? -1,
                 TimeStamp = DateTime.UtcNow.AddHours(8)
             };
             
             _repository.AddAuditLog(log);
             
             // Log to console for debugging
-            Console.WriteLine($"[AuditLogService] Successfully logged action: {actionType} on {entity} (ID: {entityId}) by user {userId}");
+            Console.WriteLine($"[AuditLogService] Successfully logged action: {actionType} on {entity} (ID: {entityId}) by user {userId ?? -1}");
         }
         catch (Exception ex)
         {

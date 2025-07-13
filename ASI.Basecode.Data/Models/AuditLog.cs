@@ -13,9 +13,9 @@ public partial class AuditLog
 
     public string ActionType { get; set; }
 
-    public int EntityId { get; set; }
+    public int? EntityId { get; set; }
 
-    public int AccountId { get; set; }
+    public int? AccountId { get; set; }
 
     public DateTime TimeStamp { get; set; }
 
