@@ -49,8 +49,10 @@ namespace ASI.Basecode.WebApp.Controllers
                 try
                 {
                     _reviewService.AddReview(model);
+                    
+                    var accountName = HttpContext.Session.GetString("UserName");
                     var newTraining = _trainingService.GetTrainingById(model.TrainingId);
-                    _auditLogService.LogAction("User", "Create", model.TrainingId, model.AccountId, $"Reviewed {newTraining.TrainingName}");
+                    _auditLogService.LogAction("Review", "Create", accountName,model.AccountId,   $"{newTraining.TrainingName}");
             
                 }
                 catch (Exception ex)

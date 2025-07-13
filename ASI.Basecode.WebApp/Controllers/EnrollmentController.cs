@@ -28,7 +28,8 @@ namespace ASI.Basecode.WebApp.Controllers
             {
                 return Unauthorized();  
             }
-
+            var accountName = HttpContext.Session.GetString("UserName");
+            int? accountId = HttpContext.Session.GetInt32("AccountId");
             var user = _userService.GetUserByEmailId(userEmail);
             if (user == null)
             {
@@ -36,7 +37,7 @@ namespace ASI.Basecode.WebApp.Controllers
             }
 
             _enrollmentService.EnrollUser(user.Id, trainingId);
-            _auditLogService.LogAction("User", "Create", trainingId, user.Id, $"Enrolled to {trainingName}");
+            _auditLogService.LogAction("Enroll", "Create", accountName, accountId.Value, $"{trainingName}");
             TempData["EnrollSuccess"] = true;
             return RedirectToAction("Topics", "UserTopic", new { trainingId = trainingId });
         }

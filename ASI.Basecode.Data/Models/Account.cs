@@ -38,7 +38,6 @@ public partial class Account
 
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
     public virtual ICollection<TopicMedium> TopicMedia { get; set; } = new List<TopicMedium>();
-    public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
 
     public virtual ICollection<Topic> Topics { get; set; } = new List<Topic>();
 

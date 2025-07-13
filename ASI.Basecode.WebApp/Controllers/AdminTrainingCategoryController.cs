@@ -131,14 +131,14 @@ namespace ASI.Basecode.WebApp.Controllers
                 model.AccountId = accountId.Value;
 
                 _trainingCategoryService.AddTrainingCategory(model);
-                
+                var accountName = HttpContext.Session.GetString("UserName");
                 var newCategory = _trainingCategoryService
                     .GetAllTrainingCategories()
                     .OrderByDescending(c => c.CreatedTime)
                     .FirstOrDefault(c => c.AccountId == model.AccountId && c.CategoryName == model.CategoryName);
 
 
-                _auditLogService.LogAction("TrainingCategory", "Create", newCategory.Id, accountId.Value,newCategory.CategoryName);
+                _auditLogService.LogAction("TrainingCategory", "Create", accountName,model.AccountId, newCategory.CategoryName);
 
                 ViewBag.NewCategory = model;
 
@@ -213,9 +213,10 @@ namespace ASI.Basecode.WebApp.Controllers
                 else{
                     model.CoverPicture = existingCategory.CoverPicture;
                 }
+                var accountName = HttpContext.Session.GetString("UserName");
                 int? accountId = HttpContext.Session.GetInt32("AccountId");
                 _trainingCategoryService.EditTrainingCategory(model);
-                _auditLogService.LogAction("TrainingCategory", "Update", existingCategory.Id, accountId.Value,model.CategoryName);
+                _auditLogService.LogAction("TrainingCategory", "Update", accountName,accountId.Value,model.CategoryName);
                 Console.WriteLine("✅ Training category edited");
 
                 ViewBag.EditedCategory = model;
@@ -242,14 +243,13 @@ namespace ASI.Basecode.WebApp.Controllers
             const int pageSize = 6;
             int currentPage = 1;
             string search = "";
-            int? accountId = HttpContext.Session.GetInt32("AccountId");
            
+            var accountName = HttpContext.Session.GetString("UserName");
+            int? accountId = HttpContext.Session.GetInt32("AccountId");
             var categories = _trainingCategoryService.GetPaginatedTrainingCategories(search, currentPage, pageSize, out totalCount);
             try
             {
-         
-
-            _auditLogService.LogAction("TrainingCategory", "Delete", id, accountId.Value, categoryName);
+            _auditLogService.LogAction("TrainingCategory", "Delete", accountName,accountId.Value, categoryName);
             _trainingCategoryService.DeleteTrainingCategory(id);
                
             return RedirectToAction("AdminTrainingCategory");

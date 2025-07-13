@@ -160,13 +160,7 @@ namespace ASI.Basecode.Data
                 .IsUnicode(false);
 
             entity.Property(e => e.TimeStamp).HasColumnType("datetime");
-
-            entity.HasOne(d => d.Account).WithMany(p => p.AuditLogs)
-                .HasForeignKey(d => d.AccountId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_AuditLog_Accounts");
         });
-
 
             modelBuilder.Entity<SkillLevel>(entity =>
             {

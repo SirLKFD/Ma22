@@ -9,15 +9,14 @@ public partial class AuditLog
 
     public string Entity { get; set; }
 
-    public string EntityName {get;set;}
-
     public string ActionType { get; set; }
 
-    public int? EntityId { get; set; }
+    public string AccountName { get; set; }
 
-    public int? AccountId { get; set; }
+    public int AccountId { get; set; }
 
     public DateTime TimeStamp { get; set; }
 
-    public virtual Account Account { get; set; }
+    public string EntityName { get; set; }
+
 }

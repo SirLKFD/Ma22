@@ -13,12 +13,14 @@ namespace ASI.Basecode.Services.Services
         private readonly IPendingUserRegistrationRepository _pendingRepo;
         private readonly IUserService _userService;
         private readonly IEmailService _emailService;
+        private readonly IAuditLogService _auditLogService;
 
-        public RegistrationService(IPendingUserRegistrationRepository pendingRepo, IUserService userService, IEmailService emailService)
+        public RegistrationService(IPendingUserRegistrationRepository pendingRepo, IUserService userService, IEmailService emailService, IAuditLogService auditLogService)
         {
             _pendingRepo = pendingRepo;
             _userService = userService;
             _emailService = emailService;
+            _auditLogService = auditLogService;
         }
 
         public async Task<(bool Success, string Message)> RegisterPendingUserAsync(UserViewModel model, string token, string verificationLink)
@@ -77,6 +79,11 @@ namespace ASI.Basecode.Services.Services
                 ConfirmPassword = pendingUser.PasswordHash
             };
             _userService.AddUser(userViewModel, true);
+            // Log the AddUser action
+            string fullName = $"{pendingUser.FirstName} {pendingUser.LastName}";
+            // Get the newly created user to get their ID
+            var newUser = _userService.GetUserByEmail(pendingUser.EmailId);
+            _auditLogService.LogAction("User", "Create", fullName, newUser.Id, fullName);
 
             pendingUser.IsVerified = true;
             _pendingRepo.Update(pendingUser);

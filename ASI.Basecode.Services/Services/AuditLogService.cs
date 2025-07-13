@@ -17,51 +17,53 @@ namespace ASI.Basecode.Services.Services
     public class AuditLogService : IAuditLogService
 {
     private readonly IAuditLogRepository _repository;
-    private readonly ITrainingCategoryService _trainingCategoryService;
-    private readonly ITrainingService _trainingService;
-    private readonly ITopicService _topicService;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IUserService _userService;
-    public AuditLogService(IAuditLogRepository repository, ITrainingCategoryService trainingCategoryService, ITrainingService trainingService, ITopicService topicService,IHttpContextAccessor httpContextAccessor, IUserService userService) 
+    private readonly ITrainingService _trainingService;
+
+    public AuditLogService(IAuditLogRepository repository, IHttpContextAccessor httpContextAccessor, ITrainingService trainingService) 
     {
         _repository = repository;
-        _trainingCategoryService = trainingCategoryService;
-        _trainingService = trainingService;
-        _topicService = topicService;
-        _userService = userService;
         _httpContextAccessor = httpContextAccessor;
+        _trainingService = trainingService;
     }
 
     public List<AuditLogViewModel> GetRecentLogs(string actionType, int count = 5)
     {
-        var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
-        var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
-        // Get the logs with account navigation property included
+        var session = _httpContextAccessor.HttpContext?.Session;
+        int? accountRole = session?.GetInt32("AccountRole");
+        int? accountId = session?.GetInt32("AccountId");
+
         var logsQuery = _repository.GetAuditLogs()
-            .Include(l => l.Account)
             .Where(l => l.ActionType == actionType);
 
-        if (accountRole == 0)
+        if (accountRole == 2)
         {
-            // For admins, include their own logs plus enrollment logs for trainings they created
-            var adminTrainingIds = _trainingService.GetAllTrainings()
-                .Where(t => t.AccountId == (accountId ?? -1))
-                .Select(t => t.Id)
+            // SuperAdmin: show all logs
+        }
+        else if (accountRole == 0)
+        {
+            // Admin: show their own logs plus enrollment/review logs for their trainings
+            var adminTrainingNames = _trainingService.GetAllTrainings()
+                .Where(t => t.AccountId == accountId)
+                .Select(t => t.TrainingName)
                 .ToList();
 
-            logsQuery = logsQuery.Where(l =>
-                l.AccountId == (accountId ?? -1) ||
-                (l.Entity == "User" && l.ActionType == "Create" && l.EntityName.StartsWith("Enrolled to") && l.EntityId.HasValue && adminTrainingIds.Contains(l.EntityId.Value)) ||
-                (l.Entity == "User" && l.ActionType == "Create" && l.EntityName.StartsWith("Reviewed") && l.EntityId.HasValue && adminTrainingIds.Contains(l.EntityId.Value))
+            logsQuery = logsQuery.Where(l => 
+                l.AccountId == accountId || // Their own logs
+                (l.Entity == "Enroll" && l.ActionType == "Create" && 
+                 adminTrainingNames.Any(name => l.EntityName.Contains(name))) || // Enrollment logs for their trainings
+                (l.Entity == "Review" && l.ActionType == "Create" && 
+                 adminTrainingNames.Any(name => l.EntityName.Contains(name))) // Review logs for their trainings
             );
         }
-        else if (accountRole == 2)
+        else if (accountRole == 1)
         {
-            // Superadmin: no filter
+            // User: show only logs for this user
+            logsQuery = logsQuery.Where(l => l.AccountId == accountId);
         }
         else
         {
-            // Other roles: return empty
+            // Unknown role: return empty
             return new List<AuditLogViewModel>();
         }
 
@@ -74,18 +76,13 @@ namespace ASI.Basecode.Services.Services
 
         foreach (var log in logs)
         {
-            string accountName = log.Account != null
-                ? $"{log.Account.FirstName} {log.Account.LastName}"
-                : "";
-
-
             result.Add(new AuditLogViewModel
             {
+                Id = log.Id,
                 Entity = log.Entity,
                 ActionType = log.ActionType,
-                EntityId = log.EntityId ?? -1,
-                AccountId = log.AccountId ?? -1,
-                AccountName = accountName,
+                AccountName = log.AccountName,
+                AccountId = log.AccountId,
                 EntityName = log.EntityName,
                 TimeStamp = log.TimeStamp
             });
@@ -94,7 +91,7 @@ namespace ASI.Basecode.Services.Services
         return result;
     }
 
-    public void LogAction(string entity, string actionType, int entityId, int? userId, string entityName)
+    public void LogAction(string entity, string actionType, string accountName, int accountId, string entityName)
     {
         try
         {
@@ -103,22 +100,18 @@ namespace ASI.Basecode.Services.Services
                 Entity = entity,
                 EntityName = entityName,
                 ActionType = actionType,
-                EntityId = entityId,
-                AccountId = userId ?? -1,
+                AccountName = accountName,
+                AccountId = accountId,
                 TimeStamp = DateTime.UtcNow.AddHours(8)
             };
-            
             _repository.AddAuditLog(log);
-            
-            // Log to console for debugging
-            Console.WriteLine($"[AuditLogService] Successfully logged action: {actionType} on {entity} (ID: {entityId}) by user {userId ?? -1}");
+            Console.WriteLine($"[AuditLogService] Successfully logged action: {actionType} on {entity} by {accountName} (ID: {accountId})");
         }
         catch (Exception ex)
         {
-            // Log the exception for debugging
             Console.WriteLine($"[AuditLogService] Error logging action: {ex.Message}");
             Console.WriteLine($"[AuditLogService] Stack trace: {ex.StackTrace}");
-            throw; // Re-throw to maintain the original behavior
+            throw;
         }
     }
 }
