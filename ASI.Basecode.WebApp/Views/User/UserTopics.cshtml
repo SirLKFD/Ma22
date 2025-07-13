@@ -47,6 +47,13 @@
     </div>
 }
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="mb-4 rounded border border-green-400 bg-green-100 px-4 py-2 text-green-700">
+        ✅ @TempData["SuccessMessage"]
+    </div>
+}
+
 <div class="flex w-full gap-10">
     <div class="flex w-2/3 flex-col gap-10">
         <div class="flex flex-col gap-5 rounded-lg bg-white p-4 shadow-md">
@@ -253,8 +260,7 @@
             {
                 @if (ViewBag.HasReviewed != null && (bool)ViewBag.HasReviewed)
                 {
-                    <button class="w-1/2 cursor-not-allowed rounded-xl bg-gray-300 p-2 font-semibold text-gray-500" disabled>Already Reviewed</button>
-                    <p class="mt-2 text-center text-green-600">Thank you for your review!</p>
+                    <button class="w-1/2 rounded-xl bg-[#EAC231] p-2 font-semibold text-black hover:bg-[#640A16] hover:text-white" onclick="editReview()">Edit Review</button>
                 }
                 else
                 {
@@ -275,19 +281,20 @@
 
 <script>
     function addReview(){
-        document.getElementById('addUserReview').classList.remove('hidden')
+        resetModalForNewReview();
+        document.getElementById('TrainingId').value = '@training.Id';
+        document.getElementById('addUserReview').classList.remove('hidden');
     }
+    
+    function editReview(){
+        loadExistingReview('@training.Id');
+        document.getElementById('TrainingId').value = '@training.Id';
+        document.getElementById('addUserReview').classList.remove('hidden');
+    }
+    
     function closeAddReview() {
         const modal = document.getElementById('addUserReview');
         modal.classList.add('hidden');
-
-        // const form = document.getElementById("createuserform");
-        // if (form) {
-        //     form.reset();
-        //     const validator = $(form).validate();
-        //     validator.resetForm();
-        //     $(form).find(".input-validation-error").removeClass("input-validation-error");
-        // }
     }
 
     let reviewsLoaded = 5;
