@@ -45,6 +45,14 @@ namespace ASI.Basecode.WebApp.Controllers
                     Console.WriteLine("❌ AccountId is null");
                     return RedirectToAction("Topics", "UserTopic", new { trainingId = model.TrainingId });
                 }
+                
+                // Check if user has already reviewed this training
+                if (_reviewService.HasUserReviewed(accountId.Value, model.TrainingId))
+                {
+                    TempData["ErrorMessage"] = "You have already reviewed this training.";
+                    return RedirectToAction("Topics", "UserTopic", new { trainingId = model.TrainingId });
+                }
+                
                 model.AccountId = accountId.Value;
                 try
                 {

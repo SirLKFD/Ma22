@@ -65,5 +65,9 @@ namespace ASI.Basecode.Services.Services
           
         }
 
+        public bool HasUserReviewed(int userId, int trainingId)
+        {
+            return _repository.GetReviews().Any(r => r.AccountId == userId && r.TrainingId == trainingId);
+        }
     }
 }

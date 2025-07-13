@@ -9,5 +9,6 @@ namespace ASI.Basecode.Services.Interfaces
     {
         void AddReview(ReviewViewModel model);
         List<ReviewViewModel> GetTrainingReviews(int trainingId);
+        bool HasUserReviewed(int userId, int trainingId);
     }
 }
