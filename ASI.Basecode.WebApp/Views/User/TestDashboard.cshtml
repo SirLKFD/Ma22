@@ -1,0 +1,155 @@
+﻿ @model ASI.Basecode.Services.ServiceModels.BrowseTrainingsViewModel 
+@* @model List<ASI.Basecode.Services.ServiceModels.TrainingViewModel> *@
+@{
+    ViewData["Title"] = "Ma22 | TestDashboard";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    var trainingstoDisplay = Model.Trainings;
+    var categoriestoDisplay = Model.Categories;
+}
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<div class="flex w-full mt-20 animate-slide-up opacity-0 animate-fade-in justify-between">
+    
+    <div class="flex-col flex w-[55%] items-start">
+
+        <div class="w-3/4">
+            <h1 class="text-6xl font-bold uppercase leading-tight mb-2">
+                KNOWLEDGE FOR<br />
+                EVERY JUAN
+            </h1>
+            <div class="w-2/3 mb-5">
+                <p class="mt-2 text-lg">
+                    Your gateway to reliable and accessible, simplified knowledge.
+                </p>
+            </div>
+
+
+            <div class="space-r-2 relative w-full">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                    <span class="material-symbols-outlined text-xl text-gray-400">search</span>
+                </div>
+                <input id="training-search-input" type="search" name="search"
+                       class="text-md h-12 w-full rounded-xl border border-gray-300 px-5 py-4 pr-[90px] text-gray-900 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-[#EAC231]"
+                       placeholder="What are you looking for?" value="@Context.Request.Query["search"]" />
+                <button id="training-search-btn" type="button"
+                        class="absolute right-2 top-[6px] rounded-xl bg-[#EAC231] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#cfa221]">
+                    Search
+                </button>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="sm:w-[45%] float">
+        <img src="~/img/bg_7.png" alt="Learning Illustration" class="h-auto w-full object-contain" />
+    </div>
+</div>
+
+<div class="flex items-center justify-between gap-10 font-semibold py-10">
+    <div class="flex gap-4">
+        <div class="category-card hover:cursor-pointer hover:bg-[#640A16] hover:text-white rounded-full whitespace-nowrap p-2" data-category-id="0"
+             data-category-description="All trainings">
+            <p>All</p>
+        </div>
+        <div id="category-cards-wrapper" class="flex flex-wrap justify-center items-center gap-4">
+            @foreach (var category in categoriestoDisplay.Take(6))
+            {
+                <div class="category-card hover:cursor-pointer hover:bg-[#640A16] hover:text-white rounded-full whitespace-nowrap p-2" data-category-id="@category.Id" data-category-description="@category.Description">
+                    <p>@category.CategoryName</p>
+                </div>
+            }
+        </div>
+    </div>
+    
+    <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="flex rounded-full outline outline-1 outline-gray-400 p-2 hover:bg-[#640A16] hover:text-white space-x-2">
+        <span class="material-symbols-outlined">
+            filter_list
+        </span>
+        <span>Categories</span>
+    </button>
+
+    <div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-42 overflow-y-auto max-h-48">
+        <ul class="py-2 text-sm text-black" aria-labelledby="dropdownDefaultButton">
+            @foreach (var category in categoriestoDisplay)
+            {
+                <li>
+                    <a class="block category-card px-4 py-2 hover:bg-[#EAC231] hover:text-black hover:no-underline" data-category-id="@category.Id" data-category-description="@category.Description">@category.CategoryName</a>
+                </li>
+            }
+            
+        </ul>
+    </div>
+
+</div>
+
+<div class="mb-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3" id="trainings-container">
+    @if (Model != null && trainingstoDisplay.Any())
+    {
+        foreach (var training in trainingstoDisplay)
+        {
+            <div class="flex min-h-[420px] flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md transition hover:shadow-xl" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
+                <!-- Cover Image -->
+                <div class="h-[180px]">
+                    @if (!string.IsNullOrEmpty(training.CoverPicture))
+                    {
+                        <img class="h-full w-full object-cover" src="@training.CoverPicture" alt="Cover Image" />
+                    }
+                    else
+                    {
+                        <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#640A16] via-[#8B1538] to-[#640A16] text-center text-sm font-medium text-white">
+                            <span class="material-symbols-outlined text-4xl opacity-50">image</span>
+                            <p class="ml-2">No Cover Image</p>
+                        </div>
+                    }
+                </div>
+                <!-- Details -->
+                <div class="flex flex-grow flex-col p-4">
+                    <!-- Header -->
+                    <div class="mb-2 flex items-center justify-between">
+                        <h2 class="text-xl font-bold text-[#222]">@training.TrainingName</h2>
+                    </div>
+                    <div class="mb-2 flex gap-2">
+                        @if (!string.IsNullOrEmpty(training.SkillLevelName))
+                        {
+                            var skillColor = training.SkillLevelName == "Beginner" ? "bg-green-200 text-green-800"
+                            : training.SkillLevelName == "Intermediate" ? "bg-yellow-200 text-yellow-800"
+                            : "bg-red-200 text-red-800";
+                            <span class="rounded-full px-3 py-1 text-xs font-semibold @skillColor">
+                                @training.SkillLevelName
+                            </span>
+                        }
+                        @if (!string.IsNullOrEmpty(training.TrainingCategoryName))
+                        {
+                            <span class="rounded-full bg-orange-200 px-3 py-1 text-xs font-semibold text-orange-800">
+                                @training.TrainingCategoryName
+                            </span>
+                        }
+                    </div>
+                    <p class="mt-2 line-clamp-4 text-sm text-gray-600">@training.Description</p>
+                    <!-- Footer -->
+                    <div class="mt-auto flex items-end justify-between pt-4 text-xs text-gray-500">
+                        <div>
+                            <p><strong>Modified:</strong> @training.UpdatedTime.ToString("MMM dd, yyyy")</p>
+                            <p><strong>By:</strong> @training.AccountFirstName @training.AccountLastName</p>
+                        </div>
+                        <a href="@Url.Action("Topics", "UserTopic", new { trainingId = training.Id })"
+                           class="rounded-full bg-[#640A16] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#4e0712] hover:no-underline">
+                            Access
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-span-3 py-8 text-center text-gray-500">No trainings found.</div>
+    }
+</div>
+
+
+@section Scripts {
+    <!-- BrowseTrainings AJAX Script -->
+    <script src="~/js/browsetrainings_AJAX.js" asp-append-version="true"></script>
+}

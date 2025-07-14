@@ -67,6 +67,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(html => {
                     const container = document.getElementById('trainings-container');
                     if (container) container.innerHTML = html;
+
+                    AOS.refresh();
                     
                     // Update title and subtitle
                     const titleElement = document.getElementById('trainings-title');
@@ -95,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(html => {
                     const container = document.getElementById('trainings-container');
                     if (container) container.innerHTML = html;
-                    
+                    AOS.refresh();
                     // Reset title and subtitle
                     const titleElement = document.getElementById('trainings-title');
                     const subtitleElement = document.getElementById('trainings-subtitle');
@@ -136,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (container) {
                         container.insertAdjacentHTML('beforeend', data);
                     }
-                    
+                    AOS.refresh();
                     // Update the count
                     currentlyDisplayed += pageSize;
                     
@@ -181,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(html => {
                 const container = document.getElementById('trainings-container');
                 if (container) container.innerHTML = html;
-                
+                AOS.refresh();
                 const titleElement = document.getElementById('trainings-title');
                 const subtitleElement = document.getElementById('trainings-subtitle');
                 if (titleElement) titleElement.textContent = 'Trainings';
