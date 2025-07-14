@@ -10,10 +10,53 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-<div class="box-border flex w-full flex-col gap-4 px-2 py-2 sm:px-4 sm:py-4 md:flex-row md:gap-8 md:px-8 md:py-8">
-    <div class="flex w-full flex-col gap-8 md:w-2/3">
+<div class="box-border my-20 flex w-full flex-col gap-4 px-2 py-2 sm:px-4 sm:py-4 md:flex-row md:gap-8 md:px-8 md:py-8 ">
+    <div class="flex w-full flex-col gap-8 md:w-2/3 " >
 
-        <div class="box-border flex w-full flex-col gap-4 rounded-xl bg-white p-4 shadow-md">
+        @* Resource Usage Bar *@
+        @if ((ViewBag.VideosSize > 0) || (ViewBag.ImagesSize > 0) || (ViewBag.DocumentsSize > 0))
+        {
+            <div class="mb-4 flex flex-wrap gap-4">
+                @if (ViewBag.VideosSize > 0)
+                {
+                    var videosMB = ((double)ViewBag.VideosSize / (1024 * 1024));
+                    <div class="flex items-center gap-2 rounded-lg bg-white px-4 py-2 shadow border border-gray-200">
+                        <span class="material-symbols-outlined text-red-500">movie</span>
+                        <span class="font-semibold">Videos:</span>
+                        <span>@videosMB.ToString("F2") MB / 100MB</span>
+                        <div class="ml-2 w-32 h-2 bg-gray-200 rounded">
+                            <div class="h-2 rounded" style="width:@Math.Min(100, videosMB).ToString("F0")% ; background:@(videosMB > 100 ? "#dc2626" : "#22c55e");"></div>
+                        </div>
+                    </div>
+                }
+                @if (ViewBag.ImagesSize > 0)
+                {
+                    var imagesMB = ((double)ViewBag.ImagesSize / (1024 * 1024));
+                    <div class="flex items-center gap-2 rounded-lg bg-white px-4 py-2 shadow border border-gray-200">
+                        <span class="material-symbols-outlined text-purple-500">image</span>
+                        <span class="font-semibold">Pictures:</span>
+                        <span>@imagesMB.ToString("F2") MB / 100MB</span>
+                        <div class="ml-2 w-32 h-2 bg-gray-200 rounded">
+                            <div class="h-2 rounded" style="width:@Math.Min(100, imagesMB).ToString("F0")% ; background:@(imagesMB > 100 ? "#dc2626" : "#22c55e");"></div>
+                        </div>
+                    </div>
+                }
+                @if (ViewBag.DocumentsSize > 0)
+                {
+                    var docsMB = ((double)ViewBag.DocumentsSize / (1024 * 1024));
+                    <div class="flex items-center gap-2 rounded-lg bg-white px-4 py-2 shadow border border-gray-200">
+                        <span class="material-symbols-outlined text-green-500">docs</span>
+                        <span class="font-semibold">Documents:</span>
+                        <span>@docsMB.ToString("F2") MB / 100MB</span>
+                        <div class="ml-2 w-32 h-2 bg-gray-200 rounded">
+                            <div class="h-2 rounded" style="width:@Math.Min(100, docsMB).ToString("F0")% ; background:@(docsMB > 100 ? "#dc2626" : "#22c55e");"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="box-border flex w-full flex-col gap-4 rounded-xl bg-white p-4 shadow-md ">
             <div class="flex items-start justify-between">
                 <div class="flex-1">
                     <h1 class="mb-2 text-5xl font-semibold uppercase">@Model.TopicName</h1>

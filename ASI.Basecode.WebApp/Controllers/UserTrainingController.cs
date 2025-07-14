@@ -31,7 +31,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 trainings = trainings.Where(t => t.TrainingName != null && t.TrainingName.ToLower().Contains(search.ToLower())).ToList();
             if (categoryId.HasValue)
                 trainings = trainings.Where(t => t.TrainingCategoryId == categoryId.Value).ToList();
-            return View("~/Views/UserTrainings/Trainings.cshtml", trainings);
+            return View("~/Views/User/_TrainingCardsPartial.cshtml", trainings);
         }
 
         [HttpGet]
@@ -68,10 +68,10 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             int? accountId = HttpContext.Session.GetInt32("AccountId");
             if (accountId == null) return RedirectToAction("Login", "Account");
-            var enrolledTrainings = _enrollmentService.GetEnrolledTrainings(accountId.Value);
+            var allTrainings = _trainingService.GetAllTrainings();
             var filtered = string.IsNullOrWhiteSpace(search)
-                ? enrolledTrainings
-                : enrolledTrainings.Where(t => t.TrainingName != null && t.TrainingName.ToLower().Contains(search.ToLower())).ToList();
+                ? allTrainings
+                : allTrainings.Where(t => t.TrainingName != null && t.TrainingName.ToLower().Contains(search.ToLower())).ToList();
             return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", filtered);
         }
 

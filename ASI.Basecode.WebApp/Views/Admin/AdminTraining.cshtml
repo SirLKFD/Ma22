@@ -190,20 +190,26 @@
     @if (ViewBag.TotalCount > ViewBag.PageSize)
     {
         var totalPages = (int)Math.Ceiling((decimal)ViewBag.TotalCount / ViewBag.PageSize);
-        <div class="mt-10 flex justify-end">
-            <nav aria-label="Page navigation">
+        <div class="mt-10 flex items-center justify-between text-sm text-gray-600">
+
+            <!-- Total Count -->
+            <div>Total @ViewBag.TotalCount items</div>
+
+            <!-- Pagination + Controls -->
+            <div class="flex items-center gap-4">
                 <ul class="flex gap-1 text-sm">
                     @if (ViewBag.CurrentPage > 1)
                     {
                         <li>
                             <a href="@(isCategory
-                                ? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = ViewBag.CurrentPage - 1, search = search })
-                                : Url.Action("AdminTraining", new { page = ViewBag.CurrentPage - 1, search = search, categoryId = selectedCategoryId, skillLevelId = skillLevelId }))"
-                                class="rounded-l-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">
-                                    Prev
-                            </a>
-                        </li>
-                    }
+                                                           ? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = ViewBag.CurrentPage - 1, search = search, pageSize = ViewBag.PageSize })
+                                                   : Url.Action("AdminTraining", new { page = ViewBag.CurrentPage - 1, search = search, categoryId = selectedCategoryId, skillLevelId = skillLevelId, pageSize = ViewBag.PageSize }))"
+                       class="border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">
+                        Prev
+                    </a>
+                </li>
+                                }
+
                     @for (int i = 1; i <= totalPages; i++)
                     {
                         var isCurrent = i == ViewBag.CurrentPage;
@@ -213,28 +219,54 @@
 
                         <li>
                             <a href="@(isCategory
-                                ? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = i, search = search })
-                                : Url.Action("AdminTraining", new { page = i, search = search, categoryId = selectedCategoryId, skillLevelId = skillLevelId }))"
-                                class="border border-gray-300 px-3 py-2 transition @pageClass">
-                                    @i
-                            </a>
-                        </li>
-                    }
+                                                           ? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = i, search = search, pageSize = ViewBag.PageSize })
+                                                   : Url.Action("AdminTraining", new { page = i, search = search, categoryId = selectedCategoryId, skillLevelId = skillLevelId, pageSize = ViewBag.PageSize }))"
+                       class="border border-gray-300 px-3 py-2 transition @pageClass">@i</a>
+                </li>
+                                }
+
                     @if (ViewBag.CurrentPage < totalPages)
                     {
                         <li>
                             <a href="@(isCategory
-                                ? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = ViewBag.CurrentPage + 1, search = search })
-                                : Url.Action("AdminTraining", new { page = ViewBag.CurrentPage + 1, search = search, categoryId = selectedCategoryId, skillLevelId = skillLevelId }))"
-                                class="rounded-r-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">
-                                    Next
-                            </a>
-                        </li>
-                    }
+                                                           ? Url.Action("TrainingCategoryDetails", new { categoryId = categoryId, page = ViewBag.CurrentPage + 1, search = search, pageSize = ViewBag.PageSize })
+                                                   : Url.Action("AdminTraining", new { page = ViewBag.CurrentPage + 1, search = search, categoryId = selectedCategoryId, skillLevelId = skillLevelId, pageSize = ViewBag.PageSize }))"
+                       class="border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">
+                        Next
+                    </a>
+                </li>
+                                }
                 </ul>
-            </nav>
+
+                <!-- Page Size & Go To -->
+                <form method="get" action="@Url.Action("AdminTraining")" class="flex items-center gap-2">
+                    <input type="hidden" name="search" value="@search" />
+                    <input type="hidden" name="categoryId" value="@selectedCategoryId" />
+                    <input type="hidden" name="skillLevelId" value="@skillLevelId" />
+
+                    <!-- Page Size Dropdown -->
+                    <select name="pageSize" onchange="this.form.submit()" class="rounded border border-gray-300 px-2 py-1 text-sm">
+                        @{
+                            int total = ViewBag.TotalCount;
+                            int selected = ViewBag.PageSize;
+                            for (int i = 6; i <= total; i += 6)
+                            {
+                                <option value="@i" selected="@(i == selected)">@i / page</option>
+                            }
+                        }
+                    </select>
+
+                    <!-- Go To -->
+                    <span class="text-sm text-gray-600">Go to</span>
+                    <input type="number" name="page" min="1" max="@totalPages"
+                           class="w-16 rounded border border-gray-300 px-2 py-1 text-sm text-center"
+                           value="@ViewBag.CurrentPage" />
+                    <span class="text-sm text-gray-600">Page</span>
+                </form>
+            </div>
         </div>
     }
+
 </div>
 
 <!-- Modals -->

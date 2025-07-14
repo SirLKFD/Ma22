@@ -12,7 +12,7 @@
         <div class="align-items-center mx-5 my-3 flex w-full justify-start">
             <h1 class="font-weight-bold text-2xl uppercase">Add New Topic</h1>
         </div>
-        <form asp-controller="AdminTopic" asp-action="AddTopic" method="post" enctype="multipart/form-data">
+        <form asp-controller="AdminTopic" asp-action="AddTopic" method="post" enctype="multipart/form-data" id="addTopicForm">
             <div class="flex">
                 <!-- Left side with form fields -->
                 <input type="hidden" asp-for="TrainingId" id="TrainingId" />
@@ -34,12 +34,14 @@
 
                 <div class="flex w-1/2 flex-col gap-2 rounded-lg bg-[#640A16] p-4 text-white">
                     <h2 class="text-2xl font-semibold">Resources</h2>
+                    <p class="text-sm text-gray-300">Maximum 100MB per category (Videos, Images, Documents)</p>
 
                     <div class="flex flex-1 flex-col gap-2">
                         <!-- Videos -->
                         <div class="flex flex-1 flex-col">
                             <div class="flex justify-between">
                                 <p class="text-lg">Videos</p>
+                                <div id="VideoSizeDisplayAdd" class="mt-1 text-xs">Total video size: 0.00MB / 100MB</div>
                                 <label for="VideoFilesAdd" class="cursor-pointer">
                                     <input type="file"
                                            name="VideoFilesAdd"
@@ -63,6 +65,7 @@
                         <div class="flex flex-1 flex-col">
                             <div class="flex justify-between">
                                 <p class="text-lg">Images</p>
+                                <div id="ImageSizeDisplayAdd" class="mt-1 text-xs">Total image size: 0.00MB / 100MB</div>
                                 <label for="ImageFilesAdd" class="cursor-pointer">
                                     <input type="file"
                                            name="ImageFilesAdd"
@@ -88,6 +91,7 @@
                                 <div class="flex flex-col">
                                     <p class="text-lg">Documents</p>
                                     <p class="text-xs text-gray-300">PDF, Word, Excel, PowerPoint</p>
+                                    <div id="DocumentSizeDisplayAdd" class="mt-1 text-xs">Total document size: 0.00MB / 100MB</div>
                                 </div>
                                 <label for="DocumentFilesAdd" class="cursor-pointer">
                                     <input type="file"
@@ -148,25 +152,53 @@
         }
     }
 
-    // Listen for file input changes and log selected files
-    ['VideoFilesAdd', 'ImageFilesAdd', 'DocumentFilesAdd'].forEach(function(inputId) {
-        var input = document.getElementById(inputId);
-        if (input) {
-            input.addEventListener('change', function(event) {
-                if (event.target.files && event.target.files.length > 0) {
-                    const fileNames = Array.from(event.target.files).map(f => f.name);
-                    console.log(`[UPLOAD] ${inputId}: Selected files:`, fileNames);
-                } else {
-                    console.log(`[UPLOAD] ${inputId}: No files selected.`);
-                }
-            });
+    function updateSizeInfo(inputId, previewId, type) {
+        const files = document.getElementById(inputId).files;
+        let totalSize = 0;
+        for (let i = 0; i < files.length; i++) {
+            totalSize += files[i].size;
         }
-    });
+
+        const sizeInMB = (totalSize / (1024 * 1024)).toFixed(2);
+        let sizeInfo = document.getElementById(`${previewId}-size`);
+
+        if (!sizeInfo) {
+            sizeInfo = document.createElement('div');
+            sizeInfo.id = `${previewId}-size`;
+            sizeInfo.className = 'text-xs text-center mt-1';
+            document.getElementById(previewId).appendChild(sizeInfo);
+        }
+
+        sizeInfo.textContent = `Total ${type} size: ${sizeInMB}MB / 100MB`;
+        sizeInfo.style.color = totalSize > 100 * 1024 * 1024 ? 'red' : 'green';
+    }
+
+    function updateTotalResourceSizeAdd(type) {
+        let previewId, displayId;
+        if (type === 'video') {
+            previewId = 'VideoPreviewAdd'; displayId = 'VideoSizeDisplayAdd';
+        } else if (type === 'image') {
+            previewId = 'ImagePreviewAdd'; displayId = 'ImageSizeDisplayAdd';
+        } else if (type === 'document') {
+            previewId = 'DocumentPreviewAdd'; displayId = 'DocumentSizeDisplayAdd';
+        }
+        let totalSize = 0;
+        document.querySelectorAll(`#${previewId} .media-item[data-filesize]`).forEach(div => {
+            totalSize += parseInt(div.getAttribute('data-filesize')) || 0;
+        });
+        const sizeInMB = (totalSize / (1024 * 1024)).toFixed(2);
+        const display = document.getElementById(displayId);
+        if (display) {
+            display.textContent = `Total ${type} size: ${sizeInMB}MB / 100MB`;
+            display.style.color = totalSize > 100 * 1024 * 1024 ? 'red' : '#39d353'; // bright green
+        }
+    }
 
     function addNewFilePreview(previewId, file, icon, inputId) {
         const preview = document.getElementById(previewId);
         const div = document.createElement('div');
         div.className = 'flex flex-col items-center min-w-[60px] cursor-pointer media-item new';
+        div.setAttribute('data-filesize', file.size); // Ensure new file previews have data-filesize
 
         let fileInfo = '';
         if (inputId === 'DocumentFilesAdd') {
@@ -184,31 +216,88 @@
             </button>`;
 
         div.querySelector('.delete-media-btn').onclick = function(e) {
+            const parentId = div.parentElement ? div.parentElement.id : '';
             div.remove();
             e.stopPropagation();
+            // If no more .media-item.new in this preview, clear the file input
+            if (parentId && document.querySelectorAll(`#${parentId} .media-item.new`).length === 0) {
+                if (parentId === 'VideoPreviewAdd') document.getElementById('VideoFilesAdd').value = '';
+                if (parentId === 'ImagePreviewAdd') document.getElementById('ImageFilesAdd').value = '';
+                if (parentId === 'DocumentPreviewAdd') document.getElementById('DocumentFilesAdd').value = '';
+            }
+            if (parentId === 'VideoPreviewAdd') updateTotalResourceSizeAdd('video');
+            if (parentId === 'ImagePreviewAdd') updateTotalResourceSizeAdd('image');
+            if (parentId === 'DocumentPreviewAdd') updateTotalResourceSizeAdd('document');
         };
         preview.appendChild(div);
     }
 
     document.getElementById('ImageFilesAdd').addEventListener('change', function(event) {
         const preview = document.getElementById('ImagePreviewAdd');
+        preview.innerHTML = ''; // Clear existing previews
         Array.from(event.target.files).forEach(file => {
             addNewFilePreview('ImagePreviewAdd', file, 'image', 'ImageFilesAdd');
         });
+        updateTotalResourceSizeAdd('image');
     });
 
     document.getElementById('VideoFilesAdd').addEventListener('change', function(event) {
         const preview = document.getElementById('VideoPreviewAdd');
+        preview.innerHTML = ''; // Clear existing previews
         Array.from(event.target.files).forEach(file => {
             addNewFilePreview('VideoPreviewAdd', file, 'movie', 'VideoFilesAdd');
         });
+        updateTotalResourceSizeAdd('video');
     });
 
     document.getElementById('DocumentFilesAdd').addEventListener('change', function(event) {
         const preview = document.getElementById('DocumentPreviewAdd');
+        preview.innerHTML = ''; // Clear existing previews
         Array.from(event.target.files).forEach(file => {
             addNewFilePreview('DocumentPreviewAdd', file, 'description', 'DocumentFilesAdd');
         });
+        updateTotalResourceSizeAdd('document');
+    });
+
+    // Form validation
+    document.getElementById('addTopicForm').addEventListener('submit', function(e) {
+        const MAX_SIZE = 100 * 1024 * 1024; // 100MB in bytes
+
+        // Check video files total size
+        const videoFiles = document.getElementById('VideoFilesAdd').files;
+        let videoTotalSize = 0;
+        for (let i = 0; i < videoFiles.length; i++) {
+            videoTotalSize += videoFiles[i].size;
+        }
+        if (videoTotalSize > MAX_SIZE) {
+            alert('Total size of videos exceeds 100MB limit');
+            e.preventDefault();
+            return;
+        }
+
+        // Check image files total size
+        const imageFiles = document.getElementById('ImageFilesAdd').files;
+        let imageTotalSize = 0;
+        for (let i = 0; i < imageFiles.length; i++) {
+            imageTotalSize += imageFiles[i].size;
+        }
+        if (imageTotalSize > MAX_SIZE) {
+            alert('Total size of images exceeds 100MB limit');
+            e.preventDefault();
+            return;
+        }
+
+        // Check document files total size
+        const documentFiles = document.getElementById('DocumentFilesAdd').files;
+        let documentTotalSize = 0;
+        for (let i = 0; i < documentFiles.length; i++) {
+            documentTotalSize += documentFiles[i].size;
+        }
+        if (documentTotalSize > MAX_SIZE) {
+            alert('Total size of documents exceeds 100MB limit');
+            e.preventDefault();
+            return;
+        }
     });
 </script>
 <script>

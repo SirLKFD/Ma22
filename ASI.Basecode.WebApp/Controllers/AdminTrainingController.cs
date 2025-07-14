@@ -60,9 +60,9 @@ namespace ASI.Basecode.WebApp.Controllers
         /// Returns Admin Training View.
         /// </summary>
         /// <returns> Admin Training View </returns>
-        public IActionResult AdminTraining(string search, int? categoryId, int? skillLevelId, int page = 1)
+        public IActionResult AdminTraining(string search, int? categoryId, int? skillLevelId, int page = 1, int pageSize = 6)
         {
-            const int pageSize = 6;
+
             int totalCount;
             var trainings = _trainingService.GetFilteredTrainings(search, categoryId, skillLevelId, page, pageSize, out totalCount);
 

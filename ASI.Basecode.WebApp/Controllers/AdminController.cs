@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 
@@ -54,12 +55,10 @@ namespace ASI.Basecode.WebApp.Controllers
 
      
         [Authorize(Roles="2")]
-        public IActionResult UserMaster(int page = 1, string filter = "all", string search = "")
+        public IActionResult UserMaster(int page = 1, string filter = "all", string search = "", int pageSize = 10) 
         {
             try
             {
-                const int PageSize = 10;
-
                 var allUsers = _userService.GetAllUsers().ToList();
 
                 if (!string.IsNullOrWhiteSpace(search))
@@ -81,19 +80,22 @@ namespace ASI.Basecode.WebApp.Controllers
                 };
 
                 var paginatedUsers = filteredUsers
-                    .Skip((page - 1) * PageSize)
-                    .Take(PageSize)
+                    .Skip((page - 1) * pageSize) 
+                    .Take(pageSize)
                     .ToList();
 
                 var viewModel = new AdminCreateUserViewModel
                 {
                     Users = paginatedUsers,
                     CurrentPage = page,
-                    TotalPages = (int)Math.Ceiling((double)filteredUsers.Count / PageSize),
+                    TotalPages = (int)Math.Ceiling((double)filteredUsers.Count / pageSize),
                     TotalUsers = allUsers.Count,
                     TotalAdmins = allUsers.Count(u => u.Role == 0),
                     TotalGuests = allUsers.Count(u => u.Role == 1),
                 };
+
+                ViewBag.TotalCount = filteredUsers.Count; 
+                ViewBag.PageSize = pageSize;
 
                 return View(viewModel);
             }
@@ -383,7 +385,7 @@ namespace ASI.Basecode.WebApp.Controllers
                         
 
                         TempData["Success"] = "User added successfully!";
-                        return RedirectToAction("UserMaster"); // ✅ Redirect after success
+                        return RedirectToAction("UserMaster"); 
                     }
                     catch (Exception ex)
                     {

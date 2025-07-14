@@ -12,7 +12,7 @@
         <div class="align-items-center mx-5 my-3 flex w-full justify-start">
             <h1 class="font-weight-bold text-2xl uppercase">Edit Topic</h1>
         </div>
-        <form asp-controller="AdminTopic" asp-action="EditTopic" method="post" enctype="multipart/form-data">
+        <form asp-controller="AdminTopic" asp-action="EditTopic" method="post" enctype="multipart/form-data" id="editTopicForm">
             <input type="hidden" id="TopicIdEdit" name="Id" />
             <input type="hidden" id="TrainingIdEdit" name="TrainingId" />
             <input type="hidden" id="DeletedMediaIds" name="DeletedMediaIds" />
@@ -37,12 +37,14 @@
                 <!-- Right side content -->
                 <div class="flex w-1/2 flex-col gap-2 rounded-lg bg-[#640A16] p-4 text-white">
                     <h2 class="text-2xl font-semibold">Resources</h2>
+                    <p class="text-sm text-gray-300">Maximum 100MB per category (Videos, Images, Documents)</p>
 
                     <div class="flex flex-1 flex-col gap-2">
                         <!-- Videos -->
                         <div class="flex flex-1 flex-col">
                             <div class="flex justify-between">
                                 <p class="text-lg">Videos</p>
+                                <div id="VideoSizeDisplay" class="text-xs mt-1">Total video size: 0.00MB / 100MB</div>
                                 <label for="VideoFilesEdit" class="cursor-pointer">
                                     <input type="file"
                                            name="VideoFilesEdit"
@@ -66,6 +68,7 @@
                         <div class="flex flex-1 flex-col">
                             <div class="flex justify-between">
                                 <p class="text-lg">Images</p>
+                                <div id="ImageSizeDisplay" class="text-xs mt-1">Total image size: 0.00MB / 100MB</div>
                                 <label for="ImageFilesEdit" class="cursor-pointer">
                                     <input type="file"
                                            name="ImageFilesEdit"
@@ -91,6 +94,7 @@
                                 <div class="flex flex-col">
                                     <p class="text-lg">Documents</p>
                                     <p class="text-xs text-gray-300">PDF, Word, Excel, PowerPoint</p>
+                                    <div id="DocumentSizeDisplay" class="text-xs mt-1">Total document size: 0.00MB / 100MB</div>
                                 </div>
                                 <label for="DocumentFilesEdit" class="cursor-pointer">
                                     <input type="file"
@@ -185,7 +189,31 @@
         let arr = deleted ? deleted.split(',') : [];
         if (!arr.includes(mediaId.toString())) arr.push(mediaId);
         document.getElementById('DeletedMediaIds').value = arr.join(',');
+        // Get parent ID before removing the div
+        const parentId = div.parentElement ? div.parentElement.id : '';
         div.remove();
+        if (parentId === 'VideoPreview') updateTotalResourceSize('video');
+        if (parentId === 'ImagePreview') updateTotalResourceSize('image');
+        if (parentId === 'DocumentPreview') updateTotalResourceSize('document');
+    }
+
+    function updateSizeInfo(inputId, previewId, type) {
+        const files = document.getElementById(inputId).files;
+        let totalSize = 0;
+        for (let i = 0; i < files.length; i++) {
+            totalSize += files[i].size;
+        }
+
+        const sizeInMB = (totalSize / (1024 * 1024)).toFixed(2);
+        let sizeInfo = document.getElementById(`${previewId}-size`);
+
+        if (!sizeInfo) {
+            sizeInfo = document.createElement('div');
+            sizeInfo.id = `${previewId}-size`;
+            sizeInfo.className = 'text-xs text-center mt-1';
+            document.getElementById(previewId).appendChild(sizeInfo);
+        }
+
     }
 
     function openEditTopic(topicId, trainingId, topicName, description, mediaCount, accountFirstName, accountLastName, updatedTime, media) {
@@ -210,6 +238,7 @@
         document.getElementById('VideoFilesEdit').value = '';
         document.getElementById('ImageFilesEdit').value = '';
         document.getElementById('DocumentFilesEdit').value = '';
+        document.getElementById('DeletedMediaIds').value = '';
 
         // Video preview
         const videoPreview = document.getElementById('VideoPreview');
@@ -295,25 +324,11 @@
         }
     }
 
-    // Listen for file input changes and log selected files
-    ['VideoFilesEdit', 'ImageFilesEdit', 'DocumentFilesEdit'].forEach(function(inputId) {
-        var input = document.getElementById(inputId);
-        if (input) {
-            input.addEventListener('change', function(event) {
-                if (event.target.files && event.target.files.length > 0) {
-                    const fileNames = Array.from(event.target.files).map(f => f.name);
-                    console.log(`[UPLOAD] ${inputId}: Selected files:`, fileNames);
-                } else {
-                    console.log(`[UPLOAD] ${inputId}: No files selected.`);
-                }
-            });
-        }
-    });
-
     function addNewFilePreview(previewId, file, icon, inputId) {
         const preview = document.getElementById(previewId);
         const div = document.createElement('div');
         div.className = 'flex flex-col items-center min-w-[60px] cursor-pointer media-item new';
+        div.setAttribute('data-filesize', file.size); // Ensure new file previews have data-filesize
 
         let fileInfo = '';
         if (inputId === 'DocumentFilesEdit') {
@@ -331,10 +346,53 @@
             </button>`;
 
         div.querySelector('.delete-media-btn').onclick = function(e) {
+            const parentId = div.parentElement ? div.parentElement.id : '';
             div.remove();
             e.stopPropagation();
+            // If no more .media-item.new in this preview, clear the file input
+            if (parentId && document.querySelectorAll(`#${parentId} .media-item.new`).length === 0) {
+                if (parentId === 'VideoPreview') document.getElementById('VideoFilesEdit').value = '';
+                if (parentId === 'ImagePreview') document.getElementById('ImageFilesEdit').value = '';
+                if (parentId === 'DocumentPreview') document.getElementById('DocumentFilesEdit').value = '';
+            }
+            if (parentId === 'VideoPreview') updateTotalResourceSize('video');
+            if (parentId === 'ImagePreview') updateTotalResourceSize('image');
+            if (parentId === 'DocumentPreview') updateTotalResourceSize('document');
         };
         preview.appendChild(div);
+    }
+
+    function getExistingMediaSizes(previewId) {
+        // Sum file sizes of existing media in the preview (data-filesize attribute)
+        let total = 0;
+        document.querySelectorAll(`#${previewId} .media-item[data-filesize]`).forEach(div => {
+            total += parseInt(div.getAttribute('data-filesize')) || 0;
+        });
+        return total;
+    }
+
+    function updateTotalResourceSize(type) {
+        let inputId, previewId, displayId;
+        if (type === 'video') {
+            inputId = 'VideoFilesEdit'; previewId = 'VideoPreview'; displayId = 'VideoSizeDisplay';
+        } else if (type === 'image') {
+            inputId = 'ImageFilesEdit'; previewId = 'ImagePreview'; displayId = 'ImageSizeDisplay';
+        } else if (type === 'document') {
+            inputId = 'DocumentFilesEdit'; previewId = 'DocumentPreview'; displayId = 'DocumentSizeDisplay';
+        }
+        const files = document.getElementById(inputId).files;
+        let newFilesSize = 0;
+        for (let i = 0; i < files.length; i++) {
+            newFilesSize += files[i].size;
+        }
+        let existingFilesSize = getExistingMediaSizes(previewId);
+        let totalSize = newFilesSize + existingFilesSize;
+        const sizeInMB = (totalSize / (1024 * 1024)).toFixed(2);
+        const display = document.getElementById(displayId);
+        if (display) {
+            display.textContent = `Total ${type} size: ${sizeInMB}MB / 100MB`;
+            display.style.color = totalSize > 100 * 1024 * 1024 ? 'red' : '#39d353'; // bright green
+        }
     }
 
     document.getElementById('ImageFilesEdit').addEventListener('change', function(event) {
@@ -342,6 +400,7 @@
         Array.from(event.target.files).forEach(file => {
             addNewFilePreview('ImagePreview', file, 'image', 'ImageFilesEdit');
         });
+        updateSizeInfo('ImageFilesEdit', 'ImagePreview', 'image');
     });
 
     document.getElementById('VideoFilesEdit').addEventListener('change', function(event) {
@@ -349,12 +408,103 @@
         Array.from(event.target.files).forEach(file => {
             addNewFilePreview('VideoPreview', file, 'movie', 'VideoFilesEdit');
         });
+        updateSizeInfo('VideoFilesEdit', 'VideoPreview', 'video');
     });
 
     document.getElementById('DocumentFilesEdit').addEventListener('change', function(event) {
         const preview = document.getElementById('DocumentPreview');
         Array.from(event.target.files).forEach(file => {
             addNewFilePreview('DocumentPreview', file, 'description', 'DocumentFilesEdit');
+        });
+        updateSizeInfo('DocumentFilesEdit', 'DocumentPreview', 'document');
+    });
+
+    // Form validation
+    document.getElementById('editTopicForm').addEventListener('submit', function(e) {
+        const MAX_SIZE = 100 * 1024 * 1024; // 100MB in bytes
+
+        // Check video files total size
+        const videoFiles = document.getElementById('VideoFilesEdit').files;
+        let videoTotalSize = 0;
+        for (let i = 0; i < videoFiles.length; i++) {
+            videoTotalSize += videoFiles[i].size;
+        }
+        if (videoTotalSize > MAX_SIZE) {
+            alert('Total size of videos exceeds 100MB limit');
+            e.preventDefault();
+            return;
+        }
+
+        // Check image files total size
+        const imageFiles = document.getElementById('ImageFilesEdit').files;
+        let imageTotalSize = 0;
+        for (let i = 0; i < imageFiles.length; i++) {
+            imageTotalSize += imageFiles[i].size;
+        }
+        if (imageTotalSize > MAX_SIZE) {
+            alert('Total size of images exceeds 100MB limit');
+            e.preventDefault();
+            return;
+        }
+
+        // Check document files total size
+        const documentFiles = document.getElementById('DocumentFilesEdit').files;
+        let documentTotalSize = 0;
+        for (let i = 0; i < documentFiles.length; i++) {
+            documentTotalSize += documentFiles[i].size;
+        }
+        if (documentTotalSize > MAX_SIZE) {
+            alert('Total size of documents exceeds 100MB limit');
+            e.preventDefault();
+            return;
+        }
+    });
+
+    // Patch addNewFilePreview to call updateTotalResourceSize
+    const origAddNewFilePreview = addNewFilePreview;
+    addNewFilePreview = function(previewId, file, icon, inputId) {
+        origAddNewFilePreview(previewId, file, icon, inputId);
+        if (inputId === 'VideoFilesEdit') updateTotalResourceSize('video');
+        if (inputId === 'ImageFilesEdit') updateTotalResourceSize('image');
+        if (inputId === 'DocumentFilesEdit') updateTotalResourceSize('document');
+    };
+
+    // Patch delete button for new files to update size
+    // (already handled in addNewFilePreview above)
+
+    // Patch handleDeleteMedia for existing files to update size
+    // (already handled in handleDeleteMedia above)
+
+    // When opening modal, set data-filesize on each .media-item for existing files
+    const origOpenEditTopic = openEditTopic;
+    openEditTopic = function(topicId, trainingId, topicName, description, mediaCount, accountFirstName, accountLastName, updatedTime, media) {
+        origOpenEditTopic(topicId, trainingId, topicName, description, mediaCount, accountFirstName, accountLastName, updatedTime, media);
+        // Set data-filesize for each .media-item
+        (media || []).forEach(m => {
+            if (m.MediaType && m.MediaType.toLowerCase().includes('video')) {
+                const div = document.querySelector(`#VideoPreview .media-item[data-media-id='${m.Id}']`);
+                if (div) div.setAttribute('data-filesize', m.FileSize || 0);
+            }
+            if (m.MediaType && m.MediaType.toLowerCase().includes('image')) {
+                const div = document.querySelector(`#ImagePreview .media-item[data-media-id='${m.Id}']`);
+                if (div) div.setAttribute('data-filesize', m.FileSize || 0);
+            }
+            if (isDocumentFile(m.MediaType, m.Name)) {
+                const div = document.querySelector(`#DocumentPreview .media-item[data-media-id='${m.Id}']`);
+                if (div) div.setAttribute('data-filesize', m.FileSize || 0);
+            }
+        });
+        updateTotalResourceSize('video');
+        updateTotalResourceSize('image');
+        updateTotalResourceSize('document');
+    };
+
+    // Also update on file input change
+    ['VideoFilesEdit','ImageFilesEdit','DocumentFilesEdit'].forEach(id => {
+        document.getElementById(id).addEventListener('change', function() {
+            if (id === 'VideoFilesEdit') updateTotalResourceSize('video');
+            if (id === 'ImageFilesEdit') updateTotalResourceSize('image');
+            if (id === 'DocumentFilesEdit') updateTotalResourceSize('document');
         });
     });
 </script>
