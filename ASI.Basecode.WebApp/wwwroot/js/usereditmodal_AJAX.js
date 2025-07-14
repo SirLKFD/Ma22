@@ -26,6 +26,32 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (editUserForm) {
         editUserForm.addEventListener('submit', function(e) {
+            // Birthdate validation: must be at least 13 years old
+            const birthdateInput = document.getElementById('editBirthdate');
+            const birthdateErrorId = 'editBirthdateError';
+            let birthdateError = document.getElementById(birthdateErrorId);
+            if (!birthdateError) {
+                birthdateError = document.createElement('span');
+                birthdateError.id = birthdateErrorId;
+                birthdateError.className = 'block text-sm text-[#EAC231]';
+                birthdateInput.parentNode.parentNode.appendChild(birthdateError);
+            }
+            birthdateError.textContent = '';
+            birthdateError.style.display = 'none';
+
+            if (birthdateInput && birthdateInput.value) {
+                const birthDate = new Date(birthdateInput.value);
+                const today = new Date();
+                const minDate = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate());
+                if (birthDate > minDate) {
+                    birthdateError.textContent = 'User must be at least 13 years old.';
+                    birthdateError.style.display = 'block';
+                    birthdateInput.focus();
+                    e.preventDefault();
+                    return;
+                }
+            }
+            
             e.preventDefault();
             
             const formData = new FormData(this);

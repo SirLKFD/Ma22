@@ -88,8 +88,10 @@ namespace ASI.Basecode.Services.Services
                     MediaType = media.MediaType,
                     Name = media.Name,
                     MediaUrl = media.MediaUrl,
-                    AccountId = media.AccountId
-                        };
+                    AccountId = media.AccountId,
+                    Id = media.Id,
+                    FileSize = media.FileSize
+                };
         }
 
         public void DeleteTopicMedia(int id)

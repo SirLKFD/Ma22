@@ -1,23 +1,30 @@
 ﻿ @model ASI.Basecode.Services.ServiceModels.BrowseTrainingsViewModel 
 @* @model List<ASI.Basecode.Services.ServiceModels.TrainingViewModel> *@
 @{
-    ViewData["Title"] = "Ma22 | Dashboard";
+    ViewData["Title"] = "Ma22 | TestDashboard";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
     var trainingstoDisplay = Model.Trainings;
     var categoriestoDisplay = Model.Categories;
 }
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-<div class="animate-slide-up animate-fade-in mt-20 flex w-full justify-between opacity-0">
+<style>
+.selected-category {
+    background-color: #640A16 !important;
+    color: #fff !important;
+}
+</style>
+
+<div class="flex w-full mt-20 animate-slide-up opacity-0 animate-fade-in justify-between">
     
-    <div class="flex w-[55%] flex-col items-start">
+    <div class="flex-col flex w-[55%] items-start">
 
         <div class="w-3/4">
-            <h1 class="mb-2 text-6xl font-bold uppercase leading-tight">
+            <h1 class="text-6xl font-bold uppercase leading-tight mb-2">
                 KNOWLEDGE FOR<br />
                 EVERY JUAN
             </h1>
-            <div class="mb-5 w-2/3">
+            <div class="w-2/3 mb-5">
                 <p class="mt-2 text-lg">
                     Your gateway to reliable and accessible, simplified knowledge.
                 </p>
@@ -41,40 +48,40 @@
         </div>
     </div>
 
-    <div class="float sm:w-[45%]">
+    <div class="sm:w-[45%] float">
         <img src="~/img/bg_7.png" alt="Learning Illustration" class="h-auto w-full object-contain" />
     </div>
 </div>
 
-<div class="flex items-center justify-between gap-10 py-10 font-semibold">
+<div class="flex items-center justify-between gap-10 font-semibold py-10">
     <div class="flex gap-4">
-        <div class="category-card whitespace-nowrap rounded-full p-2 hover:cursor-pointer hover:bg-[#640A16] hover:text-white" data-category-id="0"
+        <div class="category-card category-filter hover:cursor-pointer hover:bg-[#640A16] hover:text-white rounded-full whitespace-nowrap p-2" data-category-id="0"
              data-category-description="All trainings">
             <p>All</p>
         </div>
-        <div id="category-cards-wrapper" class="flex flex-wrap items-center justify-center gap-4">
+        <div id="category-cards-wrapper" class="flex flex-wrap justify-center items-center gap-4">
             @foreach (var category in categoriestoDisplay.Take(6))
             {
-                <div class="category-card whitespace-nowrap rounded-full p-2 hover:cursor-pointer hover:bg-[#640A16] hover:text-white" data-category-id="@category.Id" data-category-description="@category.Description">
+                <div class="category-card category-filter hover:cursor-pointer hover:bg-[#640A16] hover:text-white rounded-full whitespace-nowrap p-2" data-category-id="@category.Id" data-category-description="@category.Description">
                     <p>@category.CategoryName</p>
                 </div>
             }
         </div>
     </div>
     
-    <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="flex space-x-2 rounded-full p-2 outline outline-1 outline-gray-400 hover:bg-[#640A16] hover:text-white">
+    <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="flex rounded-full outline outline-1 outline-gray-400 p-2 hover:bg-[#640A16] hover:text-white space-x-2">
         <span class="material-symbols-outlined">
             filter_list
         </span>
         <span>Categories</span>
     </button>
 
-    <div id="dropdown" class="w-42 z-10 hidden max-h-48 divide-y divide-gray-100 overflow-y-auto rounded-lg bg-white shadow-sm">
+    <div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-42 overflow-y-auto max-h-48">
         <ul class="py-2 text-sm text-black" aria-labelledby="dropdownDefaultButton">
             @foreach (var category in categoriestoDisplay)
             {
                 <li>
-                    <a class="category-card block px-4 py-2 hover:bg-[#EAC231] hover:text-black hover:no-underline" data-category-id="@category.Id" data-category-description="@category.Description">@category.CategoryName</a>
+                    <a class="block category-card category-filter px-4 py-2 hover:bg-[#EAC231] hover:text-black hover:no-underline" data-category-id="@category.Id" data-category-description="@category.Description">@category.CategoryName</a>
                 </li>
             }
             
@@ -152,4 +159,25 @@
 @section Scripts {
     <!-- BrowseTrainings AJAX Script -->
     <script src="~/js/browsetrainings_AJAX.js" asp-append-version="true"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function setActiveCategory(categoryId) {
+            document.querySelectorAll('.category-filter').forEach(function (el) {
+                if (el.getAttribute('data-category-id') === categoryId) {
+                    el.classList.add('selected-category');
+                } else {
+                    el.classList.remove('selected-category');
+                }
+            });
+        }
+        document.querySelectorAll('.category-filter').forEach(function (el) {
+            el.addEventListener('click', function () {
+                const categoryId = el.getAttribute('data-category-id');
+                setActiveCategory(categoryId);
+                // Optionally: trigger your filter logic here
+            });
+        });
+        setActiveCategory("0"); // Default to 'All'
+    });
+    </script>
 }

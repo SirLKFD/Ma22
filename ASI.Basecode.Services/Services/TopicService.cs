@@ -82,7 +82,8 @@ namespace ASI.Basecode.Services.Services
                         MediaType = m.MediaType,
                         Name = m.Name,
                         MediaUrl = m.MediaUrl,
-                        AccountId = m.AccountId
+                        AccountId = m.AccountId,
+                        FileSize = m.FileSize
                     }).ToList(),
                     AccountFirstName = t.Account.FirstName,
                     AccountLastName = t.Account.LastName,
@@ -133,7 +134,8 @@ namespace ASI.Basecode.Services.Services
                     MediaType = m.MediaType,
                     Name = m.Name,
                     MediaUrl = m.MediaUrl,
-                    AccountId = m.AccountId
+                    AccountId = m.AccountId,
+                    FileSize = m.FileSize
                 }).ToList() ?? new List<TopicMediaViewModel>(),
                 MediaCount = topic.TopicMedia?.Count ?? 0
             };

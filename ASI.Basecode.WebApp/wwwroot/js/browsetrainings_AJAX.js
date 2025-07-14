@@ -194,6 +194,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (loadingElement) loadingElement.style.display = 'none';
             });
     }
+
+
     
     if (searchBtn) {
         searchBtn.addEventListener('click', doTrainingSearch);

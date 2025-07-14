@@ -89,10 +89,7 @@ namespace ASI.Basecode.WebApp
             {
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection"),
-                    sqlServerOptions => {
-                        sqlServerOptions.CommandTimeout(120);
-                        sqlServerOptions.EnableRetryOnFailure();
-                    });
+                    sqlServerOptions => sqlServerOptions.CommandTimeout(120));
             });
 
             services.AddControllersWithViews();
