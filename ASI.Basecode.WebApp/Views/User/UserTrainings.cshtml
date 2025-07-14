@@ -70,7 +70,42 @@
         <span class="material-symbols-outlined animate-spin text-3xl">hourglass_empty</span>
     </div>
 </div> *@
+<div class="flex items-center justify-between gap-10 font-semibold py-10">
+    <div class="flex gap-4">
+        <div class="category-card hover:cursor-pointer hover:bg-[#640A16] hover:text-white rounded-full whitespace-nowrap p-2" data-category-id="0"
+             data-category-description="All trainings">
+            <p>All</p>
+        </div>
+        <div id="category-cards-wrapper" class="flex flex-wrap justify-center items-center gap-4">
+            @foreach (var category in categoriesToDisplay.Take(6))
+            {
+                <div class="category-card hover:cursor-pointer hover:bg-[#640A16] hover:text-white rounded-full whitespace-nowrap p-2" data-category-id="@category.Id" data-category-description="@category.Description">
+                    <p>@category.CategoryName</p>
+                </div>
+            }
+        </div>
+    </div>
 
+    <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="flex rounded-full outline outline-1 outline-gray-400 p-2 hover:bg-[#640A16] hover:text-white space-x-2">
+        <span class="material-symbols-outlined">
+            filter_list
+        </span>
+        <span>Categories</span>
+    </button>
+
+    <div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-42 overflow-y-auto max-h-48">
+        <ul class="py-2 text-sm text-black" aria-labelledby="dropdownDefaultButton">
+            @foreach (var category in categoriesToDisplay)
+            {
+                <li>
+                    <a class="block category-card px-4 py-2 hover:bg-[#EAC231] hover:text-black hover:no-underline" data-category-id="@category.Id" data-category-description="@category.Description">@category.CategoryName</a>
+                </li>
+            }
+
+        </ul>
+    </div>
+
+</div>
 <div id="usertrainings-container" class=" mb-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
     @if (enrolledTrainings.Any())
     {
@@ -132,7 +167,7 @@
     }
     else
     {
-        <div class="col-span-3 py-8 text-center text-gray-500">No trainings found.</div>
+        <div class="col-span-3 py-8 text-center text-gray-500">No Enrolled Trainings.</div>
     }
 
 </div>
