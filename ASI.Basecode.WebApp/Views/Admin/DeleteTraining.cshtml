@@ -48,7 +48,7 @@
         <form asp-action="DeleteTraining" asp-controller="AdminTraining" method="post" class="align-self-center">
             <input type="hidden" asp-for="Id" name="Id" id="deleteTrainingId" />
             <input type="hidden" asp-for="TrainingName" name="trainingName" id="deleteTrainingName" />
-            <button class="bg-[#FFE9C6] hover:bg-[#e6c89c] w-[450px] text-black py-2 rounded-xl font-weight-bold">
+            <button id="deleteTrainingBtn" type="submit" class="bg-[#FFE9C6] hover:bg-[#e6c89c] w-[450px] text-black py-2 rounded-xl font-weight-bold">
                 Confirm
             </button>
         </form>
@@ -83,4 +83,13 @@
 
         document.getElementById('deleteTraining').classList.remove('hidden');
     }
+
+    // Add loading state to Delete Training form
+    document.querySelector('#deleteTraining form').addEventListener('submit', function(e) {
+        var btn = document.getElementById('deleteTrainingBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="flex items-center justify-center w-full"><span class="spinner-border spinner-border-sm mr-2"></span><span>Deleting...</span></span>';
+        }
+    });
 </script>

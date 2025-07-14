@@ -92,7 +92,7 @@
                             <option value="11">More than 1 year</option>
                         </select>
                 </div>
-                <button class="bg-[#FFE9C6] hover:bg-[#e6c89c] w-2/3 text-black align-self-center py-2 rounded-xl font-weight-bold mt-2">
+                <button id="editTrainingBtn" type="submit" class="bg-[#FFE9C6] hover:bg-[#e6c89c] w-2/3 text-black align-self-center py-2 rounded-xl font-weight-bold mt-2">
                     Save Changes
                 </button>
             </div>
@@ -160,6 +160,15 @@
             placeholderElement.classList.remove('hidden');
             placeholderElement.classList.add('material-symbols-outlined');
             textElement.classList.remove('hidden');
+        }
+    });
+
+    // Add loading state to Edit Training form
+    document.querySelector('#editTraining form').addEventListener('submit', function(e) {
+        var btn = document.getElementById('editTrainingBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="flex items-center justify-center w-full"><span class="spinner-border spinner-border-sm mr-2"></span><span>Saving...</span></span>';
         }
     });
 </script>

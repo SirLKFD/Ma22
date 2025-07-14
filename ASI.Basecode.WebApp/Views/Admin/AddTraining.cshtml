@@ -81,7 +81,7 @@
                         <option value="11">More than 1 year</option>
                     </select>
                 </div>
-                <button class="align-self-center font-weight-bold mt-2 w-2/3 rounded-xl bg-[#FFE9C6] py-2 text-black hover:bg-[#e6c89c]">
+                <button id="addTrainingBtn" type="submit" class="align-self-center font-weight-bold mt-2 w-2/3 rounded-xl bg-[#FFE9C6] py-2 text-black hover:bg-[#e6c89c]">
                     Add Training
                 </button>
             </div>
@@ -117,6 +117,15 @@
             placeholderElement.classList.remove('hidden');
             placeholderElement.classList.add('material-symbols-outlined');
             textElement.classList.remove('hidden');
+        }
+    });
+
+    // Add loading state to Add Training form
+    document.querySelector('#addTraining form').addEventListener('submit', function(e) {
+        var btn = document.getElementById('addTrainingBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="flex items-center justify-center w-full"><span class="spinner-border spinner-border-sm mr-2"></span><span>Adding...</span></span>';
         }
     });
 </script>

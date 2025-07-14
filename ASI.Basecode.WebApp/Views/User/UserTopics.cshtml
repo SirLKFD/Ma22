@@ -215,10 +215,10 @@
                 }
                 else
                 {
-                    <form method="post" asp-controller="Enrollment" asp-action="Enroll">
+                    <form method="post" asp-controller="Enrollment" asp-action="Enroll" onsubmit="return handleEnrollSubmit(this)">
                         <input type="hidden" name="trainingId" value="@training.Id" />
                         <input type="hidden" name="trainingName" value="@training.TrainingName">
-                        <button type="submit" class="w-full rounded-lg bg-[#EAC231] px-32 py-2 font-semibold">
+                        <button type="submit" class="w-full rounded-lg bg-[#EAC231] px-32 py-2 font-semibold" id="enrollNowBtn-@training.Id">
                             Enroll Now
                         </button>
                     </form>
@@ -336,5 +336,16 @@
             btn.querySelector('span').classList.remove('animate-spin');
         }
     });
+</script>
+
+<script>
+function handleEnrollSubmit(form) {
+    var btn = form.querySelector('button[type="submit"]');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="flex items-center justify-center w-full"><span class="spinner-border spinner-border-sm mr-2"></span><span>Enrolling...</span></span>';
+    }
+    return true;
+}
 </script>
 

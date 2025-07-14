@@ -31,7 +31,7 @@
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
 
-                    <button class="mx-5 mt-4 rounded-lg bg-[#FFE9C6] px-4 py-2 font-semibold">Save Changes</button>
+                    <button id="editTopicBtn" class="mx-5 mt-4 rounded-lg bg-[#FFE9C6] px-4 py-2 font-semibold flex items-center justify-center gap-2">Save Changes</button>
                 </div>
 
                 <!-- Right side content -->
@@ -357,4 +357,13 @@
             addNewFilePreview('DocumentPreview', file, 'description', 'DocumentFilesEdit');
         });
     });
+</script>
+<script>
+document.querySelector('#editTopic form').addEventListener('submit', function(e) {
+    var btn = document.getElementById('editTopicBtn');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span><span>Saving...</span>';
+    }
+});
 </script>

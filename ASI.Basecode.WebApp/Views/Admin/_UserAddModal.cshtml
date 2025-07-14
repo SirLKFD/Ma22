@@ -132,4 +132,13 @@
 
 <!-- User Add Modal AJAX Script -->
 <script src="~/js/useraddmodal_AJAX.js" asp-append-version="true"></script>
+<script>
+document.getElementById('createuserform').addEventListener('submit', function(e) {
+    var btn = this.querySelector('button[type="submit"]');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="flex items-center justify-center w-full"><span class="spinner-border spinner-border-sm mr-2"></span><span>Adding...</span></span>';
+    }
+});
+</script>
 @await Html.PartialAsync("~/Views/Shared/_ValidationScriptsPartial.cshtml")

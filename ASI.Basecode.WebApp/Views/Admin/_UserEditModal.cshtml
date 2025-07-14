@@ -119,7 +119,7 @@
                 }
 
                 <div class="flex justify-center pt-4">
-                    <button type="submit" class="w-[400px] rounded bg-[#FFE9C6] px-6 py-2 font-bold text-black hover:bg-[#e6c89c]">Save Changes</button>
+                    <button type="submit" id="editUserBtn" class="w-[400px] rounded bg-[#FFE9C6] px-6 py-2 font-bold text-black hover:bg-[#e6c89c]">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -128,3 +128,12 @@
 
 <!-- User Edit Modal AJAX Script -->
 <script src="~/js/usereditmodal_AJAX.js" asp-append-version="true"></script>
+<script>
+document.getElementById('editUserForm').addEventListener('submit', function(e) {
+    var btn = document.getElementById('editUserBtn');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="flex items-center justify-center w-full"><span class="spinner-border spinner-border-sm mr-2"></span><span>Saving...</span></span>';
+    }
+});
+</script>

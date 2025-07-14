@@ -42,7 +42,7 @@
 
         <form asp-action="DeleteTopic" asp-controller="AdminTopic" method="post" class="align-self-center">
             <input type="hidden" name="id" id="topicIdToDelete" />
-            <button class="bg-[#FFE9C6] w-[450px] text-black py-2 rounded-xl font-weight-bold ">
+            <button id="deleteTopicBtn" class="bg-[#FFE9C6] w-[450px] text-black py-2 rounded-xl font-weight-bold flex items-center justify-center gap-2">
                 Confirm
             </button>
         </form>
@@ -61,4 +61,13 @@
         document.getElementById('DeleteTopicModified').textContent = date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
         document.getElementById('DeleteTopicAttachmentCount').textContent = MediaCount + ' Attachments';
     }
+</script>
+<script>
+document.querySelector('#deleteTopic form').addEventListener('submit', function(e) {
+    var btn = document.getElementById('deleteTopicBtn');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span><span>Deleting...</span>';
+    }
+});
 </script>

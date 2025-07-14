@@ -209,7 +209,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const newBtn = confirmBtn.cloneNode(true);
       confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
       // Add new event listener
-      newBtn.addEventListener("click", function () {
+      newBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        newBtn.disabled = true;
+        newBtn.innerHTML =
+          '<span class="spinner-border spinner-border-sm mr-2"></span> Deleting...';
         handleDeleteUser(userId);
       });
     }
@@ -253,6 +257,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
       var formData = new FormData(form);
 
+      // Loading state for Save Changes button
+      var editBtn = document.getElementById("editUserBtn");
+      if (editBtn) {
+        editBtn.disabled = true;
+        editBtn.innerHTML =
+          '<span class="spinner-border spinner-border-sm mr-2"></span> Saving...';
+      }
+
       fetch(form.action, {
         method: "POST",
         body: formData,
@@ -274,7 +286,34 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(() => {
           if (window.toastr)
             toastr.error("An error occurred while updating the user.");
+        })
+        .finally(() => {
+          if (editBtn) {
+            editBtn.disabled = false;
+            editBtn.innerHTML = "Save Changes";
+          }
         });
+    }
+  });
+
+  // Attach loading state to Confirm Delete button
+  document.addEventListener("DOMContentLoaded", function () {
+    var confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+    if (confirmDeleteBtn) {
+      // Remove previous event listeners to avoid stacking
+      var newBtn = confirmDeleteBtn.cloneNode(true);
+      confirmDeleteBtn.parentNode.replaceChild(newBtn, confirmDeleteBtn);
+      newBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        newBtn.disabled = true;
+        newBtn.innerHTML =
+          '<span class="spinner-border spinner-border-sm mr-2"></span> Deleting...';
+        // Call the delete handler
+        var userId = document
+          .getElementById("deleteUserId")
+          .textContent.replace("ID: ", "");
+        handleDeleteUser(userId);
+      });
     }
   });
 
