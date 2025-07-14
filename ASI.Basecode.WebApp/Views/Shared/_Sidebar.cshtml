@@ -54,38 +54,38 @@
         </ul>
 
         <!-- Bottom Section with Dropdown -->
-        <div class="mb-10 px-2 relative">
-            <button onclick="toggleDropDown()" class="focus:outline-none w-full flex items-center justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline">
+        <div class="relative mb-10 px-2">
+            <button onclick="toggleDropDown()" class="flex w-full items-center justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline focus:outline-none">
                 @{
                     var profilePicture = HttpContextAccessor.HttpContext.Session.GetString("ProfilePicture");
                 }
                 @if (!string.IsNullOrEmpty(profilePicture))
                 {
-                    <img src="@profilePicture" alt="Profile" class="w-8 h-8 rounded-full object-cover" />
+                    <img src="@profilePicture" alt="Profile" class="h-8 w-8 rounded-full object-cover" />
                 }
                 else
                 {
                     <span class="material-symbols-outlined text-[25px]">person</span>
                 }
                 <span class="hidden text-sm group-hover:inline">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</span>
-                <span class="material-symbols-outlined text-[16px] hidden group-hover:inline ml-auto">arrow_drop_up</span>
+                <span class="material-symbols-outlined ml-auto hidden text-[16px] group-hover:inline">arrow_drop_up</span>
             </button>
 
             <!-- Improved Dropdown Menu -->
-            <div id="dropdownMenu" class="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden opacity-0 invisible transition-all duration-300 transform translate-y-2 z-50">
+            <div id="dropdownMenu" class="invisible absolute bottom-full left-0 right-0 z-50 mb-2 translate-y-2 transform overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition-all duration-300">
                 <div class="py-2">
                     
 
                     <!-- Menu Items -->
-                    <a href="javascript:void(0);" onclick="viewDetails(@userId)" class="flex items-center space-x-3 px-4 py-3 hover:bg-yellow-400 hover:text-black text-black transition-colors duration-200 hover:no-underline">
+                    <a href="javascript:void(0);" onclick="editDetails(@userId)" class="flex items-center space-x-3 px-4 py-3 text-black transition-colors duration-200 hover:bg-yellow-400 hover:text-black hover:no-underline">
                         <span class="material-symbols-outlined text-[20px]">account_circle</span>
                         <span class="text-sm">View Profile</span>
                     </a>
 
-                    <div class="border-t border-gray-100 my-1"></div>
+                    <div class="my-1 border-t border-gray-100"></div>
 
                     <!-- Logout -->
-                    <a href="/Account/SignOutUser" class="flex items-center space-x-3 px-4 py-3 text-red-600 hover:bg-yellow-400  hover:text-black text-black transition-colors duration-200 hover:no-underline">
+                    <a href="/Account/SignOutUser" class="flex items-center space-x-3 px-4 py-3 text-red-600 text-black transition-colors duration-200 hover:bg-yellow-400 hover:text-black hover:no-underline">
                         <span class="material-symbols-outlined text-[20px]">logout</span>
                         <span class="text-sm font-medium">Logout</span>
                     </a>

@@ -43,7 +43,16 @@ namespace ASI.Basecode.Services.Services
 
         if (accountRole == 0)
         {
-            logsQuery = logsQuery.Where(l => l.AccountId == accountId);
+            // For admins, include their own logs plus enrollment logs for trainings they created
+            var adminTrainingIds = _trainingService.GetAllTrainings()
+                .Where(t => t.AccountId == accountId)
+                .Select(t => t.Id)
+                .ToList();
+
+            logsQuery = logsQuery.Where(l => l.AccountId == accountId || 
+                                           (l.Entity == "User" && l.ActionType == "Create" && l.EntityName.StartsWith("Enrolled to") && 
+                                            adminTrainingIds.Contains(l.EntityId)) || (l.Entity == "User" && l.ActionType == "Create" && l.EntityName.StartsWith("Reviewed") && 
+                                            adminTrainingIds.Contains(l.EntityId)));
         }
         else if (accountRole == 2)
         {
@@ -86,16 +95,30 @@ namespace ASI.Basecode.Services.Services
 
     public void LogAction(string entity, string actionType, int entityId, int userId, string entityName)
     {
-        var log = new AuditLog
+        try
         {
-            Entity = entity,
-            EntityName = entityName,
-            ActionType = actionType,
-            EntityId = entityId,
-            AccountId = userId,
-            TimeStamp = DateTime.UtcNow.AddHours(8)
-        };
-        _repository.AddAuditLog(log);
+            var log = new AuditLog
+            {
+                Entity = entity,
+                EntityName = entityName,
+                ActionType = actionType,
+                EntityId = entityId,
+                AccountId = userId,
+                TimeStamp = DateTime.UtcNow.AddHours(8)
+            };
+            
+            _repository.AddAuditLog(log);
+            
+            // Log to console for debugging
+            Console.WriteLine($"[AuditLogService] Successfully logged action: {actionType} on {entity} (ID: {entityId}) by user {userId}");
+        }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging
+            Console.WriteLine($"[AuditLogService] Error logging action: {ex.Message}");
+            Console.WriteLine($"[AuditLogService] Stack trace: {ex.StackTrace}");
+            throw; // Re-throw to maintain the original behavior
+        }
     }
 }
 }

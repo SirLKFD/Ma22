@@ -25,6 +25,9 @@ namespace ASI.Basecode.Services.ServiceModels
         public DateOnly? Birthdate { get; set; }
 
         public string Password { get; set; } 
+
+        [Compare("Password", ErrorMessage = "Password and Confirm Password must match.")]
+        public string ConfirmPassword { get; set; }
         public string ProfilePicture { get; set; }
 
     }

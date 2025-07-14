@@ -5,43 +5,55 @@
     Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
 
-<div class="max-h-xl mb-20 flex w-full items-center rounded-xl bg-[#fff]">
+<div class="flex h-[90vh] mb-20 w-full items-center justify-center  animate-slide-up opacity-0 animate-fade-in">
     <!-- Left Image -->
-    <div class="w-[45%]">
+    <div class="sm:w-[45%] ">
         <img src="~/img/bg_3.png" alt="Learning Illustration" class="h-auto w-full object-contain" />
     </div>
 
     <!-- Right Text Content -->
-    <div class="flex-1 pr-10">
-        <div class="rounded-lg bg-[#640A16] p-8 text-white">
-            <h1 class="text-7xl font-extrabold uppercase leading-tight">
-                KNOWLEDGE FOR<br />
-                EVERY JUAN
-            </h1>
-            <p class="mt-4 text-lg">
-                Your gateway to reliable and accessible, simplified knowledge.
-            </p>
-        </div>
-    </div>
-</div>
-
-<div class="mb-20 flex flex-col gap-10">
-    <h1 class="font-weight-bold text-4xl">About Us</h1>
-    <div class="flex w-full rounded-lg bg-[#640A16] p-10 text-center text-white">
-        <p class="text-lg">
-            We are a knowledge-sharing platform dedicated to making complex topics simple and accessible.
-            Our goal is to empower curious minds with clear, reliable, and easy-to-understand information
-            across a wide range of subjects.
+    <div class=" flex-col flex">
+        
+        <h1 class="text-7xl font-extrabold uppercase leading-tight">
+            KNOWLEDGE FOR<br />
+            EVERY JUAN
+        </h1>
+        <p class="mt-2 text-lg">
+            Your gateway to reliable and accessible, simplified knowledge.
         </p>
+        
+        <div class="flex gap-5 mt-4">
+            <div class="flex gap-2 items-center ">
+                <span class="material-symbols-outlined !text-[30px] bg-[#640A16] text-white rounded-lg p-1">
+                    verified
+                </span>
+                <p class="text-sm">Reliable & Up-to-date <br />Content</p>
+            </div>
+            <div class="flex gap-2 items-center ">
+                <span class="material-symbols-outlined !text-[30px] bg-[#640A16] text-white rounded-lg p-1">
+                    search
+                </span>
+                <p class="text-sm">Easy to Navigate</p>
+            </div>
+            <div class="flex gap-2 items-center ">
+                <span class="material-symbols-outlined !text-[30px] bg-[#640A16] text-white rounded-lg p-1">
+                    collections
+                </span>
+                <p class="text-sm">Engaging and Accessible<br /> Formats </p>
+            </div>
+
+        </div>
+        <button class="mt-4 bg-[#EAC231] p-2 w-fit font-bold rounded-lg" onclick="scrollToSection()">Get Started</button>
+        
     </div>
 </div>
 
-<div class="mb-10 flex flex-col gap-2">
-    <h1 class="font-weight-bold text-4xl">Trainings to get you started</h1>
+<div class=" mx-20 mb-10 flex flex-col gap-2 ">
+    <h1 id="target-section" class="font-weight-bold text-4xl">Trainings to get you started</h1>
     <p>Learn new skills or improve existing ones at your own pace.</p>
 </div>
 
-<div class="mb-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+<div class="mx-20 mb-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
     @if (Model != null && Model.Any())
     {
         foreach (var training in Model.Take(6))
@@ -106,13 +118,18 @@
     }
 </div>
 
-<div class="flex items-center justify-center">
+<div class="flex items-center justify-center mb-20">
 
-    <a asp-controller="User" asp-action="BrowseTrainings" class="rounded-lg bg-[#640A16] px-16 py-2 text-white">
+    <a asp-controller="User" asp-action="BrowseTrainings" class="rounded-lg bg-[#640A16] px-16 py-2 text-white hover:no-underline">
         Explore More
     </a>
 </div>
 
 <script>
-    // You can add JS logic here if needed
+    function scrollToSection() {
+          document.getElementById("target-section").scrollIntoView({
+            behavior: "smooth"
+          });
+    }
+
 </script>

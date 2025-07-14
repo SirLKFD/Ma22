@@ -50,6 +50,25 @@ namespace ASI.Basecode.Services.Services
             return token;
         }
 
+        public async Task<string> GenerateVerificationTokenAsync(string email)
+        {
+            _logger.LogInformation("Generating verification token for email: {Email}", email);
+            var token = GenerateSecureToken();
+            var expiration = DateTime.UtcNow.AddHours(1);
+    
+            var resetToken = new PasswordResetToken
+            {
+                // Special value for email verification
+                Token = token,
+                ExpirationTime = expiration,
+                IsUsed = false
+            };
+            _tokenRepo.AddToken(resetToken);
+            _unitOfWork.SaveChanges();
+            _logger.LogInformation("Verification token generated for email: {Email}", email);
+            return token;
+        }
+
         public async Task<bool> ValidateResetTokenAsync(string token)
         {
             _logger.LogInformation("Validating reset token: {Token}", token);
@@ -82,6 +101,23 @@ namespace ASI.Basecode.Services.Services
             _userRepo.UpdateUser(user);
             _unitOfWork.SaveChanges();
             _logger.LogInformation("Password reset successful for userId: {UserId}", user.Id);
+            return true;
+        }
+
+        public async Task<bool> VerifyEmailAsync(string token)
+        {
+            _logger.LogInformation("Verifying email for token: {Token}", token);
+            var resetToken = _tokenRepo.GetByToken(token);
+            if (resetToken == null || resetToken.IsUsed == true || resetToken.ExpirationTime < DateTime.UtcNow)
+            {
+                _logger.LogWarning("Invalid or expired verification token: {Token}", token);
+                return false;
+            }
+            
+            // Mark token as used (email verified)
+            resetToken.IsUsed = true;
+            _tokenRepo.UpdateToken(resetToken);
+            _unitOfWork.SaveChanges();
             return true;
         }
 

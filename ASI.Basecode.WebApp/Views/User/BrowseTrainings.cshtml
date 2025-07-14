@@ -8,7 +8,7 @@
 }
 
 
-<div class="my-10 flex justify-center gap-20">
+<div class="animate-slide-up animate-fade-in flex h-[90vh] items-center justify-center gap-20 opacity-0">
     <div class="flex flex-col gap-10">
         <h1 class="font-weight-bold md:text-5xl lg:text-6xl">
             Discover Trainings <br />that expand your<br /> knowledge 
@@ -36,28 +36,34 @@
         <h2 class="font-weight-bold text-4xl">Explore by Category</h2>
         <p>Choose from our popular learning paths</p>
     </div>
-    <div class="flex flex-wrap justify-center gap-20" id="category-list-container">
-        <button id="category-left-btn" class="mr-2 rounded bg-[#EAC231] px-4 py-2 font-semibold text-black shadow transition hover:bg-[#cfa221]">&#8592;</button>
+
+    <div class="flex items-center justify-center gap-x-10" id="category-list-container">
+        <button id="category-left-btn" class="h-10 w-10 rounded-full bg-[#EAC231] font-semibold text-black shadow transition hover:bg-[#cfa221]">
+            &#8592;
+        </button>
+
         <div id="category-cards-wrapper" class="flex flex-wrap justify-center gap-20">
-        @if (Model != null && Model.Categories.Any())
-        {
-            foreach (var category in Model.Categories)
+            @if (Model != null && Model.Categories.Any())
             {
-                <div class="category-card flex aspect-square w-[150px] flex-col items-center justify-center gap-4 rounded-xl bg-white p-4 text-black shadow-md transition-all duration-300 hover:scale-110 hover:cursor-pointer"
-                     data-category-id="@category.Id" data-category-description="@category.Description">
-                    <span class="material-symbols-outlined rounded-xl bg-[#FFE9C6] p-2 text-black text-[40px]">
-                        code
-                    </span>
-                    <p class="text-center text-sm font-semibold">@category.CategoryName</p>
-                </div>
+                foreach (var category in Model.Categories)
+                {
+                    <div class="category-card flex aspect-square w-[150px] flex-col items-center justify-center gap-4 rounded-xl bg-white p-4 text-black shadow-md transition-all duration-300 hover:scale-110 hover:cursor-pointer"
+                         data-category-id="@category.Id" data-category-description="@category.Description">
+                        <span class="material-symbols-outlined rounded-xl bg-[#FFE9C6] p-2 text-black text-[40px]">
+                            code
+                        </span>
+                        <p class="text-center text-sm font-semibold">@category.CategoryName</p>
+                    </div>
+                }
             }
-        }
         </div>
-        <button id="category-right-btn" class="ml-2 rounded bg-[#EAC231] px-4 py-2 font-semibold text-black shadow transition hover:bg-[#cfa221]">&#8594;</button>
+
+        <button id="category-right-btn" class="h-10 w-10 rounded-full bg-[#EAC231] font-semibold text-black shadow transition hover:bg-[#cfa221]">
+            &#8594;
+        </button>
     </div>
-
-
 </div>
+
 
 <div class="my-10 flex flex-col items-center">
     <h2 id="trainings-title" class="font-weight-bold text-4xl">Trainings</h2>

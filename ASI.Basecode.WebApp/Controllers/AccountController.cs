@@ -16,6 +16,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using static ASI.Basecode.Resources.Constants.Enums;
+using System.Linq;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -30,6 +31,9 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly IPasswordResetService _passwordResetService;
         private readonly IEmailService _emailService;
         private readonly ILogger<AccountController> _logger;
+        private readonly IAuditLogService _auditLogService;
+        private readonly IRegistrationService _registrationService;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
@@ -46,6 +50,7 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="passwordResetService">The password reset service.</param>
         /// <param name="emailService">The email service.</param>
         /// <param name="logger">The logger.</param>
+        /// <param name="registrationService">The registration service.</param>
         public AccountController(
                             SignInManager signInManager,
                             IHttpContextAccessor httpContextAccessor,
@@ -57,7 +62,9 @@ namespace ASI.Basecode.WebApp.Controllers
                             TokenProviderOptionsFactory tokenProviderOptionsFactory,
                             IPasswordResetService passwordResetService,
                             IEmailService emailService,
-                            ILogger<AccountController> logger) : base(httpContextAccessor, loggerFactory, configuration, mapper)
+                            IAuditLogService auditLogService,
+                            ILogger<AccountController> logger,
+                            IRegistrationService registrationService) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             this._sessionManager = new SessionManager(this._session);
             this._signInManager = signInManager;
@@ -68,6 +75,8 @@ namespace ASI.Basecode.WebApp.Controllers
             this._passwordResetService = passwordResetService;
             this._emailService = emailService;
             this._logger = logger;
+            this._auditLogService = auditLogService;
+            this._registrationService = registrationService;
         }
 
         /// <summary>
@@ -77,7 +86,7 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         [AllowAnonymous]
         [ServiceFilter(typeof(RoleBasedFilterService))]
-        public ActionResult Login()
+        public async Task<ActionResult> Login()
         {
             // Check if user is already authenticated
             if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -176,35 +185,40 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         [AllowAnonymous]
         [ServiceFilter(typeof(RoleBasedFilterService))]
-        public IActionResult Register()
+        public async Task<ActionResult> Register()
         {
+         
             return View();
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult Register(UserViewModel model)
+        public async Task<IActionResult> Register(UserViewModel model)
         {
             if (!ModelState.IsValid)
-            {
-                return View(model); 
-            }
-
-            try
-            {
-                _userService.AddUser(model);
+                return View(model);
+            
+            var token = Guid.NewGuid().ToString();
+            var verificationLink = Url.Action("VerifyEmail", "Account", new { token = token }, Request.Scheme);
+            var (success, message) = await _registrationService.RegisterPendingUserAsync(model, token, verificationLink);
+            TempData[success ? "SuccessMessage" : "ErrorMessage"] = message;
+            if (success)
                 return RedirectToAction("Login", "Account");
-            }
-            catch (InvalidDataException ex)
-            {
-                TempData["ErrorMessage"] = ex.InnerException?.Message ?? ex.Message;
-            }
-            catch (Exception)
-            {
-                TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
-            }
+            else
+                return View(model);
+        }
 
-            return View(model);
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> VerifyEmail(string token)
+        {
+            var (success, errorMessage) = await _registrationService.VerifyEmailAsync(token);
+            if (success)
+                TempData["SuccessMessage"] = "Email verified successfully! You can now log in.";
+            else
+                TempData["ErrorMessage"] = errorMessage;
+
+            return RedirectToAction("Login");
         }
 
 
@@ -276,7 +290,6 @@ namespace ASI.Basecode.WebApp.Controllers
             return View(model);
         }
 
-        // Reset Password TEMPORARY MOCKUP
         [HttpGet]
         [AllowAnonymous]
         [ServiceFilter(typeof(RoleBasedFilterService))]
