@@ -90,11 +90,11 @@
                 <div class="flex justify-between">
                     <div class="flex items-center space-x-4">
                         <span class="material-symbols-outlined rounded-lg bg-[#EAC231] p-2">star</span>
-                        <h2 class="font-weight-bold text-2xl">Ratings and Reviews</h2>
+                        <h2 class="font-weight-bold text-2xl">Reviews</h2>
                     </div>
                     <div class="flex items-center space-x-2">
                         <p class="text-2xl font-semibold">
-                            @(avgRating > 0 ? avgRating.ToString("0.0") : "No ratings")
+                            @(avgRating > 0 ? avgRating.ToString("0.0") : "No Reviews")
                         </p>
                         @for (int i = 0; i < fullStars; i++)
                         {
