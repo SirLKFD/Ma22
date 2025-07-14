@@ -31,7 +31,7 @@ namespace ASI.Basecode.Services.Services
             Console.WriteLine($"[TopicService] Attempting to add topic: {model.TopicName}, AccountId: {model.AccountId}");
 
             var topic = new Topic();
-            if (!_repository.TopicExists(model.TopicName))
+            if (!_repository.TopicExists(model.TopicName, model.TrainingId))
             {
                try
                 {
@@ -148,7 +148,7 @@ namespace ASI.Basecode.Services.Services
             {
                 if (topic.AccountId != accountId && accountRole == 0)
                     throw new UnauthorizedAccessException("You are not allowed to edit this topic.");
-                if (_repository.TopicExists(model.TopicName) && model.TopicName != topic.TopicName)
+                if (_repository.TopicExists(model.TopicName, model.TrainingId) && model.TopicName != topic.TopicName)
                 {
                     Console.WriteLine($"[TopicService] ❌ Error: Topic '{model.TopicName}' already exists.");
                     throw new InvalidDataException(Resources.Messages.Errors.TopicExists);

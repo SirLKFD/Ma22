@@ -30,9 +30,9 @@ namespace ASI.Basecode.Data.Repositories
                 .FirstOrDefault(t => t.Id == id);
         }
 
-        public bool TopicExists(string name)
+        public bool TopicExists(string name, int trainingId)
         {
-            return this.GetDbSet<Topic>().Any(x => x.TopicName == name);
+            return this.GetDbSet<Topic>().Any(x => x.TopicName == name && x.TrainingId == trainingId);
         }
 
          public void AddTopic(Topic topic)

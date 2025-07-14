@@ -33,8 +33,6 @@ namespace ASI.Basecode.Services.Services
             Console.WriteLine($"[Service] Attempting to add category: {model.CategoryName}, AccountId: {model.AccountId}");
 
             var trainingCategory = new TrainingCategory();
-            if (!_repository.TrainingCategoryExists(model.CategoryName))
-            {
                try
                 {
                     Console.WriteLine("✅ Mapping TrainingCategory");
@@ -55,12 +53,7 @@ namespace ASI.Basecode.Services.Services
                 _repository.AddTrainingCategory(trainingCategory);
 
                 Console.WriteLine("[Service] AddTrainingCategory called on repository.");
-            }
-            else
-            {
-                Console.WriteLine($"[Service] ❌ Error: Category '{model.CategoryName}' already exists.");
-                throw new InvalidDataException(Resources.Messages.Errors.TrainingCategoryExists);
-            }
+           
         }
 
         public void EditTrainingCategory(TrainingCategoryViewModel model)

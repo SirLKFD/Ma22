@@ -32,7 +32,7 @@ namespace ASI.Basecode.Services.Services
         public void AddTraining(TrainingViewModel model)
         {
             var training = new Training();
-            if (!_repository.TrainingExists(model.TrainingName))
+            if (!_repository.TrainingExists(model.TrainingName, model.TrainingCategoryId))
             {
                 try
                 {
@@ -182,7 +182,7 @@ namespace ASI.Basecode.Services.Services
                 if (training.AccountId != accountId && accountRole == 0)
                     throw new UnauthorizedAccessException("You are not allowed to edit this training.");
                 Console.WriteLine($"[Service] Attempting to edit training: {training.TrainingName}, AccountId: {training.AccountId}");
-                if (!_repository.TrainingExists(training.TrainingName))
+                if (!_repository.TrainingExists(training.TrainingName,training.TrainingCategoryId))
                 {
                     Console.WriteLine($"[Service] ❌ Error: Training '{training.TrainingName}' already exists.");
                     throw new InvalidDataException(Resources.Messages.Errors.TrainingExists);

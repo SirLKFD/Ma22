@@ -10,7 +10,7 @@ namespace ASI.Basecode.Data.Interfaces
     public interface ITrainingRepository
     {
         IQueryable<Training> GetTrainings();
-        bool TrainingExists(string name);
+        bool TrainingExists(string name, int categoryId);
         void AddTraining(Training training);
         void UpdateTraining(Training training);
         void DeleteTraining(Training training);
