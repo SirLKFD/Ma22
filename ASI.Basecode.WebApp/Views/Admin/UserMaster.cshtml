@@ -115,15 +115,24 @@
     </table>
 </div>
 
-<!-- Pagination -->
-<div class="mx-20 mt-10 flex justify-end">
-    <nav aria-label="Page navigation">
+<!-- Inline Pagination Bar with All Controls -->
+<div class="mx-20 mt-10 flex items-center justify-between text-sm text-gray-600">
+
+    <!-- Total items -->
+    <div>
+        Total @ViewBag.TotalCount items
+    </div>
+
+    <!-- Pagination and Controls Row -->
+    <div class="flex items-center gap-4">
+
+        <!--  Pagination numbers -->
         <ul class="flex gap-1 text-sm">
             @if (Model.CurrentPage > 1)
             {
                 <li>
-                    <a href="@Url.Action("UserMaster", "Admin", new { page = Model.CurrentPage - 1, filter = filter })"
-                       class="rounded-l-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">Prev</a>
+                    <a href="@Url.Action("UserMaster", "Admin", new { page = Model.CurrentPage - 1, filter = filter, pageSize = ViewBag.PageSize })"
+                       class="border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">Prev</a>
                 </li>
             }
 
@@ -135,22 +144,47 @@
                 : "bg-white text-gray-600 hover:bg-gray-100 hover:text-black";
 
                 <li>
-                    <a href="@Url.Action("UserMaster", "Admin", new { page = i, filter = filter })"
+                    <a href="@Url.Action("UserMaster", "Admin", new { page = i, filter = filter, pageSize = ViewBag.PageSize })"
                        class="border border-gray-300 px-3 py-2 transition @pageClass">@i</a>
                 </li>
             }
 
-
             @if (Model.CurrentPage < Model.TotalPages)
             {
                 <li>
-                    <a href="@Url.Action("UserMaster", "Admin", new { page = Model.CurrentPage + 1, filter = filter })"
-                       class="rounded-r-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">Next</a>
+                    <a href="@Url.Action("UserMaster", "Admin", new { page = Model.CurrentPage + 1, filter = filter, pageSize = ViewBag.PageSize })"
+                       class="border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">Next</a>
                 </li>
             }
         </ul>
-    </nav>
+
+        <!-- Page size & Go to controls -->
+        <form method="get" action="@Url.Action("UserMaster")" class="flex items-center gap-2">
+            <input type="hidden" name="search" value="@Context.Request.Query["search"]" />
+            <input type="hidden" name="filter" value="@filter" />
+
+            <!-- Page size dropdown -->
+            <select name="pageSize" onchange="this.form.submit()" class="rounded border border-gray-300 px-2 py-1 text-sm">
+                @{
+                    int totalCount = ViewBag.TotalCount;
+                    int selected = ViewBag.PageSize;
+                    for (int i = 10; i <= totalCount; i += 10)
+                    {
+                        <option value="@i" selected="@(i == selected)">@i / page</option>
+                    }
+                }
+            </select>
+
+            <!-- Go to page input -->
+            <span class="text-sm text-gray-600">Go to</span>
+            <input type="number" min="1" max="@Model.TotalPages" id="goToPage" name="page"
+                   class="w-16 rounded border border-gray-300 px-2 py-1 text-sm text-center" value="@Model.CurrentPage" />
+            <span class="text-sm text-gray-600">Page</span>
+        </form>
+    </div>
 </div>
+
+
 
 @await Html.PartialAsync("_UserAddModal")
 @await Html.PartialAsync("_UserDeleteModal")
