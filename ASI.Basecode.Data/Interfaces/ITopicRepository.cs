@@ -10,7 +10,7 @@ namespace ASI.Basecode.Data.Interfaces
     public interface ITopicRepository
     {
         IQueryable<Topic> GetTopics();
-        bool TopicExists(string name);
+        bool TopicExists(string name, int trainingId);
         void AddTopic(Topic topic);
         void UpdateTopic(Topic topic);
         void DeleteTopic(Topic topic);

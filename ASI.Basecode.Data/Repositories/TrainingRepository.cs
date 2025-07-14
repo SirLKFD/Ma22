@@ -21,9 +21,14 @@ namespace ASI.Basecode.Data.Repositories
             return this.GetDbSet<Training>().Include(t => t.Account).Include(t => t.TrainingCategory);
         }
 
-        public bool TrainingExists(string name)
+        public bool TrainingNameExists(string name, int categoryId)
         {
-            return this.GetDbSet<Training>().Any(x => x.TrainingName == name);
+            return this.GetDbSet<Training>().Any(x => x.TrainingName == name && x.TrainingCategoryId == categoryId);
+        }
+
+        public bool TrainingExists(string name, int categoryId)
+        {
+            return TrainingNameExists(name, categoryId);
         }
 
          public void AddTraining(Training training)
