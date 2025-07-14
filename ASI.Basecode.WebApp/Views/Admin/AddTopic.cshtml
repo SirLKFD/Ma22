@@ -192,7 +192,6 @@
 
     document.getElementById('ImageFilesAdd').addEventListener('change', function(event) {
         const preview = document.getElementById('ImagePreviewAdd');
-        preview.innerHTML = ''; // Clear previous previews
         Array.from(event.target.files).forEach(file => {
             addNewFilePreview('ImagePreviewAdd', file, 'image', 'ImageFilesAdd');
         });
@@ -200,7 +199,6 @@
 
     document.getElementById('VideoFilesAdd').addEventListener('change', function(event) {
         const preview = document.getElementById('VideoPreviewAdd');
-        preview.innerHTML = ''; // Clear previous previews
         Array.from(event.target.files).forEach(file => {
             addNewFilePreview('VideoPreviewAdd', file, 'movie', 'VideoFilesAdd');
         });
@@ -208,7 +206,6 @@
 
     document.getElementById('DocumentFilesAdd').addEventListener('change', function(event) {
         const preview = document.getElementById('DocumentPreviewAdd');
-        preview.innerHTML = ''; // Clear previous previews
         Array.from(event.target.files).forEach(file => {
             addNewFilePreview('DocumentPreviewAdd', file, 'description', 'DocumentFilesAdd');
         });
