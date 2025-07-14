@@ -17,9 +17,9 @@
         <a asp-controller="User" asp-action="UserTrainings" class="hover:text-[#EAC231] hover:no-underline">
             My Trainings
         </a>
-        <button class="focus:outline-none hover:text-[#EAC231] hover:no-underline" onclick="toggleNightCareMode()">
+        @* <button class="focus:outline-none hover:text-[#EAC231] hover:no-underline" onclick="toggleNightCareMode()">
             <span class="material-symbols-outlined" >dark_mode</span>
-        </button>
+        </button> *@
     </div>
 
     <div class="absolute right-10 flex items-center gap-2">
@@ -51,8 +51,9 @@
         <!-- Dropdown Menu -->
         <div id="dropdownMenu" class="absolute right-0 top-full z-50 mt-2 hidden min-w-[140px] rounded bg-white text-black shadow-md">
             <ul class="flex flex-col py-2 text-sm">
-                <li><a asp-controller="User" asp-action="UserProfile" class="block px-4 py-2 hover:bg-gray-100">My Account</a></li>
-                <li><a href="/Account/SignOutUser" class="block px-4 py-2 hover:bg-gray-100">Log Out</a></li>
+                <li><a asp-controller="User" asp-action="UserProfile" class="block px-4 py-2 hover:bg-gray-100 hover:no-underline">My Account</a></li>
+                <li><a id="nightModeToggleText" onclick="toggleNightCareMode()" class="block px-4 py-2 hover-pointer hover:bg-gray-100">Night Light</a></li>
+                <li><a href="/Account/SignOutUser" class="block px-4 py-2 hover:bg-gray-100 hover:no-underline">Log Out</a></li>
             </ul>
         </div>
     </div>
@@ -84,6 +85,7 @@
     function toggleNightCareMode() {
         const body = document.body;
         const topbar = document.getElementById('topbar');
+        const nightModeToggleText = document.getElementById('nightModeToggleText');
 
         if (body.classList.contains("bg-gray-100")) {
             // Enable NightCareMode
@@ -91,29 +93,34 @@
             topbar.classList.remove("bg-white", "text-black");
             topbar.classList.add("bg-[#640A16]", "text-white");
             localStorage.setItem("nightCareMode", "on");
+            if (nightModeToggleText) nightModeToggleText.textContent = "Light Mode";
         } else {
             // Disable NightCareMode
             body.classList.replace("bg-[#FFE9C6]", "bg-gray-100");
             topbar.classList.remove("bg-[#640A16]", "text-white");
             topbar.classList.add("bg-white", "text-black");
             localStorage.setItem("nightCareMode", "off");
+            if (nightModeToggleText) nightModeToggleText.textContent = "Night Light";
         }
     }
     window.addEventListener("DOMContentLoaded", function() {
         const mode = localStorage.getItem("nightCareMode");
         const body = document.body;
         const topbar = document.getElementById('topbar');
+        const nightModeToggleText = document.getElementById('nightModeToggleText');
 
         if (mode === "on") {
             body.classList.remove("bg-gray-100");
             body.classList.add("bg-[#FFE9C6]");
             topbar.classList.remove("bg-white", "text-black");
             topbar.classList.add("bg-[#640A16]", "text-white");
+            if (nightModeToggleText) nightModeToggleText.textContent = "Light Mode";
         } else {
             body.classList.remove("bg-[#FFE9C6]");
             body.classList.add("bg-gray-100");
             topbar.classList.remove("bg-[#640A16]", "text-white");
             topbar.classList.add("bg-white", "text-black");
+            if (nightModeToggleText) nightModeToggleText.textContent = "Night Light";
         }
     });
 
