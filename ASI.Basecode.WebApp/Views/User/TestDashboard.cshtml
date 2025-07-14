@@ -47,16 +47,20 @@
 </div>
 
 <div class="flex items-center justify-between gap-10 font-semibold py-10">
-    
-    <div class="flex flex-wrap justify-center items-center gap-4">
-        @foreach (var category in categoriestoDisplay.Take(6))
-        {
-            <div class="hover:cursor-pointer hover:bg-[#640A16] hover:text-white rounded-full whitespace-nowrap p-2" data-category-id="@category.Id" data-category-description="@category.Description">
-                <p>@category.CategoryName</p>
-            </div>
-        }
+    <div class="flex gap-4">
+        <div class="category-card hover:cursor-pointer hover:bg-[#640A16] hover:text-white rounded-full whitespace-nowrap p-2" data-category-id="0"
+             data-category-description="All trainings">
+            <p>All</p>
+        </div>
+        <div id="category-cards-wrapper" class="flex flex-wrap justify-center items-center gap-4">
+            @foreach (var category in categoriestoDisplay.Take(6))
+            {
+                <div class="category-card hover:cursor-pointer hover:bg-[#640A16] hover:text-white rounded-full whitespace-nowrap p-2" data-category-id="@category.Id" data-category-description="@category.Description">
+                    <p>@category.CategoryName</p>
+                </div>
+            }
+        </div>
     </div>
-
     
     <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="flex rounded-full outline outline-1 outline-gray-400 p-2 hover:bg-[#640A16] hover:text-white space-x-2">
         <span class="material-symbols-outlined">
@@ -70,7 +74,7 @@
             @foreach (var category in categoriestoDisplay)
             {
                 <li>
-                    <a href="#" class="block px-4 py-2 hover:bg-[#EAC231] hover:text-black hover:no-underline">@category.CategoryName</a>
+                    <a class="block category-card px-4 py-2 hover:bg-[#EAC231] hover:text-black hover:no-underline" data-category-id="@category.Id" data-category-description="@category.Description">@category.CategoryName</a>
                 </li>
             }
             
@@ -79,7 +83,7 @@
 
 </div>
 
-<div class="mb-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+<div class="mb-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3" id="trainings-container">
     @if (Model != null && trainingstoDisplay.Any())
     {
         foreach (var training in trainingstoDisplay)
@@ -143,3 +147,9 @@
         <div class="col-span-3 py-8 text-center text-gray-500">No trainings found.</div>
     }
 </div>
+
+
+@section Scripts {
+    <!-- BrowseTrainings AJAX Script -->
+    <script src="~/js/browsetrainings_AJAX.js" asp-append-version="true"></script>
+}

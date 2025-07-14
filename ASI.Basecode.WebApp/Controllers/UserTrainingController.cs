@@ -50,9 +50,17 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             int? accountId = HttpContext.Session.GetInt32("AccountId");
             if (accountId == null) return RedirectToAction("Login", "Account");
-            var trainings = _trainingService.GetAllTrainings()
-                .Where(t => t.TrainingCategoryId == categoryId).ToList();
-            return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", trainings);
+            IEnumerable<TrainingViewModel> trainings;
+            if (categoryId == 0)
+            {
+                trainings = _trainingService.GetAllTrainings();
+            }
+            else
+            {
+                trainings = _trainingService.GetAllTrainings()
+                    .Where(t => t.TrainingCategoryId == categoryId).ToList();
+            }
+                return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", trainings);
         }
 
         [HttpGet]
