@@ -151,7 +151,8 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 Console.WriteLine("✅ Training added");
 
-                return RedirectToAction("AdminTraining");
+                    return RedirectToAction("AdminTraining");
+                
             }
             catch (Exception ex)
             {

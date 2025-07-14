@@ -16,6 +16,7 @@
             <h1 class="font-weight-bold text-2xl uppercase">Add New Training</h1>
         </div>
         <form asp-action="AddTraining" asp-controller="AdminTraining" method="post" enctype="multipart/form-data" class="flex flex-col gap-4">
+            <input type="hidden" name="context" id="addTrainingContext" value="all" />
             <label for="CoverPictureAddTraining" class="flex h-[125px] w-full cursor-pointer flex-col items-center justify-center rounded-xl bg-white">
                 <input type="file"
                        name="CoverPictureAddTraining"
@@ -42,7 +43,7 @@
                 <div class="flex gap-4">
                     <div class="w-1/2">
                         <label asp-for="TrainingCategoryId" class="mb-2 block text-sm font-medium text-white">Training Category</label>
-                        <select asp-for="TrainingCategoryId" class="w-full rounded-md border border-gray-300 px-2 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]">
+                        <select asp-for="TrainingCategoryId" id="TrainingCategoryId" class="w-full rounded-md border border-gray-300 px-2 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]">
                             @foreach (var category in categories)
                             {
                                 <option value="@category.Id">@category.CategoryName</option>

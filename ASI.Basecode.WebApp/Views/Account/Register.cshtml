@@ -96,5 +96,13 @@
         if (successMessage) {
             toastr.success(successMessage);
         }
+        // Add loading state to Register form
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            var btn = this.querySelector('button[type="submit"]');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="flex items-center justify-center w-full"><span class="spinner-border spinner-border-sm mr-2"></span><span>Signing up...</span></span>';
+            }
+        });
     </script>
 }

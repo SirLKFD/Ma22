@@ -29,7 +29,7 @@
                         <span class="hidden text-sm group-hover:inline">Dashboard</span>
                     </a>
                 </li>
-            <li>
+           
             @if (userRole == 2) 
             {
                 <li>
@@ -39,12 +39,13 @@
                     </a>
                 </li>
             }
-           
+                 <li>
                 <a asp-controller="AdminTrainingCategory" asp-action="AdminTrainingCategory" class="flex justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline @(isCategory ? "bg-yellow-400 text-black" : "")">
                     <span class="material-symbols-outlined text-[25px]">category</span>
                     <span class="hidden text-sm group-hover:inline">Training Categories</span>
                 </a>
             </li>
+            
             <li>
                 <a asp-controller="AdminTraining" asp-action="AdminTraining" class="flex justify-center space-x-4 rounded-md p-3 transition duration-200 group-hover:justify-start hover:bg-yellow-400 hover:text-black hover:no-underline @(isTraining ? "bg-yellow-400 text-black" : "")">
                     <span class="material-symbols-outlined text-[25px]">book</span>

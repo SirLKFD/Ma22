@@ -2,6 +2,8 @@
 @{
     ViewData["Title"] = "Ma22 | Training Categories";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var userRole = HttpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+
 }
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
@@ -24,10 +26,13 @@
                 </button>
             </form>
 
+             @if (userRole == 2) 
+            {
             <button class="rounded-full bg-[#EAC231] px-6 py-2 text-sm font-semibold text-black shadow-md transition hover:bg-[#cfa221]"
                     onclick="addTrainingCategory()">
                 Add+
             </button>
+            }
         </div>
     </div>
 
@@ -56,12 +61,15 @@
                     <!-- Header -->
                     <div class="mb-2 flex items-center justify-between">
                         <h2 class="text-xl font-bold text-[#222]">@category.CategoryName</h2>
+                         @if (userRole == 2) 
+                        {
                         <div class="flex gap-2 text-gray-600">
                             <span class="material-symbols-outlined cursor-pointer hover:text-black"
                                   onclick="openEditTrainingCategory('@category.Id', '@category.CoverPicture', '@category.CategoryName', '@category.Description')">edit</span>
                             <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700"
                                   onclick="openDeleteTrainingCategory('@category.Id', '@category.CoverPicture', '@category.CategoryName', '@category.Description', '@category.UpdatedTime', '@category.AccountFirstName', '@category.AccountLastName')">delete</span>
                         </div>
+                        }
                     </div>
 
                     <p class="line-clamp-4 text-sm text-gray-600">@category.Description</p>

@@ -246,6 +246,20 @@
 
 <script>
     function addTraining() {
+        // Set context based on whether a category is selected
+        var contextValue = '@(isCategory ? "category" : "all")';
+        var contextInput = document.getElementById('addTrainingContext');
+        if (contextInput) contextInput.value = contextValue;
+        // Set the category select if on a category page
+        var trainingCategoryIdInput = document.getElementById('TrainingCategoryId');
+        var currentCategoryId = '@(isCategory ? categoryId : "")';
+        if (trainingCategoryIdInput) {
+            if (currentCategoryId) {
+                trainingCategoryIdInput.value = currentCategoryId;
+            } else {
+                trainingCategoryIdInput.selectedIndex = 0;
+            }
+        }
         document.getElementById('addTraining').classList.remove('hidden');
     }
     function closeAddTraining() {
