@@ -71,7 +71,7 @@
                 </div>
                 <div>
                     <label class="mb-1 block text-sm font-semibold" for="Birthdate">Birthdate</label>
-                    <input id="Birthdate" name="Birthdate" type="date" value="@Model.Birthdate?.ToString("yyyy-MM-dd")" class="w-full rounded-lg border border-gray-300 px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#800000]" />
+                    <input id="Birthdate" name="Birthdate" type="date" value="@Model.Birthdate?.ToString("yyyy-MM-dd")" class="w-full rounded-lg border border-gray-300 px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#800000]" max="@DateTime.Now.AddYears(-13).ToString("yyyy-MM-dd")" />
                 </div>
                 <div>
                     <label class="mb-1 block text-sm font-semibold" for="Contact">Contact No.</label>
