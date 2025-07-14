@@ -40,6 +40,20 @@
     </div>
 }
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="mb-4 rounded border border-red-400 bg-red-100 px-4 py-2 text-red-700">
+        ❌ @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="mb-4 rounded border border-green-400 bg-green-100 px-4 py-2 text-green-700">
+        ✅ @TempData["SuccessMessage"]
+    </div>
+}
+
 <div class="flex w-full gap-10">
     <div class="flex w-2/3 flex-col gap-10">
         <div class="flex flex-col gap-5 rounded-lg bg-white p-4 shadow-md">
@@ -244,7 +258,14 @@
             <p class="font-weight-bold">What do you think of the Training?</p>
             @if (ViewBag.IsEnrolled != null && (bool)ViewBag.IsEnrolled)
             {
-                <button class="w-1/2 rounded-xl bg-[#EAC231] p-2 font-semibold text-black hover:bg-[#640A16] hover:text-white" onclick="addReview()">Rate</button>
+                @if (ViewBag.HasReviewed != null && (bool)ViewBag.HasReviewed)
+                {
+                    <button class="w-1/2 rounded-xl bg-[#EAC231] p-2 font-semibold text-black hover:bg-[#640A16] hover:text-white" onclick="editReview()">Edit Review</button>
+                }
+                else
+                {
+                    <button class="w-1/2 rounded-xl bg-[#EAC231] p-2 font-semibold text-black hover:bg-[#640A16] hover:text-white" onclick="addReview()">Rate</button>
+                }
             }
             else
             {
@@ -260,19 +281,20 @@
 
 <script>
     function addReview(){
-        document.getElementById('addUserReview').classList.remove('hidden')
+        resetModalForNewReview();
+        document.getElementById('TrainingId').value = '@training.Id';
+        document.getElementById('addUserReview').classList.remove('hidden');
     }
+    
+    function editReview(){
+        loadExistingReview('@training.Id');
+        document.getElementById('TrainingId').value = '@training.Id';
+        document.getElementById('addUserReview').classList.remove('hidden');
+    }
+    
     function closeAddReview() {
         const modal = document.getElementById('addUserReview');
         modal.classList.add('hidden');
-
-        // const form = document.getElementById("createuserform");
-        // if (form) {
-        //     form.reset();
-        //     const validator = $(form).validate();
-        //     validator.resetForm();
-        //     $(form).find(".input-validation-error").removeClass("input-validation-error");
-        // }
     }
 
     let reviewsLoaded = 5;

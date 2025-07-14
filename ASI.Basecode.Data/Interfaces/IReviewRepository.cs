@@ -11,5 +11,6 @@ namespace ASI.Basecode.Data.Interfaces
     {
         IQueryable<Review> GetReviews();
         void AddReview(Review review);
+        void UpdateReview(Review review);
     }
 }

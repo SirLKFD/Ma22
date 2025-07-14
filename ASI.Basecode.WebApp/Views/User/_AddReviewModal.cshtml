@@ -9,7 +9,7 @@
             </a>
         </div>
         <div class="flex flex-col w-full gap-2">
-            <h1 class="text-3xl uppercase font-semibold mb-2">Rate Training</h1>
+            <h1 id="reviewModalTitle" class="text-3xl uppercase font-semibold mb-2">Rate Training</h1>
             <div class="flex items-center justify-between w-full mb-0">
                 <p class="text-lg">Tap to Rate:</p>
                 <div id="starRating" class="flex items-center space-x-2">
@@ -22,23 +22,24 @@
                 </div>
             </div>
             @Html.ValidationMessageFor(model => model.ReviewScore, "", new { @class = "text-red-400 mb-1" })
-            <form asp-action="AddReview" asp-controller="Review" method="post" id="reviewForm" class="flex flex-col gap-3">
+            <form id="reviewForm" class="flex flex-col gap-3">
                 @Html.AntiForgeryToken()
                 @Html.ValidationSummary(true, "", new { @class = "text-red-400 mb-2" })
                 <input type="hidden" asp-for="TrainingId" />
+                <input type="hidden" asp-for="ReviewId" id="ReviewId" />
                 <input type="hidden" asp-for="ReviewScore" id="ReviewScore" />
                 <input type="number" min="1" max="5" asp-for="ReviewScore" id="ReviewScoreVisible" class="sr-only" aria-label="Star rating (1 to 5)" readonly />
                 <div>
                     <p class="text-lg mb-1">Title</p>
-                    <input asp-for="Title" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black" />
+                    <input asp-for="Title" id="ReviewTitle" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black" />
                     @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-red-400" })
                 </div>
                 <div>
                     <p class="text-lg mb-1">Review</p>
-                    <textarea asp-for="UserReview" rows="6" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black"></textarea>
+                    <textarea asp-for="UserReview" id="ReviewText" rows="6" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black"></textarea>
                     @Html.ValidationMessageFor(model => model.UserReview, "", new { @class = "text-red-400" })
                 </div>
-                <button type="submit" class="bg-[#FFE9C6] w-1/3 mx-auto text-black py-2 rounded-xl font-semibold mt-2 shadow hover:bg-[#EAC231] transition">Submit</button>
+                <button type="submit" id="reviewSubmitBtn" class="bg-[#FFE9C6] w-1/3 mx-auto text-black py-2 rounded-xl font-semibold mt-2 shadow hover:bg-[#EAC231] transition">Submit</button>
             </form>
         </div>
     </div>
@@ -49,6 +50,7 @@
     let selectedRating = 0;
     const reviewScoreInput = document.getElementById('ReviewScore');
     const reviewScoreVisible = document.getElementById('ReviewScoreVisible');
+    let isEditMode = false;
 
     stars.forEach((star, index) => {
         star.addEventListener('click', () => {
@@ -87,6 +89,71 @@
                 star.classList.add('text-white');
             }
         });
+    }
+
+    // Handle form submission
+    document.getElementById('reviewForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const action = isEditMode ? '/Review/EditReview' : '/Review/AddReview';
+        
+        fetch(action, {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                console.error('Form submission failed');
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    });
+
+    // Function to load existing review data
+    async function loadExistingReview(trainingId) {
+        try {
+            const response = await fetch(`/Review/GetUserReview?trainingId=${trainingId}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                const review = data.review;
+                document.getElementById('ReviewId').value = review.reviewId;
+                document.getElementById('ReviewTitle').value = review.title;
+                document.getElementById('ReviewText').value = review.userReview;
+                document.getElementById('ReviewScore').value = review.reviewScore;
+                document.getElementById('ReviewScoreVisible').value = review.reviewScore;
+                
+                selectedRating = review.reviewScore;
+                updateStars();
+                
+                // Update UI for edit mode
+                document.getElementById('reviewModalTitle').textContent = 'Edit Review';
+                document.getElementById('reviewSubmitBtn').textContent = 'Update Review';
+                isEditMode = true;
+            }
+        } catch (error) {
+            console.error('Error loading review:', error);
+        }
+    }
+
+    // Function to reset modal for new review
+    function resetModalForNewReview() {
+        document.getElementById('ReviewId').value = '';
+        document.getElementById('ReviewTitle').value = '';
+        document.getElementById('ReviewText').value = '';
+        document.getElementById('ReviewScore').value = '';
+        document.getElementById('ReviewScoreVisible').value = '';
+        
+        selectedRating = 0;
+        updateStars();
+        
+        // Update UI for new review mode
+        document.getElementById('reviewModalTitle').textContent = 'Rate Training';
+        document.getElementById('reviewSubmitBtn').textContent = 'Submit';
+        isEditMode = false;
     }
 </script>
 

@@ -28,6 +28,13 @@ namespace ASI.Basecode.Data.Repositories
             Console.WriteLine("SaveChanges for Review called.");
         }
 
+        public void UpdateReview(Review review)
+        {
+            this.GetDbSet<Review>().Update(review);
+            UnitOfWork.SaveChanges();
+            Console.WriteLine("UpdateReview SaveChanges called.");
+        }
+
 
 
 
