@@ -1,0 +1,165 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+
+
+<div id="topbar" class="fixed left-0 top-0 z-50 flex h-[10vh] bg-white text-black w-screen items-center px-10 transition-transform duration-300 ease-in-out">
+
+    <div class="h-8 w-8 mr-20">
+        <img src="~/img/Logo.png" alt="MA22 Logo" class="h-full w-full object-contain" />
+    </div> 
+    
+    <!-- Desktop Nav Links -->
+    <div class="hidden md:flex flex-1 gap-10 font-semibold">
+        <a asp-controller="User" asp-action="UserDashboard" class="hover:text-[#EAC231] hover:no-underline">
+            Home
+        </a>
+        <a asp-controller="User" asp-action="UserTrainings" class="hover:text-[#EAC231] hover:no-underline">
+            My Trainings
+        </a>
+        <button class="focus:outline-none hover:text-[#EAC231] hover:no-underline" onclick="toggleNightCareMode()">
+            <span class="material-symbols-outlined" >dark_mode</span>
+        </button>
+    </div>
+
+    <div class="absolute right-10 flex items-center gap-2">
+        <div class="flex cursor-pointer items-center justify-center gap-4" onclick="toggleDropDown()">
+            <span>
+                @{
+                    var profilePicture = HttpContextAccessor.HttpContext.Session.GetString("ProfilePicture");
+                }
+                @if (!string.IsNullOrEmpty(profilePicture))
+                {
+                    <img src="@profilePicture" alt="Profile" class="h-[40px] w-[40px] rounded-full object-cover" />
+                }
+                else
+                {
+                    <span class="material-symbols-outlined !text-[30px]">person</span>
+                }
+            </span>
+            <span class="block">@HttpContextAccessor.HttpContext.Session.GetString("UserName")</span>
+            <span class="material-symbols-outlined hover:text-[#EAC231]">arrow_drop_down</span>
+        </div>
+
+        <!-- Hamburger Icon (Mobile, right after dropdown) -->
+        <div class="md:hidden flex items-center">
+            <button id="hamburgerBtn" class="focus:outline-none" onclick="toggleMobileMenu()">
+                <span class="material-symbols-outlined !text-[32px]">menu</span>
+            </button>
+        </div>
+
+        <!-- Dropdown Menu -->
+        <div id="dropdownMenu" class="absolute right-0 top-full z-50 mt-2 hidden min-w-[140px] rounded bg-white text-black shadow-md">
+            <ul class="flex flex-col py-2 text-sm">
+                <li><a asp-controller="User" asp-action="UserProfile" class="block px-4 py-2 hover:bg-gray-100">My Account</a></li>
+                <li><a href="/Account/SignOutUser" class="block px-4 py-2 hover:bg-gray-100">Log Out</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Nav Menu -->
+<div id="mobileNavMenu" class="md:hidden fixed top-[10vh] left-0 w-full bg-[#640A16] text-white z-40 hidden transition-all duration-300">
+    <div class="flex flex-col items-center py-4 gap-4 font-semibold">
+        <a asp-controller="User" asp-action="UserDashboard" class="hover:text-[#EAC231] w-full text-center" onclick="closeMobileMenu()">Home</a>
+        <a asp-controller="User" asp-action="BrowseTrainings" class="hover:text-[#EAC231] w-full text-center" onclick="closeMobileMenu()">Browse Trainings</a>
+        <a asp-controller="User" asp-action="UserTrainings" class="hover:text-[#EAC231] w-full text-center" onclick="closeMobileMenu()">My Trainings</a>
+    </div>
+</div>
+
+<script>
+    // function toggleNightCareMode(){
+    //     const body = document.body;
+    //     if (body.classList.contains("bg-gray-100")) {
+    //         body.classList.replace("bg-gray-100", "bg-[#FFE9C6]");
+    //     } else {
+    //         body.classList.replace("bg-[#FFE9C6]", "bg-gray-100");
+    //     }
+    //     const topbar = document.getElementById('topbar');
+    //     topbar.classList.toggle("bg-white");
+    //     topbar.classList.toggle("text-black");
+    //     topbar.classList.toggle("bg-[#640A16]");
+    //     topbar.classList.toggle("text-white");
+    // }
+    function toggleNightCareMode() {
+        const body = document.body;
+        const topbar = document.getElementById('topbar');
+
+        if (body.classList.contains("bg-gray-100")) {
+            // Enable NightCareMode
+            body.classList.replace("bg-gray-100", "bg-[#FFE9C6]");
+            topbar.classList.remove("bg-white", "text-black");
+            topbar.classList.add("bg-[#640A16]", "text-white");
+            localStorage.setItem("nightCareMode", "on");
+        } else {
+            // Disable NightCareMode
+            body.classList.replace("bg-[#FFE9C6]", "bg-gray-100");
+            topbar.classList.remove("bg-[#640A16]", "text-white");
+            topbar.classList.add("bg-white", "text-black");
+            localStorage.setItem("nightCareMode", "off");
+        }
+    }
+    window.addEventListener("DOMContentLoaded", function() {
+        const mode = localStorage.getItem("nightCareMode");
+        const body = document.body;
+        const topbar = document.getElementById('topbar');
+
+        if (mode === "on") {
+            body.classList.remove("bg-gray-100");
+            body.classList.add("bg-[#FFE9C6]");
+            topbar.classList.remove("bg-white", "text-black");
+            topbar.classList.add("bg-[#640A16]", "text-white");
+        } else {
+            body.classList.remove("bg-[#FFE9C6]");
+            body.classList.add("bg-gray-100");
+            topbar.classList.remove("bg-[#640A16]", "text-white");
+            topbar.classList.add("bg-white", "text-black");
+        }
+    });
+
+
+    function toggleDropDown() {
+        const menu = document.getElementById("dropdownMenu");
+        menu.classList.toggle("hidden");
+    }
+
+    // Hamburger menu logic
+    function toggleMobileMenu() {
+        const menu = document.getElementById("mobileNavMenu");
+        menu.classList.toggle("hidden");
+    }
+    function closeMobileMenu() {
+        const menu = document.getElementById("mobileNavMenu");
+        menu.classList.add("hidden");
+    }
+
+    // Scroll behavior for topbar
+    let lastScrollTop = 0;
+    const topbar = document.getElementById('topbar');
+    let ticking = false;
+
+    function updateTopbarVisibility() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        if (scrollTop > lastScrollTop && scrollTop > 100) {
+            // Scrolling down and past threshold - hide topbar
+            topbar.style.transform = 'translateY(-100%)';
+        } else {
+            // Scrolling up or at top - show topbar
+            topbar.style.transform = 'translateY(0)';
+        }
+
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
+        ticking = false;
+    }
+
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(updateTopbarVisibility);
+            ticking = true;
+        }
+    }
+
+    // Add scroll event listener
+    window.addEventListener('scroll', requestTick, { passive: true });
+</script>

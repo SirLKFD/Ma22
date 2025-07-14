@@ -8,7 +8,7 @@
 }
 
 
-<div class="animate-slide-up animate-fade-in flex h-[90vh] items-center justify-center gap-20 opacity-0">
+<div class="animate-slide-up animate-fade-in flex h-[90vh] items-center justify-center gap-20 opacity-0" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
     <div class="flex flex-col gap-10">
         <h1 class="font-weight-bold md:text-5xl lg:text-6xl">
             Discover Trainings <br />that expand your<br /> knowledge 
@@ -32,7 +32,7 @@
     </div>
 </div>
 <div class="-mx-20 mb-20 flex w-screen flex-col justify-center gap-5 bg-white p-5">
-    <div class="mb-10 flex flex-col items-center gap-5 text-center">
+    <div class="mb-10 flex flex-col items-center gap-5 text-center" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
         <h2 class="font-weight-bold text-4xl">Explore by Category</h2>
         <p>Choose from our popular learning paths</p>
     </div>
@@ -42,12 +42,12 @@
             &#8592;
         </button>
 
-        <div id="category-cards-wrapper" class="flex flex-wrap justify-center gap-20">
+        <div id="category-cards-wrapper" class="flex justify-center gap-20">
             @if (Model != null && Model.Categories.Any())
             {
                 foreach (var category in Model.Categories)
                 {
-                    <div class="category-card flex aspect-square w-[150px] flex-col items-center justify-center gap-4 rounded-xl bg-white p-4 text-black shadow-md transition-all duration-300 hover:scale-110 hover:cursor-pointer"
+                    <div class="category-card flex aspect-square w-[150px] flex-col items-center justify-center gap-4 rounded-xl bg-white p-4 text-black shadow-md transition-all duration-300 hover:scale-110 hover:cursor-pointer" data-aos="fade-up" data-aos-anchor-placement="top-bottom"
                          data-category-id="@category.Id" data-category-description="@category.Description">
                         <span class="material-symbols-outlined rounded-xl bg-[#FFE9C6] p-2 text-black text-[40px]">
                             code
@@ -76,12 +76,12 @@
     </div>
 </div>
 
-<div class="mx-20 mb-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3" id="trainings-container">
+<div class="mx-20 mb-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3" id="trainings-container" >
     @if (Model != null && Model.Trainings.Any())
     {
         foreach (var training in trainingsToDisplay)
         {
-            <div class="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md transition hover:shadow-xl">
+            <div class="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md transition hover:shadow-xl" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
                 <!-- Cover Image -->
                 <div class="h-[180px]">
                     @if (!string.IsNullOrEmpty(training.CoverPicture))
