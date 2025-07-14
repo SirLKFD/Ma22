@@ -25,26 +25,40 @@ namespace ASI.Basecode.Services.Services
 
         public void AddReview(ReviewViewModel model)
         {
+            Console.WriteLine($"[ReviewService] Starting AddReview with model: Title='{model.Title}', UserReview='{model.UserReview}', ReviewScore={model.ReviewScore}, TrainingId={model.TrainingId}, AccountId={model.AccountId}");
         
             var review = new Review();
       
             try{
                 Console.WriteLine("✅ Mapping Review");
                 _mapper.Map(model, review);
+                Console.WriteLine($"✅ Mapping completed. Review: ReviewId={review.ReviewId}, Title='{review.Title}', UserReview='{review.UserReview}', ReviewScore={review.ReviewScore}, TrainingId={review.TrainingId}, AccountId={review.AccountId}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"❌ Exception during mapping: {ex.Message}");
+                Console.WriteLine($"❌ Stack trace: {ex.StackTrace}");
                 throw;
             }
+            
             review.CreatedTime = DateTime.Now;
             review.UpdatedTime = DateTime.Now;
             review.CreatedBy = System.Environment.UserName;
             review.UpdatedBy = System.Environment.UserName;
 
-            _repository.AddReview(review);
+            Console.WriteLine($"✅ Setting audit fields: CreatedTime={review.CreatedTime}, UpdatedTime={review.UpdatedTime}, CreatedBy={review.CreatedBy}, UpdatedBy={review.UpdatedBy}");
 
-            Console.WriteLine("[Service] AddReview called on repository.");
+            try
+            {
+                _repository.AddReview(review);
+                Console.WriteLine("[Service] AddReview called on repository successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Exception during repository call: {ex.Message}");
+                Console.WriteLine($"❌ Stack trace: {ex.StackTrace}");
+                throw;
+            }
         }
 
         public List<ReviewViewModel> GetTrainingReviews(int trainingId) 

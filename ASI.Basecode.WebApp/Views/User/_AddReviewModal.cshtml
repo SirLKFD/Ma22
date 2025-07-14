@@ -31,12 +31,12 @@
                 <input type="number" min="1" max="5" asp-for="ReviewScore" id="ReviewScoreVisible" class="sr-only" aria-label="Star rating (1 to 5)" readonly />
                 <div>
                     <p class="text-lg mb-1">Title</p>
-                    <input asp-for="Title" id="ReviewTitle" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black" />
+                    <input asp-for="Title" id="ReviewTitle" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black" required />
                     @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-red-400" })
                 </div>
                 <div>
                     <p class="text-lg mb-1">Review</p>
-                    <textarea asp-for="UserReview" id="ReviewText" rows="6" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black"></textarea>
+                    <textarea asp-for="UserReview" id="ReviewText" rows="6" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black" required></textarea>
                     @Html.ValidationMessageFor(model => model.UserReview, "", new { @class = "text-red-400" })
                 </div>
                 <button type="submit" id="reviewSubmitBtn" class="bg-[#FFE9C6] w-1/3 mx-auto text-black py-2 rounded-xl font-semibold mt-2 shadow hover:bg-[#EAC231] transition">Submit</button>
@@ -95,7 +95,41 @@
     document.getElementById('reviewForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
+        // Validate required fields
+        const title = document.getElementById('ReviewTitle').value.trim();
+        const reviewText = document.getElementById('ReviewText').value.trim();
+        const rating = selectedRating;
+        
+        if (!title) {
+            alert('Please enter a title for your review.');
+            document.getElementById('ReviewTitle').focus();
+            return;
+        }
+        
+        if (!reviewText) {
+            alert('Please enter your review text.');
+            document.getElementById('ReviewText').focus();
+            return;
+        }
+        
+        if (rating === 0) {
+            alert('Please select a rating by clicking on the stars.');
+            return;
+        }
+        
+        // Show loading state
+        const submitBtn = document.getElementById('reviewSubmitBtn');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Submitting...';
+        submitBtn.disabled = true;
+        
         const formData = new FormData(this);
+        
+        // Remove ReviewId from form data when adding a new review
+        if (!isEditMode) {
+            formData.delete('ReviewId');
+        }
+        
         const action = isEditMode ? '/Review/EditReview' : '/Review/AddReview';
         
         fetch(action, {
@@ -103,12 +137,21 @@
             body: formData
         }).then(response => {
             if (response.ok) {
+                // Close modal
+                closeAddReview();
+                // Reload page to show updated reviews
                 window.location.reload();
             } else {
-                console.error('Form submission failed');
+                console.error('Form submission failed with status:', response.status);
+                alert('Failed to submit review. Please try again.');
             }
         }).catch(error => {
             console.error('Error:', error);
+            alert('An error occurred while submitting your review. Please try again.');
+        }).finally(() => {
+            // Reset button state
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
         });
     });
 
@@ -141,7 +184,7 @@
 
     // Function to reset modal for new review
     function resetModalForNewReview() {
-        document.getElementById('ReviewId').value = '';
+        // Don't set ReviewId for new reviews - let it be empty
         document.getElementById('ReviewTitle').value = '';
         document.getElementById('ReviewText').value = '';
         document.getElementById('ReviewScore').value = '';

@@ -31,7 +31,15 @@ namespace ASI.Basecode.WebApp
                 CreateMap<TrainingCategoryViewModel, TrainingCategory>();
                 CreateMap<TrainingViewModel, Training>();
                 CreateMap<UserProfileEditViewModel, Account>();
-                CreateMap<ReviewViewModel, Review>();
+                
+                CreateMap<ReviewViewModel, Review>()
+                    .ForMember(dest => dest.ReviewId, opt => opt.Ignore())
+                    .ForMember(dest => dest.CreatedTime, opt => opt.Ignore())
+                    .ForMember(dest => dest.UpdatedTime, opt => opt.Ignore())
+                    .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
+                    .ForMember(dest => dest.UpdatedBy, opt => opt.Ignore())
+                    .ForMember(dest => dest.Account, opt => opt.Ignore())
+                    .ForMember(dest => dest.Training, opt => opt.Ignore());
 
                 CreateMap<Training, TrainingViewModel>()
                     .ForMember(dest => dest.AccountFirstName, opt => opt.MapFrom(src => src.Account.FirstName))
