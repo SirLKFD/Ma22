@@ -48,6 +48,11 @@
 
 <script>
 document.getElementById('confirmDeleteBtn').addEventListener('click', function(e) {
+    var form = this.closest('form');
+    if (form && !form.checkValidity()) {
+        // Form is invalid, let browser show errors, do not set loading state
+        return;
+    }
     var btn = document.getElementById('confirmDeleteBtn');
     if (btn) {
         btn.disabled = true;

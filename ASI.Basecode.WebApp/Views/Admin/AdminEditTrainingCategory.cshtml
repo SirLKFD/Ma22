@@ -26,13 +26,13 @@
 
             <div class="flex flex-col gap-4">
                 <div>
-                    <label asp-for="CategoryName" class="block text-sm font-medium text-white mb-2">Category Name</label>
-                    <input asp-for="CategoryName" id="CategoryNamePreview" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black" />
+                    <label asp-for="CategoryName" class="block text-sm font-medium text-white mb-2">Category Name <span class="text-xs text-gray-300">(max 30 characters)</span></label>
+                    <input asp-for="CategoryName" id="CategoryNamePreview" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black" required />
                     <span asp-validation-for="CategoryName" class="text-red-500 text-sm"></span>
                 </div>
                 <div>
-                    <label asp-for="Description" class="block text-sm font-medium text-white mb-2">Description</label>
-                    <textarea asp-for="Description" id="DescriptionPreview" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black"></textarea>
+                    <label asp-for="Description" class="block text-sm font-medium text-white mb-2">Description <span class="text-xs text-gray-300">(max 250 characters)</span></label>
+                    <textarea asp-for="Description" id="DescriptionPreview" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#EAC231] text-black" required></textarea>
                     <span asp-validation-for="Description" class="text-red-500 text-sm"></span>
                 </div>
                 <button id="editTrainingCategoryBtn" class="bg-[#FFE9C6] hover:bg-[#e6c89c] w-2/3 text-black align-self-center py-2 rounded-xl font-weight-bold ">
@@ -124,6 +124,10 @@
     });
     // Add loading state to Save Changes button
     document.querySelector('#editTrainingCategory form').addEventListener('submit', function(e) {
+        if (!this.checkValidity()) {
+            // Form is invalid, let browser show errors, do not set loading state
+            return;
+        }
         var btn = document.getElementById('editTrainingCategoryBtn');
         if (btn) {
             btn.disabled = true;

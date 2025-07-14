@@ -140,7 +140,7 @@
 
                     <div class="flex flex-grow flex-col p-4">
                         <div class="mb-2 flex items-center justify-between">
-                            <h2 class="text-xl font-bold text-gray-800">@training.TrainingName</h2>
+                            <h2 class="text-xl font-bold text-gray-800">@(training.TrainingName != null && training.TrainingName.Length > 20 ? training.TrainingName.Substring(0, 20) + "..." : training.TrainingName)</h2>
                             <div class="flex gap-2 text-gray-600">
                                 <span class="material-symbols-outlined cursor-pointer hover:text-black"
                                       onclick="openEditTraining('@training.Id', '@training.TrainingName', '@training.TrainingCategoryId', '@training.SkillLevel', '@training.Duration', '@training.CourseCode', '@training.Description', '@training.CoverPicture')">edit</span>

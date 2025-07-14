@@ -132,6 +132,10 @@
 <script src="~/js/usereditmodal_AJAX.js" asp-append-version="true"></script>
 <script>
 document.getElementById('editUserForm').addEventListener('submit', function(e) {
+    if (!this.checkValidity()) {
+        // Form is invalid, let browser show errors, do not set loading state
+        return;
+    }
     var btn = document.getElementById('editUserBtn');
     if (btn) {
         btn.disabled = true;

@@ -86,6 +86,10 @@
 
     // Add loading state to Delete Training form
     document.querySelector('#deleteTraining form').addEventListener('submit', function(e) {
+        if (!this.checkValidity()) {
+            // Form is invalid, let browser show errors, do not set loading state
+            return;
+        }
         var btn = document.getElementById('deleteTrainingBtn');
         if (btn) {
             btn.disabled = true;

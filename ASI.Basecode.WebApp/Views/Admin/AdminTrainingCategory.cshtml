@@ -60,7 +60,7 @@
                 <div class="flex flex-grow flex-col p-4">
                     <!-- Header -->
                     <div class="mb-2 flex items-center justify-between">
-                        <h2 class="text-xl font-bold text-[#222]">@category.CategoryName</h2>
+                        <h2 class="text-xl font-bold text-[#222]">@(category.CategoryName != null && category.CategoryName.Length > 20 ? category.CategoryName.Substring(0, 20) + "..." : category.CategoryName)</h2>
                          @if (userRole == 2) 
                         {
                         <div class="flex gap-2 text-gray-600">

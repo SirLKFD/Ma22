@@ -86,6 +86,10 @@
     }
     // Add loading state to Confirm button
     document.querySelector('#deleteTrainingCategory form').addEventListener('submit', function(e) {
+        if (!this.checkValidity()) {
+            // Form is invalid, let browser show errors, do not set loading state
+            return;
+        }
         var btn = document.getElementById('deleteTrainingCategoryBtn');
         if (btn) {
             btn.disabled = true;

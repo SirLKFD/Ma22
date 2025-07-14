@@ -179,6 +179,10 @@
 
 <script>
 function handleDeleteEnrollmentSubmit(form) {
+    if (!form.checkValidity()) {
+        // Form is invalid, let browser show errors, do not set loading state
+        return false;
+    }
     var btn = form.querySelector('button[type="submit"]');
     if (btn) {
         btn.disabled = true;

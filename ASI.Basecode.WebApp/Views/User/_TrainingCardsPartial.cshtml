@@ -28,7 +28,7 @@ else
             <div class="flex flex-grow flex-col p-4">
                 <!-- Header -->
                 <div class="mb-2 flex items-center justify-between">
-                    <h2 class="text-xl font-bold text-[#222]">@training.TrainingName</h2>
+                    <h2 class="text-xl font-bold text-[#222]">@(training.TrainingName != null && training.TrainingName.Length > 25 ? training.TrainingName.Substring(0, 20) + "..." : training.TrainingName)</h2>
 
                 </div>
                 <div class="mb-2 flex gap-2">

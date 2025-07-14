@@ -64,6 +64,10 @@
 </script>
 <script>
 document.querySelector('#deleteTopic form').addEventListener('submit', function(e) {
+    if (!this.checkValidity()) {
+        // Form is invalid, let browser show errors, do not set loading state
+        return;
+    }
     var btn = document.getElementById('deleteTopicBtn');
     if (btn) {
         btn.disabled = true;

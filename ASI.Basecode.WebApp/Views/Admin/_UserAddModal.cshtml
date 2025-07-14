@@ -136,6 +136,10 @@
 <script src="~/js/useraddmodal_AJAX.js" asp-append-version="true"></script>
 <script>
 document.getElementById('createuserform').addEventListener('submit', function(e) {
+    if (!this.checkValidity()) {
+        // Form is invalid, let browser show errors, do not set loading state
+        return;
+    }
     var btn = this.querySelector('button[type="submit"]');
     if (btn) {
         btn.disabled = true;
