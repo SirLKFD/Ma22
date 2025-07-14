@@ -86,14 +86,19 @@
     @if (ViewBag.TotalCount > ViewBag.PageSize)
     {
         var totalPages = (int)Math.Ceiling((decimal)ViewBag.TotalCount / ViewBag.PageSize);
-        <div class="mt-10 flex justify-end">
-            <nav aria-label="Page navigation">
+        <div class="mt-10 flex items-center justify-between text-sm text-gray-600">
+
+            <!-- Total Count -->
+            <div>Total @ViewBag.TotalCount items</div>
+
+            <!-- Pagination and Page Controls -->
+            <div class="flex items-center gap-4">
                 <ul class="flex gap-1 text-sm">
                     @if (ViewBag.CurrentPage > 1)
                     {
                         <li>
-                            <a href="@Url.Action("AdminTrainingCategory", new { page = ViewBag.CurrentPage - 1, search = ViewBag.Search })"
-                               class="rounded-l-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">
+                            <a href="@Url.Action("AdminTrainingCategory", new { page = ViewBag.CurrentPage - 1, search = ViewBag.Search, pageSize = ViewBag.PageSize })"
+                               class="border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">
                                 Prev
                             </a>
                         </li>
@@ -107,7 +112,7 @@
                         : "bg-white text-gray-600 hover:bg-gray-100 hover:text-black";
 
                         <li>
-                            <a href="@Url.Action("AdminTrainingCategory", new { page = i, search = ViewBag.Search })"
+                            <a href="@Url.Action("AdminTrainingCategory", new { page = i, search = ViewBag.Search, pageSize = ViewBag.PageSize })"
                                class="border border-gray-300 px-3 py-2 transition @pageClass">
                                 @i
                             </a>
@@ -117,16 +122,41 @@
                     @if (ViewBag.CurrentPage < totalPages)
                     {
                         <li>
-                            <a href="@Url.Action("AdminTrainingCategory", new { page = ViewBag.CurrentPage + 1, search = ViewBag.Search })"
-                               class="rounded-r-full border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">
+                            <a href="@Url.Action("AdminTrainingCategory", new { page = ViewBag.CurrentPage + 1, search = ViewBag.Search, pageSize = ViewBag.PageSize })"
+                               class="border border-gray-300 bg-white px-3 py-2 text-gray-600 transition hover:bg-gray-100 hover:text-black">
                                 Next
                             </a>
                         </li>
                     }
                 </ul>
-            </nav>
+
+                <!-- Page Size & Go To -->
+                <form method="get" action="@Url.Action("AdminTrainingCategory")" class="flex items-center gap-2">
+                    <input type="hidden" name="search" value="@ViewBag.Search" />
+
+                    <!-- Page Size Dropdown -->
+                    <select name="pageSize" onchange="this.form.submit()" class="rounded border border-gray-300 px-2 py-1 text-sm">
+                        @{
+                            int total = ViewBag.TotalCount;
+                            int selected = ViewBag.PageSize;
+                            for (int i = 6; i <= total; i += 6)
+                            {
+                                <option value="@i" selected="@(i == selected)">@i / page</option>
+                            }
+                        }
+                    </select>
+
+                    <!-- Go to Page -->
+                    <span class="text-sm text-gray-600">Go to</span>
+                    <input type="number" name="page" min="1" max="@totalPages"
+                           class="w-16 rounded border border-gray-300 px-2 py-1 text-sm text-center"
+                           value="@ViewBag.CurrentPage" />
+                    <span class="text-sm text-gray-600">Page</span>
+                </form>
+            </div>
         </div>
     }
+
 </div>
 
 <!-- Modals -->
