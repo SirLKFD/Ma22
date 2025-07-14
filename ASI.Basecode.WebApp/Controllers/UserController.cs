@@ -54,12 +54,27 @@ namespace ASI.Basecode.WebApp.Controllers
             try
             {
                 var trainings = _trainingService.GetAllTrainings();
-                return View("UserDashboard", trainings);
+                var categories = _trainingCategoryService.GetAllTrainingCategoryViewModelsUnfiltered(); // Or any categories you want
+                var viewModel = new BrowseTrainingsViewModel
+                {
+                    Trainings = trainings,
+                    Categories = categories
+                };
+                return View("TestDashboard", viewModel);
             }
             catch (Exception)
             {
                 throw;
             }
+            //try
+            //{
+            //    var trainings = _trainingService.GetAllTrainings();
+            //    return View("TestDashboard", trainings);
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         [HttpGet]

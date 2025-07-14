@@ -12,8 +12,8 @@
 }
 
 
-<div class="animate-slide-up animate-fade-in mb-20 flex h-[90vh] flex-col items-center justify-center gap-10 opacity-0">
-    <h1 class="font-weight-bold md:text-5xl lg:text-6xl">
+<div class="animate-slide-up animate-fade-in my-20 flex flex-col items-center gap-10 opacity-0">
+    <h1 class="font-weight-bold text-6xl">
         Enrolled Trainings
     </h1>
     <p class="font-semibold">Continue where you left off.</p>
@@ -31,7 +31,7 @@
     </div>
 </div>
 
-<div class="-mx-20 mb-20 flex w-screen flex-col justify-center gap-5 bg-white p-5">
+@* <div class="-mx-20 mb-20 flex w-screen flex-col justify-center gap-5 bg-white p-5">
     <div class="mb-10 flex flex-col items-center gap-5 text-center">
         <h2 class="font-weight-bold text-4xl">Explore by Category</h2>
         <p>Choose from our popular learning paths</p>
@@ -41,7 +41,7 @@
             &#8592;
         </button>
 
-        <div id="usertrainings-category-cards-wrapper" class="flex flex-wrap justify-center gap-10">
+        <div id="usertrainings-category-cards-wrapper" class="flex justify-center gap-10">
             @if (categoriesToDisplay.Any())
             {
                 foreach (var category in categoriesToDisplay)
@@ -61,24 +61,22 @@
             &#8594;
         </button>
     </div>
+</div> *@
 
-
-</div>
-
-<div class="my-10 flex flex-col items-center">
+@* <div class="my-10 flex flex-col items-center">
     <h2 id="usertrainings-title" class="font-weight-bold text-4xl">Trainings</h2>
     <p id="usertrainings-subtitle">Hand-picked courses from our expert instructors</p>
     <div id="usertrainings-loading" class="mt-2" style="display:none;">
         <span class="material-symbols-outlined animate-spin text-3xl">hourglass_empty</span>
     </div>
-</div>
+</div> *@
 
-<div id="usertrainings-container" class="mx-20 mb-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+<div id="usertrainings-container" class=" mb-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
     @if (enrolledTrainings.Any())
     {
         foreach (var training in trainingsToDisplay)
         {
-            <div class="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md transition hover:shadow-xl">
+            <div class="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md transition hover:shadow-xl" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
                 <!-- Cover Image -->
                 <div class="h-[180px]">
                     @if (!string.IsNullOrEmpty(training.CoverPicture))
