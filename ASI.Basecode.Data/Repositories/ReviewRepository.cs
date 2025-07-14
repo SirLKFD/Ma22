@@ -23,9 +23,23 @@ namespace ASI.Basecode.Data.Repositories
 
         public void AddReview(Review review)
         {
-            this.GetDbSet<Review>().Add(review);
-            UnitOfWork.SaveChanges();
-            Console.WriteLine("SaveChanges for Review called.");
+            Console.WriteLine($"[ReviewRepository] Starting AddReview: ReviewId={review.ReviewId}, Title='{review.Title}', UserReview='{review.UserReview}', ReviewScore={review.ReviewScore}, TrainingId={review.TrainingId}, AccountId={review.AccountId}");
+            
+            try
+            {
+                this.GetDbSet<Review>().Add(review);
+                Console.WriteLine("✅ Review added to DbSet");
+                
+                UnitOfWork.SaveChanges();
+                Console.WriteLine("✅ SaveChanges for Review called successfully.");
+                Console.WriteLine($"✅ Review saved with ID: {review.ReviewId}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Exception in AddReview: {ex.Message}");
+                Console.WriteLine($"❌ Stack trace: {ex.StackTrace}");
+                throw;
+            }
         }
 
         public void UpdateReview(Review review)

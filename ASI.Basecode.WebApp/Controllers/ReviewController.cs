@@ -30,6 +30,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddReview(ReviewViewModel model)
         {
 
@@ -37,12 +38,29 @@ namespace ASI.Basecode.WebApp.Controllers
             $"Title='{model.Title}', UserReview='{model.UserReview}', ReviewScore={model.ReviewScore}, " +
             $"TrainingId={model.TrainingId}");
 
+            // Check if anti-forgery token is present
+            var hasAntiForgeryToken = Request.Form.ContainsKey("__RequestVerificationToken");
+            Console.WriteLine($"🔐 Anti-forgery token present: {hasAntiForgeryToken}");
+
+            // Log model binding state
+            Console.WriteLine($"📋 Model binding state:");
+            Console.WriteLine($"   - Model is null: {model == null}");
+            if (model != null)
+            {
+                Console.WriteLine($"   - Title: '{model.Title}' (null: {model.Title == null})");
+                Console.WriteLine($"   - UserReview: '{model.UserReview}' (null: {model.UserReview == null})");
+                Console.WriteLine($"   - ReviewScore: {model.ReviewScore}");
+                Console.WriteLine($"   - TrainingId: {model.TrainingId}");
+                Console.WriteLine($"   - AccountId: {model.AccountId}");
+            }
+
             if (ModelState.IsValid)
             {
                 int? accountId = HttpContext.Session.GetInt32("AccountId");
                 if (accountId == null)
                 {
                     Console.WriteLine("❌ AccountId is null");
+                    TempData["ErrorMessage"] = "You must be logged in to submit a review.";
                     return RedirectToAction("Topics", "UserTopic", new { trainingId = model.TrainingId });
                 }
                 
@@ -61,17 +79,39 @@ namespace ASI.Basecode.WebApp.Controllers
                     var accountName = HttpContext.Session.GetString("UserName");
                     var newTraining = _trainingService.GetTrainingById(model.TrainingId);
                     _auditLogService.LogAction("Review", "Create", accountName,model.AccountId,   $"{newTraining.TrainingName}");
-            
+                    
+                    TempData["SuccessMessage"] = "Review submitted successfully!";
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine($"❌ Exception in AddReview: {ex.Message}");
                     ModelState.AddModelError("", ex.Message);
+                    TempData["ErrorMessage"] = "Failed to submit review: " + ex.Message;
                 }
+            }
+            else
+            {
+                Console.WriteLine("❌ ModelState is invalid");
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                Console.WriteLine($"❌ Validation errors: {string.Join(", ", errors)}");
+                
+                // Log each ModelState entry for debugging
+                foreach (var key in ModelState.Keys)
+                {
+                    var entry = ModelState[key];
+                    if (!entry.ValidationState.ToString().Contains("Valid"))
+                    {
+                        Console.WriteLine($"❌ ModelState[{key}]: {entry.ValidationState} - {string.Join(", ", entry.Errors.Select(e => e.ErrorMessage))}");
+                    }
+                }
+                
+                TempData["ErrorMessage"] = "Please correct the following errors: " + string.Join(", ", errors);
             }
             return RedirectToAction("Topics", "UserTopic", new { trainingId = model.TrainingId });
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult EditReview(ReviewViewModel model)
         {
             Console.WriteLine($"[ReviewController] Received EditReviewViewModel: " +
@@ -84,6 +124,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 if (accountId == null)
                 {
                     Console.WriteLine("❌ AccountId is null");
+                    TempData["ErrorMessage"] = "You must be logged in to edit a review.";
                     return RedirectToAction("Topics", "UserTopic", new { trainingId = model.TrainingId });
                 }
 
@@ -108,9 +149,28 @@ namespace ASI.Basecode.WebApp.Controllers
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine($"❌ Exception in EditReview: {ex.Message}");
                     ModelState.AddModelError("", ex.Message);
                     TempData["ErrorMessage"] = "Failed to update review: " + ex.Message;
                 }
+            }
+            else
+            {
+                Console.WriteLine("❌ ModelState is invalid");
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                Console.WriteLine($"❌ Validation errors: {string.Join(", ", errors)}");
+                
+                // Log each ModelState entry for debugging
+                foreach (var key in ModelState.Keys)
+                {
+                    var entry = ModelState[key];
+                    if (!entry.ValidationState.ToString().Contains("Valid"))
+                    {
+                        Console.WriteLine($"❌ ModelState[{key}]: {entry.ValidationState} - {string.Join(", ", entry.Errors.Select(e => e.ErrorMessage))}");
+                    }
+                }
+                
+                TempData["ErrorMessage"] = "Please correct the following errors: " + string.Join(", ", errors);
             }
             return RedirectToAction("Topics", "UserTopic", new { trainingId = model.TrainingId });
         }

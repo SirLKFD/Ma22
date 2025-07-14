@@ -418,6 +418,14 @@ namespace ASI.Basecode.Data
 
                 entity.Property(e => e.ReviewId).ValueGeneratedOnAdd();
                 entity.Property(e => e.Title).HasMaxLength(100);
+                entity.Property(e => e.UserReview);
+                entity.Property(e => e.ReviewScore);
+                entity.Property(e => e.TrainingId).IsRequired();
+                entity.Property(e => e.AccountId).IsRequired();
+                entity.Property(e => e.CreatedBy).HasMaxLength(50);
+                entity.Property(e => e.CreatedTime).HasColumnType("datetime");
+                entity.Property(e => e.UpdatedBy).HasMaxLength(50);
+                entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Account)
                 .WithMany(a => a.Reviews) // <-- Specify the navigation property
