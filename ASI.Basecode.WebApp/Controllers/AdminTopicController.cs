@@ -48,12 +48,39 @@ namespace ASI.Basecode.WebApp.Controllers
 
         [HttpPost]
         public IActionResult AddTopic(
+
+
             TopicViewModel model,
             List<IFormFile> VideoFilesAdd,
             List<IFormFile> ImageFilesAdd,
             List<IFormFile> DocumentFilesAdd,
             [FromServices] CloudinaryDotNet.Cloudinary cloudinary)
         {
+            const long maxSize = 100 * 1024 * 1024; // 100MB
+
+            // Validate video files total size
+            if (VideoFilesAdd?.Sum(f => f.Length) > maxSize)
+            {
+                ModelState.AddModelError("", "Total size of videos exceeds 100MB limit");
+            }
+
+            // Validate image files total size
+            if (ImageFilesAdd?.Sum(f => f.Length) > maxSize)
+            {
+                ModelState.AddModelError("", "Total size of images exceeds 100MB limit");
+            }
+
+            // Validate document files total size
+            if (DocumentFilesAdd?.Sum(f => f.Length) > maxSize)
+            {
+                ModelState.AddModelError("", "Total size of documents exceeds 100MB limit");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             if (!ModelState.IsValid)
             {
                 return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = model.TrainingId });
@@ -143,7 +170,8 @@ namespace ASI.Basecode.WebApp.Controllers
                                 Name = file.FileName,
                                 MediaType = file.ContentType,
                                 MediaUrl = uploadResult.SecureUrl?.ToString(),
-                                AccountId = model.AccountId
+                                AccountId = model.AccountId,
+                                FileSize = file.Length
                             };
                             _topicMediaService.AddTopicMedia(topicMedia);
                             Console.WriteLine($"[AddTopic] Media saved for topic {addedTopic.Id}: {uploadResult.SecureUrl}");
@@ -436,7 +464,8 @@ namespace ASI.Basecode.WebApp.Controllers
                                 Name = file.FileName,
                                 MediaType = file.ContentType,
                                 MediaUrl = uploadResult.SecureUrl?.ToString(),
-                                AccountId = model.AccountId
+                                AccountId = model.AccountId,
+                                FileSize = file.Length
                             };
                             _topicMediaService.AddTopicMedia(topicMedia);
                             Console.WriteLine($"[EditTopic] Media saved for topic {updatedTopic.Id}: {uploadResult.SecureUrl}");

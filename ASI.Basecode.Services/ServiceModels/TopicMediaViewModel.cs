@@ -22,4 +22,5 @@ public class TopicMediaViewModel
 
     public int Id {get;set;}
 
+    public long? FileSize { get; set; } // File size in bytes
 }
