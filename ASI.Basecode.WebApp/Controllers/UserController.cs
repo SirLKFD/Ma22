@@ -266,8 +266,18 @@ namespace ASI.Basecode.WebApp.Controllers
         public IActionResult UserTrainingsByCategory(int categoryId)
         {
             try
-            {
-                var trainings = _trainingService.GetAllTrainingsByCategoryId(categoryId);
+            { int? userId = HttpContext.Session.GetInt32("AccountId");
+                IEnumerable<TrainingViewModel> trainings;
+                if (categoryId == 0)
+                {
+                    trainings = _enrollmentService.GetEnrolledTrainings(userId ?? 0);
+                }
+                else
+                {
+                    trainings = _enrollmentService.GetEnrolledTrainings(userId ?? 0)
+                        .Where(t => t.TrainingCategoryId == categoryId).ToList();
+                }
+                //var trainings = _trainingService.GetAllTrainingsByCategoryId(categoryId);
                 return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", trainings);
             }
             catch (Exception)
