@@ -1,0 +1,178 @@
+@model List<ASI.Basecode.Services.ServiceModels.EnrollmentViewModel>
+@{
+    ViewData["Title"] = "Ma22 | Manage Enrollments";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var training = ViewData["Training"] as ASI.Basecode.Services.ServiceModels.TrainingViewModel;
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<div class="mb-20 pb-20 animate-slide-up opacity-0 animate-fade-in">
+    <div class="mx-20">
+        <!-- Header -->
+        <div class="mb-8 flex items-center justify-between">
+            <div>
+                <h1 class="text-4xl font-bold text-gray-800">Manage Enrollments</h1>
+                <p class="mt-2 text-gray-600">@training?.TrainingName</p>
+            </div>
+            <a href="@Url.Action("AdminTrainingTopics", "AdminTraining", new { trainingId = training?.Id })" 
+               class="flex items-center gap-2 rounded-lg bg-[#640A16] px-4 py-2 text-white hover:bg-[#4e0712] transition no-underline">
+                Back to Training
+            </a>
+        </div>
+
+        <!-- Success/Error Messages -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="mb-4 rounded border border-green-400 bg-green-100 px-4 py-2 text-green-700">
+                ✅ @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="mb-4 rounded border border-red-400 bg-red-100 px-4 py-2 text-red-700">
+                ❌ @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <!-- Stats Cards -->
+        <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div class="rounded-lg bg-white p-6 shadow-md">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined rounded-lg bg-blue-100 p-2 text-blue-600">group</span>
+                    <div>
+                        <p class="text-sm text-gray-600">Total Enrollees</p>
+                        <p class="text-2xl font-bold text-gray-800">@Model.Count</p>
+                    </div>
+                </div>
+            </div>
+            <div class="rounded-lg bg-white p-6 shadow-md">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined rounded-lg bg-green-100 p-2 text-green-600">schedule</span>
+                    <div>
+                        <p class="text-sm text-gray-600">Training Duration</p>
+                        <p class="text-2xl font-bold text-gray-800">@training?.DurationName</p>
+                    </div>
+                </div>
+            </div>
+            <div class="rounded-lg bg-white p-6 shadow-md">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined rounded-lg bg-purple-100 p-2 text-purple-600">category</span>
+                    <div>
+                        <p class="text-sm text-gray-600">Category</p>
+                        <p class="text-2xl font-bold text-gray-800">@training?.TrainingCategoryName</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enrollees Table -->
+        <div class="rounded-lg bg-white shadow-md">
+            <div class="border-b border-gray-200 px-6 py-4">
+                <h2 class="text-xl font-semibold text-gray-800">Enrolled Students</h2>
+                <p class="mt-1 text-sm text-gray-600">Manage student enrollments for this training</p>
+            </div>
+
+            @if (Model.Any())
+            {
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Student</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Enrolled Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 bg-white">
+                            @foreach (var enrollment in Model)
+                            {
+                                <tr class="hover:bg-gray-50">
+                                    <td class="whitespace-nowrap px-6 py-4">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0">
+                                                <span class="material-symbols-outlined h-10 w-10 rounded-full bg-gray-200 p-2 text-gray-600">person</span>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">@enrollment.FullName</div>
+                                                <div class="text-sm text-gray-500">ID: @enrollment.AccountId</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4">
+                                        <div class="text-sm text-gray-900">@enrollment.UserEmail</div>
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4">
+                                        <div class="text-sm text-gray-900">@enrollment.EnrolledAt.ToString("MMM dd, yyyy")</div>
+                                        <div class="text-sm text-gray-500">@enrollment.EnrolledAt.ToString("hh:mm tt")</div>
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
+                                        <div class="flex items-center justify-start">
+                                            <button onclick="confirmDeleteEnrollment(@enrollment.EnrollmentId, '@enrollment.FullName')" 
+                                                    class="rounded bg-red-100 px-3 py-1 text-red-700 hover:bg-red-200 transition flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-sm">delete</span>
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="px-6 py-12 text-center">
+                    <span class="material-symbols-outlined mx-auto mb-4 text-6xl text-gray-300">group_off</span>
+                    <h3 class="text-lg font-medium text-gray-900">No Enrollments</h3>
+                    <p class="mt-2 text-sm text-gray-500">No students have enrolled in this training yet.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteEnrollmentModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
+    <div class="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl">
+        <div class="mb-4 flex items-center gap-3">
+            <span class="material-symbols-outlined rounded-full bg-red-100 p-2 text-red-600">warning</span>
+            <h3 class="text-lg font-semibold text-gray-900">Remove Student</h3>
+        </div>
+        <p class="mb-6 text-gray-600">Are you sure you want to remove <span id="studentName" class="font-semibold"></span> from this training? This action cannot be undone.</p>
+        <div class="flex gap-3">
+            <form id="deleteEnrollmentForm" method="post" action="@Url.Action("DeleteEnrollment", "Enrollment")" class="flex-1">
+                <input type="hidden" id="enrollmentIdToDelete" name="enrollmentId" />
+                <input type="hidden" name="trainingId" value="@training?.Id" />
+                <button type="submit" class="w-full rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 transition">
+                    Remove Student
+                </button>
+            </form>
+            <button onclick="closeDeleteModal()" class="flex-1 rounded-lg bg-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-400 transition">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDeleteEnrollment(enrollmentId, studentName) {
+        document.getElementById('enrollmentIdToDelete').value = enrollmentId;
+        document.getElementById('studentName').textContent = studentName;
+        document.getElementById('deleteEnrollmentModal').classList.remove('hidden');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteEnrollmentModal').classList.add('hidden');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('deleteEnrollmentModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+</script> 

@@ -70,10 +70,41 @@ namespace ASI.Basecode.Data.Repositories
         public void DeleteUser(Account user)
         {
             var existingUser = this.GetDbSet<Account>().FirstOrDefault(x => x.Id == user.Id);
-            if (existingUser != null)
+            if (existingUser == null)
+                return;
+
+            // Use transaction for safety
+            using (var transaction = Context.Database.BeginTransaction())
             {
+                if (existingUser.Role == 2) // SuperAdmin
+                {
+                    // Delete all content created by this superadmin
+                    var topics = Context.Topics.Where(t => t.AccountId == user.Id).ToList();
+                    Context.Topics.RemoveRange(topics);
+
+                    var trainings = Context.Trainings.Where(t => t.AccountId == user.Id).ToList();
+                    Context.Trainings.RemoveRange(trainings);
+
+                    var categories = Context.TrainingCategories.Where(c => c.AccountId == user.Id).ToList();
+                    Context.TrainingCategories.RemoveRange(categories);
+
+                    var topicMedia = Context.TopicMedia.Where(m => m.AccountId == user.Id).ToList();
+                    Context.TopicMedia.RemoveRange(topicMedia);
+                }
+                else if (existingUser.Role == 1) 
+                {
+                    // Delete reviews and enrollments
+                    var reviews = Context.Reviews.Where(r => r.AccountId == user.Id).ToList();
+                    Context.Reviews.RemoveRange(reviews);
+
+                    var enrollments = Context.Enrollments.Where(e => e.AccountId == user.Id).ToList();
+                    Context.Enrollments.RemoveRange(enrollments);
+                }
+
+                // Finally, delete the user
                 this.GetDbSet<Account>().Remove(existingUser);
                 UnitOfWork.SaveChanges();
+                transaction.Commit();
             }
         }
 

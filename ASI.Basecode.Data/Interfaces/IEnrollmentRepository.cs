@@ -11,5 +11,7 @@ namespace ASI.Basecode.Data.Interfaces
         List<Enrollment> GetByTrainingId(int trainingId);
 
         List<Enrollment> GetByTrainingIds(List<int> trainingIds);
+        Enrollment GetById(int id);
+        void Delete(Enrollment enrollment);
     }
 }

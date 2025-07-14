@@ -213,7 +213,8 @@ namespace ASI.Basecode.WebApp.Controllers
                         }
 
                         _userService.UpdateUser(model);
-                        _auditLogService.LogAction("User", "Update", model.Id, model.Id, $"{model.FirstName} {model.LastName}");
+                        var accountName = HttpContext.Session.GetString("UserName");
+                        _auditLogService.LogAction("User", "Update", accountName,model.Id, $"{model.FirstName} {model.LastName}");
                         Console.WriteLine("log complete");
                         TempData["Success"] = "User updated successfully!";
                         return RedirectToAction("UserProfile");
@@ -250,8 +251,9 @@ namespace ASI.Basecode.WebApp.Controllers
             }
 
             var user = _userService.GetUserById(idToDelete);
-
-            _auditLogService.LogAction("User", "Delete", idToDelete, idToDelete, $"{user.FirstName} {user.LastName}");
+            int? accountId = HttpContext.Session.GetInt32("AccountId");
+            var accountName = HttpContext.Session.GetString("UserName");
+            _auditLogService.LogAction("User", "Delete", accountName,accountId.Value, $"{user.FirstName} {user.LastName}");
             Console.WriteLine("log complete");
             _userService.DeleteUser(idToDelete);
            
@@ -325,7 +327,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 var currentUserId = HttpContext.Session.GetInt32("AccountId");
                 if (currentUserId.HasValue)
                 {
-                    _auditLogService.LogAction("Test", "TestAction", 999, currentUserId.Value, "Test Entity");
+                    _auditLogService.LogAction("Test", "TestAction", "test user",-1, "Test Entity");
                     _logger.LogInformation("Test audit log created successfully");
                     return Json(new { success = true, message = "Test audit log created", userId = currentUserId.Value });
                 }

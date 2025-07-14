@@ -14,18 +14,20 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly ITrainingService _trainingService;
         private readonly IUserService _userService;
         private readonly IEnrollmentService _enrollmentService;
-
+        private readonly IReviewService _reviewService;
 
         public UserTopicController(
             ITopicService topicService,
             ITrainingService trainingService,
             IUserService userService,
-            IEnrollmentService enrollmentService)
+            IEnrollmentService enrollmentService,
+            IReviewService reviewService)
         {
             _topicService = topicService;
             _trainingService = trainingService;
             _userService = userService;
             _enrollmentService = enrollmentService;
+            _reviewService = reviewService;
         }
 
         [HttpGet]
@@ -46,6 +48,8 @@ namespace ASI.Basecode.WebApp.Controllers
                     {
                         bool isEnrolled = _enrollmentService.IsUserEnrolled(user.Id, trainingId);
                         ViewBag.IsEnrolled = isEnrolled;
+                        bool hasReviewed = _reviewService.HasUserReviewed(user.Id, trainingId);
+                        ViewBag.HasReviewed = hasReviewed;
                     }
                 }
 

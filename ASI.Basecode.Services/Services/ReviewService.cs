@@ -65,5 +65,41 @@ namespace ASI.Basecode.Services.Services
           
         }
 
+        public bool HasUserReviewed(int userId, int trainingId)
+        {
+            return _repository.GetReviews().Any(r => r.AccountId == userId && r.TrainingId == trainingId);
+        }
+
+        public ReviewViewModel GetUserReview(int userId, int trainingId)
+        {
+            var review = _repository.GetReviews().FirstOrDefault(r => r.AccountId == userId && r.TrainingId == trainingId);
+            if (review == null) return null;
+
+            return new ReviewViewModel
+            {
+                ReviewId = review.ReviewId,
+                TrainingId = review.TrainingId,
+                Title = review.Title,
+                UserReview = review.UserReview,
+                ReviewScore = review.ReviewScore,
+                AccountId = review.AccountId
+            };
+        }
+
+        public void UpdateReview(ReviewViewModel model)
+        {
+            var review = _repository.GetReviews().FirstOrDefault(r => r.ReviewId == model.ReviewId);
+            if (review == null)
+                throw new InvalidOperationException("Review not found.");
+
+            review.Title = model.Title;
+            review.UserReview = model.UserReview;
+            review.ReviewScore = model.ReviewScore;
+            review.UpdatedTime = DateTime.Now;
+            review.UpdatedBy = System.Environment.UserName;
+
+            _repository.UpdateReview(review);
+            Console.WriteLine("[Service] UpdateReview called on repository.");
+        }
     }
 }

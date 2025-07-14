@@ -70,11 +70,11 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 _topicService.AddTopic(model);
                
-
+                var accountName = HttpContext.Session.GetString("UserName");
                 var addedTopic = _topicService.GetAllTopicsByTrainingId(model.TrainingId)
                     .OrderByDescending(t => t.UpdatedTime).FirstOrDefault(t => t.TopicName == model.TopicName);
 
-                 _auditLogService.LogAction("Topic", "Create", addedTopic.Id, accountId.Value,addedTopic.TopicName);
+                 _auditLogService.LogAction("Topic", "Create", accountName,model.AccountId,addedTopic.TopicName);
 
                 if (addedTopic != null)
                 {
@@ -372,11 +372,11 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 _topicService.UpdateTopic(model);
 
-
+                var accountName = HttpContext.Session.GetString("UserName");
                 var updatedTopic = _topicService.GetAllTopicsByTrainingId(model.TrainingId)
                     .OrderByDescending(t => t.UpdatedTime).FirstOrDefault(t => t.TopicName == model.TopicName);
 
-                 _auditLogService.LogAction("Topic", "Update", updatedTopic.Id, accountId.Value,updatedTopic.TopicName);
+                 _auditLogService.LogAction("Topic", "Update", accountName,accountId.Value,updatedTopic.TopicName);
 
                 var allFiles = new List<IFormFile>();
                 if (VideoFilesEdit != null) { allFiles.AddRange(VideoFilesEdit); Console.WriteLine($"[EditTopic] {VideoFilesEdit.Count} video files received."); }
@@ -481,11 +481,12 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpPost]
         public IActionResult DeleteTopic(int id)
         {
+            var accountName = HttpContext.Session.GetString("UserName");
             int? accountId = HttpContext.Session.GetInt32("AccountId");
             var topic = _topicService.GetTopicWithAccountById(id);
             if (topic != null)
             {
-                _auditLogService.LogAction("Topic", "Delete", id, accountId.Value, topic.TopicName);
+                _auditLogService.LogAction("Topic", "Delete", accountName,accountId.Value, topic.TopicName);
                 _topicService.DeleteTopic(id);
                 
                 return RedirectToAction("AdminTrainingTopics", "AdminTraining", new { trainingId = topic.TrainingId });

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ASI.Basecode.Data;
 
 namespace ASI.Basecode.Services.Services
 {
@@ -14,15 +15,18 @@ namespace ASI.Basecode.Services.Services
     {
         private readonly IEnrollmentRepository _enrollmentRepository;
         private readonly ITrainingRepository _trainingRepository;
+        private readonly AsiBasecodeDBContext _context;
         private readonly IMapper _mapper;
 
         public EnrollmentService(
             IEnrollmentRepository enrollmentRepository,
             ITrainingRepository trainingRepository,
+            AsiBasecodeDBContext context,
             IMapper mapper)
         {
             _enrollmentRepository = enrollmentRepository;
             _trainingRepository = trainingRepository;
+            _context = context;
             _mapper = mapper;
         }
 
@@ -78,6 +82,37 @@ namespace ASI.Basecode.Services.Services
         {
             var enrollments = _enrollmentRepository.GetByTrainingId(trainingId);
             return enrollments.Count;
+        }
+
+        public List<EnrollmentViewModel> GetEnrolleesForTraining(int trainingId)
+        {
+            var enrollments = _enrollmentRepository.GetByTrainingId(trainingId);
+            var userIds = enrollments.Select(e => e.AccountId).ToList();
+            
+            // Get user details from the Account table
+            var users = _context.Accounts
+                .Where(a => userIds.Contains(a.Id))
+                .ToList();
+
+            return enrollments.Select(e => new EnrollmentViewModel
+            {
+                EnrollmentId = e.Id,
+                TrainingId = e.TrainingId,
+                AccountId = e.AccountId,
+                EnrolledAt = e.EnrolledAt,
+                UserFirstName = users.FirstOrDefault(u => u.Id == e.AccountId)?.FirstName ?? "Unknown",
+                UserLastName = users.FirstOrDefault(u => u.Id == e.AccountId)?.LastName ?? "Unknown",
+                UserEmail = users.FirstOrDefault(u => u.Id == e.AccountId)?.EmailId ?? "Unknown"
+            }).ToList();
+        }
+
+        public void DeleteEnrollment(int enrollmentId)
+        {
+            var enrollment = _enrollmentRepository.GetById(enrollmentId);
+            if (enrollment != null)
+            {
+                _enrollmentRepository.Delete(enrollment);
+            }
         }
     }
 }

@@ -43,5 +43,7 @@ public partial class Training
 
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
+    public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
+
     public virtual TrainingCategory TrainingCategory { get; set; }
 }

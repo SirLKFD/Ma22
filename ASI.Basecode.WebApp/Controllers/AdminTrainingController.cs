@@ -142,12 +142,12 @@ namespace ASI.Basecode.WebApp.Controllers
                 }
                 model.AccountId = accountId.Value;
                 _trainingService.AddTraining(model);
-
+                var accountName = HttpContext.Session.GetString("UserName");
                 var newTraining = _trainingService.GetAllTrainings().
                 OrderByDescending(c=>c.UpdatedTime)
                 .FirstOrDefault(c => c.AccountId == model.AccountId && c.TrainingName == model.TrainingName);
 
-                _auditLogService.LogAction("Training", "Create", newTraining.Id, accountId.Value,newTraining.TrainingName);
+                _auditLogService.LogAction("Training", "Create", accountName,model.AccountId,newTraining.TrainingName);
 
                 Console.WriteLine("✅ Training added");
 
@@ -224,8 +224,9 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 _logger.LogInformation("[UpdateTraining] Calling _trainingService.UpdateTraining for Id={Id}", model.Id);
                 _trainingService.UpdateTraining(model);
+                var accountName = HttpContext.Session.GetString("UserName");
                 int? accountId = HttpContext.Session.GetInt32("AccountId");
-                 _auditLogService.LogAction("Training", "Update", existingTraining.Id, accountId.Value,model.TrainingName);
+                 _auditLogService.LogAction("Training", "Update", accountName,accountId.Value,model.TrainingName);
                 _logger.LogInformation("[UpdateTraining] Training updated successfully for Id={Id}", model.Id);
 
                 return RedirectToAction("AdminTraining");
@@ -243,11 +244,12 @@ namespace ASI.Basecode.WebApp.Controllers
         public IActionResult DeleteTraining(int id, string trainingName)
         {
             List<TrainingViewModel> trainings = _trainingService.GetAllTrainings();
+            var accountName = HttpContext.Session.GetString("UserName");
             int? accountId = HttpContext.Session.GetInt32("AccountId");
             try{
           
 
-            _auditLogService.LogAction("Training", "Delete", id, accountId.Value, trainingName);
+            _auditLogService.LogAction("Training", "Delete", accountName,accountId.Value, trainingName);
             _trainingService.DeleteTraining(id);
             return RedirectToAction("AdminTraining");
             }
