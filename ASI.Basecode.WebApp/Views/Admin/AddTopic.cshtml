@@ -121,6 +121,11 @@
 </div>
 
 <script>
+    // File tracking arrays
+    let imageFilesAdd = [];
+    let videoFilesAdd = [];
+    let documentFilesAdd = [];
+
     function addTopic(trainingId) {
         document.getElementById('addTopic').classList.remove('hidden');
         document.getElementById('TrainingId').value = trainingId;
@@ -135,6 +140,9 @@
         document.getElementById('VideoFilesAdd').value = '';
         document.getElementById('ImageFilesAdd').value = '';
         document.getElementById('DocumentFilesAdd').value = '';
+        imageFilesAdd = [];
+        videoFilesAdd = [];
+        documentFilesAdd = [];
     }
 
     function getFileExtension(filename) {
@@ -196,11 +204,12 @@
         }
     }
 
-    function addNewFilePreview(previewId, file, icon, inputId) {
+    function addNewFilePreview(previewId, file, icon, inputId, index) {
         const preview = document.getElementById(previewId);
         const div = document.createElement('div');
         div.className = 'flex flex-col items-center min-w-[60px] cursor-pointer media-item new';
         div.setAttribute('data-filesize', file.size); // Ensure new file previews have data-filesize
+        div.setAttribute('data-index', index); // Track index for removal
 
         let fileInfo = '';
         if (inputId === 'DocumentFilesAdd') {
@@ -219,26 +228,59 @@
 
         div.querySelector('.delete-media-btn').onclick = function(e) {
             const parentId = div.parentElement ? div.parentElement.id : '';
+            const idx = parseInt(div.getAttribute('data-index'));
             div.remove();
             e.stopPropagation();
-            // If no more .media-item.new in this preview, clear the file input
-            if (parentId && document.querySelectorAll(`#${parentId} .media-item.new`).length === 0) {
-                if (parentId === 'VideoPreviewAdd') document.getElementById('VideoFilesAdd').value = '';
-                if (parentId === 'ImagePreviewAdd') document.getElementById('ImageFilesAdd').value = '';
-                if (parentId === 'DocumentPreviewAdd') document.getElementById('DocumentFilesAdd').value = '';
+            // Remove from tracking array and update input.files
+            if (parentId === 'VideoPreviewAdd') {
+                videoFilesAdd.splice(idx, 1);
+                updateInputFiles('VideoFilesAdd', videoFilesAdd);
+                updateTotalResourceSizeAdd('video');
             }
-            if (parentId === 'VideoPreviewAdd') updateTotalResourceSizeAdd('video');
-            if (parentId === 'ImagePreviewAdd') updateTotalResourceSizeAdd('image');
-            if (parentId === 'DocumentPreviewAdd') updateTotalResourceSizeAdd('document');
+            if (parentId === 'ImagePreviewAdd') {
+                imageFilesAdd.splice(idx, 1);
+                updateInputFiles('ImageFilesAdd', imageFilesAdd);
+                updateTotalResourceSizeAdd('image');
+            }
+            if (parentId === 'DocumentPreviewAdd') {
+                documentFilesAdd.splice(idx, 1);
+                updateInputFiles('DocumentFilesAdd', documentFilesAdd);
+                updateTotalResourceSizeAdd('document');
+            }
+            // If no more .media-item.new in this preview, clear the file input and array
+            if (parentId && document.querySelectorAll(`#${parentId} .media-item.new`).length === 0) {
+                if (parentId === 'VideoPreviewAdd') {
+                    document.getElementById('VideoFilesAdd').value = '';
+                    videoFilesAdd = [];
+                    updateTotalResourceSizeAdd('video');
+                }
+                if (parentId === 'ImagePreviewAdd') {
+                    document.getElementById('ImageFilesAdd').value = '';
+                    imageFilesAdd = [];
+                    updateTotalResourceSizeAdd('image');
+                }
+                if (parentId === 'DocumentPreviewAdd') {
+                    document.getElementById('DocumentFilesAdd').value = '';
+                    documentFilesAdd = [];
+                    updateTotalResourceSizeAdd('document');
+                }
+            }
         };
         preview.appendChild(div);
+    }
+
+    function updateInputFiles(inputId, filesArr) {
+        const dt = new DataTransfer();
+        filesArr.forEach(f => dt.items.add(f));
+        document.getElementById(inputId).files = dt.files;
     }
 
     document.getElementById('ImageFilesAdd').addEventListener('change', function(event) {
         const preview = document.getElementById('ImagePreviewAdd');
         preview.innerHTML = ''; // Clear existing previews
-        Array.from(event.target.files).forEach(file => {
-            addNewFilePreview('ImagePreviewAdd', file, 'image', 'ImageFilesAdd');
+        imageFilesAdd = Array.from(event.target.files);
+        imageFilesAdd.forEach((file, idx) => {
+            addNewFilePreview('ImagePreviewAdd', file, 'image', 'ImageFilesAdd', idx);
         });
         updateTotalResourceSizeAdd('image');
     });
@@ -246,8 +288,9 @@
     document.getElementById('VideoFilesAdd').addEventListener('change', function(event) {
         const preview = document.getElementById('VideoPreviewAdd');
         preview.innerHTML = ''; // Clear existing previews
-        Array.from(event.target.files).forEach(file => {
-            addNewFilePreview('VideoPreviewAdd', file, 'movie', 'VideoFilesAdd');
+        videoFilesAdd = Array.from(event.target.files);
+        videoFilesAdd.forEach((file, idx) => {
+            addNewFilePreview('VideoPreviewAdd', file, 'movie', 'VideoFilesAdd', idx);
         });
         updateTotalResourceSizeAdd('video');
     });
@@ -255,8 +298,9 @@
     document.getElementById('DocumentFilesAdd').addEventListener('change', function(event) {
         const preview = document.getElementById('DocumentPreviewAdd');
         preview.innerHTML = ''; // Clear existing previews
-        Array.from(event.target.files).forEach(file => {
-            addNewFilePreview('DocumentPreviewAdd', file, 'description', 'DocumentFilesAdd');
+        documentFilesAdd = Array.from(event.target.files);
+        documentFilesAdd.forEach((file, idx) => {
+            addNewFilePreview('DocumentPreviewAdd', file, 'description', 'DocumentFilesAdd', idx);
         });
         updateTotalResourceSizeAdd('document');
     });
