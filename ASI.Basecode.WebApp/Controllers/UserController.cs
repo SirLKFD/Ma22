@@ -215,6 +215,16 @@ namespace ASI.Basecode.WebApp.Controllers
                         _userService.UpdateUser(model);
                         var accountName = HttpContext.Session.GetString("UserName");
                         _auditLogService.LogAction("User", "Update", accountName,model.Id, $"{model.FirstName} {model.LastName}");
+                        
+                        // Update session values if the current user is editing their own profile
+                        int? accountId = HttpContext.Session.GetInt32("AccountId");
+                        if (accountId.HasValue && accountId.Value == model.Id)
+                        {
+                            HttpContext.Session.SetString("UserName", $"{model.FirstName} {model.LastName}");
+                            HttpContext.Session.SetString("UserEmail", model.EmailId);
+                            HttpContext.Session.SetString("ProfilePicture", model.ProfilePicture ?? "");
+                        }
+                        
                         Console.WriteLine("log complete");
                         TempData["Success"] = "User updated successfully!";
                         return RedirectToAction("UserProfile");
