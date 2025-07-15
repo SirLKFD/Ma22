@@ -1,10 +1,11 @@
 ﻿ @model ASI.Basecode.Services.ServiceModels.BrowseTrainingsViewModel 
 @* @model List<ASI.Basecode.Services.ServiceModels.TrainingViewModel> *@
 @{
-    ViewData["Title"] = "Ma22 | TestDashboard";
+    ViewData["Title"] = "Ma22 | Dashboard";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
     var trainingstoDisplay = Model.Trainings;
     var categoriestoDisplay = Model.Categories;
+
 }
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
@@ -49,13 +50,19 @@
 </div>
 
 <div class="flex items-center justify-between gap-10 font-semibold py-10">
+    <button id="dropdownSkillLevelButton" data-dropdown-toggle="dropdownskilllevel" class="flex jusify-center rounded-full outline outline-1 outline-gray-400 p-2 hover:bg-[#640A16] hover:text-white">
+        <span>Skill Level</span>
+        <span class="material-symbols-outlined">
+            arrow_drop_down
+        </span>
+    </button>
     <div class="flex gap-4">
         <div class="category-card category-filter hover:cursor-pointer hover:bg-[#640A16] hover:text-white rounded-full whitespace-nowrap p-2" data-category-id="0"
              data-category-description="All trainings">
             <p>All</p>
         </div>
         <div id="category-cards-wrapper" class="flex flex-wrap justify-center items-center gap-4">
-            @foreach (var category in categoriestoDisplay.Take(6))
+            @foreach (var category in categoriestoDisplay.Take(4))
             {
                 <div class="category-card category-filter hover:cursor-pointer hover:bg-[#640A16] hover:text-white rounded-full whitespace-nowrap p-2" data-category-id="@category.Id" data-category-description="@category.Description">
                     <p>@category.CategoryName</p>
@@ -71,6 +78,16 @@
         <span>Categories</span>
     </button>
 
+    <div id="dropdownskilllevel" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-42 overflow-y-auto max-h-48">
+        <ul class="py-2 text-sm text-black" aria-labelledby="dropdownDefaultButton">
+            <li>
+                <a class="block skill-level-filter px-4 py-2 hover:bg-[#EAC231] hover:text-black hover:no-underline hover-pointer" data-skill-level="All">All Skill Levels</a>
+                <a class="block skill-level-filter px-4 py-2 bg-[#BBF7D0] hover:bg-[#EAC231] hover:text-black hover:no-underline hover-pointer" data-skill-level="Beginner">Beginner</a>
+                <a class="block skill-level-filter px-4 py-2 bg-[#FEF08A] hover:bg-[#EAC231] hover:text-black hover:no-underline hover-pointer" data-skill-level="Intermediate">Intermediate</a>
+                <a class="block skill-level-filter px-4 py-2 bg-[#FECACA] hover:bg-[#EAC231] hover:text-black hover:no-underline hover-pointer" data-skill-level="Advanced">Advanced</a>
+            </li>
+        </ul>
+    </div>
     <div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-42 overflow-y-auto max-h-48">
         <ul class="py-2 text-sm text-black" aria-labelledby="dropdownDefaultButton">
             @foreach (var category in categoriestoDisplay)
@@ -165,6 +182,16 @@
                 }
             });
         }
+        
+        function setActiveSkillLevel(skillLevel) {
+            document.querySelectorAll('.skill-level-filter').forEach(function (el) {
+                if (el.getAttribute('data-skill-level') === skillLevel) {
+                    el.classList.add('selected-skill-level');
+                } else {
+                    el.classList.remove('selected-skill-level');
+                }
+            });
+        }
         document.querySelectorAll('.category-filter').forEach(function (el) {
             el.addEventListener('click', function () {
                 const categoryId = el.getAttribute('data-category-id');
@@ -172,13 +199,42 @@
                 // Optionally: trigger your filter logic here
             });
         });
+        
+        document.querySelectorAll('.skill-level-filter').forEach(function (el) {
+            el.addEventListener('click', function () {
+                const skillLevel = el.getAttribute('data-skill-level');
+                setActiveSkillLevel(skillLevel);
+                
+                // Update the dropdown button text
+                const dropdownButton = document.getElementById('dropdownSkillLevelButton');
+                if (dropdownButton) {
+                    const spanElement = dropdownButton.querySelector('span:first-child');
+                    if (spanElement) {
+                        spanElement.textContent = skillLevel === 'All' ? 'Skill Level' : skillLevel;
+                    }
+                }
+                
+                // Close the dropdown
+                const dropdown = document.getElementById('dropdownskilllevel');
+                if (dropdown) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        });
+        
         setActiveCategory("0"); // Default to 'All'
+        setActiveSkillLevel("All"); // Default to 'All Skill Levels'
     });
     </script>
 }
 
 <style>
     .selected-category {
+        background-color: #640A16 !important;
+        color: #fff !important;
+    }
+    
+    .selected-skill-level {
         background-color: #640A16 !important;
         color: #fff !important;
     }

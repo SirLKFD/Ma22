@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalTrainings = parseInt(document.getElementById('loadMoreBtn')?.getAttribute('data-total-trainings') || '0');
     const pageSize = 9;
     let selectedCategoryName = null;
+    let currentCategoryId = "0";
+    let currentSkillLevel = "All";
 
     // Category navigation logic
     let categoryStart = 0;
@@ -58,29 +60,53 @@ document.addEventListener('DOMContentLoaded', function() {
             const categoryName = this.querySelector('p')?.textContent || '';
             const categoryDescription = this.getAttribute('data-category-description') || '';
             
+            // Update current category
+            currentCategoryId = categoryId;
+            
             // Show loading indicator
             const loadingElement = document.getElementById('trainings-loading');
             if (loadingElement) loadingElement.style.display = '';
             
-            fetch(`/UserTraining/TrainingsByCategory?categoryId=${categoryId}`)
-                .then(response => response.text())
-                .then(html => {
-                    const container = document.getElementById('trainings-container');
-                    if (container) container.innerHTML = html;
-
-                    AOS.refresh();
-                    
-                    // Update title and subtitle
-                    const titleElement = document.getElementById('trainings-title');
-                    const subtitleElement = document.getElementById('trainings-subtitle');
-                    if (titleElement) titleElement.textContent = categoryName;
-                    if (subtitleElement) subtitleElement.innerHTML = categoryDescription;
-                    selectedCategoryName = categoryName;
-                    if (titleElement) titleElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                })
-                .finally(() => {
-                    if (loadingElement) loadingElement.style.display = 'none';
-                });
+            // Use combined filtering if skill level is also selected
+            if (currentSkillLevel !== "All") {
+                fetch(`/UserTraining/TrainingsByCategoryAndSkillLevel?categoryId=${categoryId}&skillLevel=${encodeURIComponent(currentSkillLevel)}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        const container = document.getElementById('trainings-container');
+                        if (container) container.innerHTML = html;
+                        AOS.refresh();
+                        
+                        // Update title and subtitle
+                        const titleElement = document.getElementById('trainings-title');
+                        const subtitleElement = document.getElementById('trainings-subtitle');
+                        if (titleElement) titleElement.textContent = `${categoryName} - ${currentSkillLevel}`;
+                        if (subtitleElement) subtitleElement.innerHTML = `${categoryDescription} (${currentSkillLevel} level)`;
+                        selectedCategoryName = categoryName;
+                        if (titleElement) titleElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    })
+                    .finally(() => {
+                        if (loadingElement) loadingElement.style.display = 'none';
+                    });
+            } else {
+                fetch(`/UserTraining/TrainingsByCategory?categoryId=${categoryId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        const container = document.getElementById('trainings-container');
+                        if (container) container.innerHTML = html;
+                        AOS.refresh();
+                        
+                        // Update title and subtitle
+                        const titleElement = document.getElementById('trainings-title');
+                        const subtitleElement = document.getElementById('trainings-subtitle');
+                        if (titleElement) titleElement.textContent = categoryName;
+                        if (subtitleElement) subtitleElement.innerHTML = categoryDescription;
+                        selectedCategoryName = categoryName;
+                        if (titleElement) titleElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    })
+                    .finally(() => {
+                        if (loadingElement) loadingElement.style.display = 'none';
+                    });
+            }
         });
     });
 
@@ -194,6 +220,68 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (loadingElement) loadingElement.style.display = 'none';
             });
     }
+
+    // SKILL LEVEL FILTERING logic
+    document.querySelectorAll('.skill-level-filter').forEach(filter => {
+        filter.addEventListener('click', function() {
+            const skillLevel = this.getAttribute('data-skill-level');
+            currentSkillLevel = skillLevel;
+            
+            const loadingElement = document.getElementById('trainings-loading');
+            if (loadingElement) loadingElement.style.display = '';
+            
+            // Use combined filtering if category is also selected
+            if (currentCategoryId !== "0") {
+                fetch(`/UserTraining/TrainingsByCategoryAndSkillLevel?categoryId=${currentCategoryId}&skillLevel=${encodeURIComponent(skillLevel)}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        const container = document.getElementById('trainings-container');
+                        if (container) container.innerHTML = html;
+                        AOS.refresh();
+                        
+                        // Update title and subtitle based on both filters
+                        const titleElement = document.getElementById('trainings-title');
+                        const subtitleElement = document.getElementById('trainings-subtitle');
+                        if (titleElement) {
+                            titleElement.textContent = skillLevel === 'All' ? selectedCategoryName || 'Trainings' : `${selectedCategoryName || 'Trainings'} - ${skillLevel}`;
+                        }
+                        if (subtitleElement) {
+                            subtitleElement.innerHTML = skillLevel === 'All' 
+                                ? 'Hand-picked courses from our expert instructors'
+                                : `Courses designed for ${skillLevel.toLowerCase()} learners`;
+                        }
+                        if (titleElement) titleElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    })
+                    .finally(() => {
+                        if (loadingElement) loadingElement.style.display = 'none';
+                    });
+            } else {
+                fetch(`/UserTraining/TrainingsBySkillLevel?skillLevel=${encodeURIComponent(skillLevel)}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        const container = document.getElementById('trainings-container');
+                        if (container) container.innerHTML = html;
+                        AOS.refresh();
+                        
+                        // Update title and subtitle based on skill level
+                        const titleElement = document.getElementById('trainings-title');
+                        const subtitleElement = document.getElementById('trainings-subtitle');
+                        if (titleElement) {
+                            titleElement.textContent = skillLevel === 'All' ? 'Trainings' : `${skillLevel} Trainings`;
+                        }
+                        if (subtitleElement) {
+                            subtitleElement.innerHTML = skillLevel === 'All' 
+                                ? 'Hand-picked courses from our expert instructors'
+                                : `Courses designed for ${skillLevel.toLowerCase()} learners`;
+                        }
+                        if (titleElement) titleElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    })
+                    .finally(() => {
+                        if (loadingElement) loadingElement.style.display = 'none';
+                    });
+            }
+        });
+    });
 
 
     

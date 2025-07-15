@@ -287,6 +287,64 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpGet]
+        public IActionResult UserTrainingsBySkillLevel(string skillLevel)
+        {
+            try
+            {
+                int? userId = HttpContext.Session.GetInt32("AccountId");
+                var enrolledTrainings = _enrollmentService.GetEnrolledTrainings(userId ?? 0);
+                IEnumerable<TrainingViewModel> filtered;
+                
+                if (string.IsNullOrWhiteSpace(skillLevel) || skillLevel == "All")
+                {
+                    filtered = enrolledTrainings;
+                }
+                else
+                {
+                    filtered = enrolledTrainings.Where(t => t.SkillLevelName == skillLevel).ToList();
+                }
+                
+                return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", filtered);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet]
+        public IActionResult UserTrainingsByCategoryAndSkillLevel(int categoryId, string skillLevel)
+        {
+            try
+            {
+                int? userId = HttpContext.Session.GetInt32("AccountId");
+                var enrolledTrainings = _enrollmentService.GetEnrolledTrainings(userId ?? 0);
+                IEnumerable<TrainingViewModel> filtered;
+                
+                // Start with enrolled trainings
+                filtered = enrolledTrainings;
+                
+                // Apply category filter
+                if (categoryId != 0)
+                {
+                    filtered = filtered.Where(t => t.TrainingCategoryId == categoryId);
+                }
+                
+                // Apply skill level filter
+                if (!string.IsNullOrWhiteSpace(skillLevel) && skillLevel != "All")
+                {
+                    filtered = filtered.Where(t => t.SkillLevelName == skillLevel);
+                }
+                
+                return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", filtered.ToList());
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet]
         public IActionResult SearchUserTrainings(string search)
         {
             try
