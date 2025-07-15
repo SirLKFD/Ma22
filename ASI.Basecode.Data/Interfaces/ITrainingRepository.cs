@@ -14,5 +14,6 @@ namespace ASI.Basecode.Data.Interfaces
         void AddTraining(Training training);
         void UpdateTraining(Training training);
         void DeleteTraining(Training training);
+        IQueryable<Training> GetFilteredTrainings(string search, int? categoryId, int? skillLevelId);
     }
 }

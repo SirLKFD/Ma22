@@ -1,17 +1,18 @@
+using ASI.Basecode.Data.Models;
+using ASI.Basecode.Services.Interfaces;
+using ASI.Basecode.Services.ServiceModels;
 using ASI.Basecode.WebApp.Mvc;
 using AutoMapper;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using ASI.Basecode.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using ASI.Basecode.Services.ServiceModels;
-using CloudinaryDotNet;
-using CloudinaryDotNet.Actions;
-using System.IO;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace ASI.Basecode.WebApp.Controllers
@@ -52,11 +53,29 @@ namespace ASI.Basecode.WebApp.Controllers
         /// 
         
         [Authorize(Roles = "0,2")]
-        public IActionResult AdminTrainingCategory(string search, int page = 1)
+        public IActionResult AdminTrainingCategory(string search, int page = 1, int pageSize = 6)
         {
-            const int pageSize = 6;
-            int totalCount;
+            int totalCount = _trainingCategoryService.GetFilteredTrainingCategoriesCount(search);
+            int totalPages = (int)Math.Ceiling((decimal)totalCount / pageSize);
 
+            if (totalPages > 0 && page > totalPages)
+            {
+                return RedirectToAction("AdminTrainingCategory", new
+                {
+                    search,
+                    page = totalPages,
+                    pageSize
+                });
+            }
+            else if (page < 1)
+            {
+                return RedirectToAction("AdminTrainingCategory", new
+                {
+                    search,
+                    page = 1,
+                    pageSize
+                });
+            }
 
             var categories = _trainingCategoryService.GetPaginatedTrainingCategories(search, page, pageSize, out totalCount);
 
@@ -65,11 +84,17 @@ namespace ASI.Basecode.WebApp.Controllers
             ViewBag.CurrentPage = page;
             ViewBag.Search = search;
 
+            if (totalCount == 0)
+            {
+                ViewBag.NoResults = true;
+            }
+
             return View("~/Views/Admin/AdminTrainingCategory.cshtml", categories);
         }
 
+
         [HttpPost]
-         [Authorize(Roles = "2")]
+        [Authorize(Roles = "2")]
         public IActionResult AddTrainingCategory(
             TrainingCategoryViewModel model,
             IFormFile CoverPictureAdd,

@@ -214,5 +214,17 @@ namespace ASI.Basecode.Services.Services
                 }).ToList();
             return categories;
         }
+
+        public int GetFilteredTrainingCategoriesCount(string search)
+        {
+            var query = _repository.GetTrainingCategories();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(c => c.CategoryName.Contains(search));
+            }
+
+            return query.Count();
+        }
     }
 }

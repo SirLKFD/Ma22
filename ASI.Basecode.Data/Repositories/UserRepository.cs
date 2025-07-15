@@ -19,7 +19,8 @@ namespace ASI.Basecode.Data.Repositories
 
         public IQueryable<Account> GetUsers()
         {
-            return this.GetDbSet<Account>();
+            return this.GetDbSet<Account>()
+                       .OrderByDescending(u => u.CreatedTime);
         }
 
         public Account GetUserById(int id)

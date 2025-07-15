@@ -301,5 +301,12 @@ namespace ASI.Basecode.Services.Services
                 AccountLastName = training.Account.LastName,
             }).ToList();
         }
+
+        public int GetFilteredTrainingsCount(string search, int? categoryId, int? skillLevelId)
+        {
+            var trainings = _repository.GetFilteredTrainings(search, categoryId, skillLevelId);
+            return trainings.Count();
+        }
+
     }
 }
