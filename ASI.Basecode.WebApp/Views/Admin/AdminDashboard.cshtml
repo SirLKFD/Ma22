@@ -19,13 +19,20 @@
                 <div class="mt-1 text-3xl font-bold text-[#000]">@Model.EnrolleeCount</div>
             </div>
         </div>
+        @{
+                var accountRole = Context.Session.GetInt32("AccountRole");
+            }
+            @if(accountRole == 2){
         <div class="flex flex-1 items-center gap-4 rounded-xl bg-white p-8 text-[#640A16] shadow">
             <span class="material-symbols-outlined rounded-full bg-[#FFE9C6] p-4 text-5xl">category</span>
+            
             <div>
                 <div class="text-lg font-semibold">Total Categories</div>
                 <div class="mt-1 text-3xl font-bold text-[#000]">@Model.CategoryCount</div>
             </div>
+          
         </div>
+          }
         <div class="flex flex-1 items-center gap-4 rounded-xl bg-white p-8 text-[#640A16] shadow">
             <span class="material-symbols-outlined rounded-full bg-[#FFE9C6] p-4 text-5xl">menu_book</span>
             <div>
@@ -36,22 +43,29 @@
     </div>
 
     <!-- Most/Least Enrolled -->
+
     <div class="mb-8 flex flex-col gap-4 md:flex-row">
-        <a href="@(Model.MostEnrolledTrainingId.HasValue ? Url.Action("AdminTrainingTopics", "AdminTraining", new { trainingId = Model.MostEnrolledTrainingId }) : "#")" class="flex flex-1 items-center gap-4 rounded-xl bg-white p-8 shadow transition hover:scale-105 cursor-pointer @(Model.MostEnrolledTrainingId.HasValue ? "" : "pointer-events-none opacity-60")" style="text-decoration: none;">
+        <a href="@(Model.EnrolleeCount > 0 ? Url.Action("AdminTrainingTopics", "AdminTraining", new { trainingId = Model.MostEnrolledTrainingId }) : "#")" class="flex flex-1 items-center gap-4 rounded-xl bg-white p-8 shadow transition hover:scale-105 cursor-pointer @(Model.EnrolleeCount > 0  ? "" : "pointer-events-none opacity-60")" style="text-decoration: none;">
             <span class="material-symbols-outlined rounded-full bg-[#EAC231] p-3 text-4xl text-white">trending_up</span>
+            
             <div>
                 <div class="text-lg font-semibold text-[#640A16]">Most Enrolled Training</div>
+                @if(Model.EnrolleeCount > 0){
                 <div class="mt-1 text-xl font-bold text-black">@Model.MostEnrolledTrainingName</div>
+                }
             </div>
         </a>
-        <a href="@(Model.LeastEnrolledTrainingId.HasValue ? Url.Action("AdminTrainingTopics", "AdminTraining", new { trainingId = Model.LeastEnrolledTrainingId }) : "#")" class="flex flex-1 items-center gap-4 rounded-xl bg-white p-8 shadow transition hover:scale-105 cursor-pointer @(Model.LeastEnrolledTrainingId.HasValue ? "" : "pointer-events-none opacity-60")" style="text-decoration: none;">
+        <a href="@(Model.LeastEnrolledTrainingId.HasValue ? Url.Action("AdminTrainingTopics", "AdminTraining", new { trainingId = Model.LeastEnrolledTrainingId }) : "#")" class="flex flex-1 items-center gap-4 rounded-xl bg-white p-8 shadow transition hover:scale-105 cursor-pointer @(Model.EnrolleeCount > 0 ?  "" : "pointer-events-none opacity-60")" style="text-decoration: none;">
             <span class="material-symbols-outlined rounded-full bg-gray-200 p-3 text-4xl text-[#640A16]">trending_down</span>
             <div>
                 <div class="text-lg font-semibold text-[#640A16]">Least Enrolled Training</div>
+                @if(Model.EnrolleeCount > 0){
                 <div class="mt-1 text-xl font-bold text-black">@Model.LeastEnrolledTrainingName</div>
+                }
             </div>
         </a>
     </div>
+    
 
     <!-- Logs Section -->
     <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -69,7 +83,6 @@
                         <div class="flex flex-col gap-1 rounded-lg border border-gray-200 bg-[#FFE9C6] p-4 shadow-sm">
                             <div class="flex items-center gap-2">
                                 <span class="font-semibold text-[#640A16]">@log.Entity</span>
-                                <span class="ml-2 rounded bg-[#EAC231] px-2 py-0.5 text-xs text-white">@log.ActionType</span>
                             </div>
                             <div class="text-base font-bold text-black">@log.EntityName</div>
                             <div class="mt-1 text-xs text-gray-600">By <span class="font-semibold">@log.AccountName</span> on @log.TimeStamp.ToString("g")</div>
@@ -96,7 +109,6 @@
                         <div class="flex flex-col gap-1 rounded-lg border border-gray-200 bg-[#FFE9C6] p-4 shadow-sm">
                             <div class="flex items-center gap-2">
                                 <span class="font-semibold text-[#640A16]">@log.Entity</span>
-                                <span class="ml-2 rounded bg-[#EAC231] px-2 py-0.5 text-xs text-white">@log.ActionType</span>
                             </div>
                             <div class="text-base font-bold text-black">@log.EntityName</div>
                             <div class="mt-1 text-xs text-gray-600">By <span class="font-semibold">@log.AccountName</span> on @log.TimeStamp.ToString("g")</div>
@@ -123,7 +135,6 @@
                         <div class="flex flex-col gap-1 rounded-lg border border-gray-200 bg-[#FFE9C6] p-4 shadow-sm">
                             <div class="flex items-center gap-2">
                                 <span class="font-semibold text-[#640A16]">@log.Entity</span>
-                                <span class="ml-2 rounded bg-[#EAC231] px-2 py-0.5 text-xs text-white">@log.ActionType</span>
                             </div>
                             <div class="text-base font-bold text-black">@log.EntityName</div>
                             <div class="mt-1 text-xs text-gray-600">By <span class="font-semibold">@log.AccountName</span> on @log.TimeStamp.ToString("g")</div>
