@@ -63,7 +63,31 @@ namespace ASI.Basecode.WebApp.Controllers
         public IActionResult AdminTraining(string search, int? categoryId, int? skillLevelId, int page = 1, int pageSize = 6)
         {
 
-            int totalCount;
+            int totalCount = _trainingService.GetFilteredTrainingsCount(search, categoryId, skillLevelId);
+            int totalPages = (int)Math.Ceiling((decimal)totalCount / pageSize);
+
+            if (page > totalPages && totalPages > 0)
+            {
+                return RedirectToAction("AdminTraining", new
+                {
+                    search,
+                    categoryId,
+                    skillLevelId,
+                    page = totalPages,
+                    pageSize
+                });
+            }
+            else if (page < 1)
+            {
+                return RedirectToAction("AdminTraining", new
+                {
+                    search,
+                    categoryId,
+                    skillLevelId,
+                    page = 1,
+                    pageSize
+                });
+            }
             var trainings = _trainingService.GetFilteredTrainings(search, categoryId, skillLevelId, page, pageSize, out totalCount);
 
             var skillLevels = new Dictionary<int, string>

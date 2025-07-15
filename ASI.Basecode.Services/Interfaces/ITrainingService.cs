@@ -16,5 +16,6 @@ namespace ASI.Basecode.Services.Interfaces
         // Pagination for trainings
         List<TrainingViewModel> GetPaginatedTrainings(string search, int page, int pageSize, out int totalCount);
         List<TrainingViewModel> GetFilteredTrainings(string search, int? categoryId, int? skillLevelId, int page, int pageSize, out int totalCount);
+        int GetFilteredTrainingsCount(string search, int? categoryId, int? skillLevelId);
     }
 }

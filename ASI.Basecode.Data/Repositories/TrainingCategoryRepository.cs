@@ -66,5 +66,17 @@ namespace ASI.Basecode.Data.Repositories
         {
             return this.GetDbSet<TrainingCategory>().Include(c => c.Account).Where(c => ids.Contains(c.Id));
         }
+        public IQueryable<TrainingCategory> GetFilteredTrainingCategories(string search)
+        {
+            var query = GetTrainingCategories();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(t => t.CategoryName.Contains(search));
+            }
+
+            return query;
+        }
+
     }
 }

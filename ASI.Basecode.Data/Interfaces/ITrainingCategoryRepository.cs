@@ -16,5 +16,6 @@ namespace ASI.Basecode.Data.Interfaces
         bool TrainingCategoryExists(string categoryName);
         void DeleteTrainingCategory(TrainingCategory category);
         IQueryable<TrainingCategory> GetTrainingCategoriesByIds(IEnumerable<int> ids);
+        IQueryable<TrainingCategory> GetFilteredTrainingCategories(string search);
     }
 }

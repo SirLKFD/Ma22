@@ -66,6 +66,28 @@ namespace ASI.Basecode.Data.Repositories
             }
 
         }
+        public IQueryable<Training> GetFilteredTrainings(string search, int? categoryId, int? skillLevelId)
+        {
+            var query = GetTrainings();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(t => t.TrainingName.Contains(search));
+            }
+
+            if (categoryId.HasValue)
+            {
+                query = query.Where(t => t.TrainingCategoryId == categoryId.Value);
+            }
+
+            if (skillLevelId.HasValue)
+            {
+                query = query.Where(t => t.SkillLevel == skillLevelId.Value);
+            }
+
+            return query;
+        }
+
     }
 
 }
