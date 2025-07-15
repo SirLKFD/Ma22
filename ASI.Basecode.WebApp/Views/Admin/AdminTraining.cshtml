@@ -1,6 +1,6 @@
 ﻿@model List<ASI.Basecode.Services.ServiceModels.TrainingViewModel>
 @using static ASI.Basecode.Resources.Constants.Enums
-
+@using System.Text.Json
 @{
     var pageTitle = ViewBag.CategoryName ?? "Ma22 | Trainings";
     ViewData["Title"] = pageTitle;
@@ -16,6 +16,9 @@
     var skillLevels = new Dictionary<int, string> {
         { 1, "Beginner" }, { 2, "Intermediate" }, { 3, "Advanced" }
     };
+ 
+    
+
 }
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
@@ -142,10 +145,21 @@
                         <div class="mb-2 flex items-center justify-between">
                             <h2 class="text-xl font-bold text-gray-800">@(training.TrainingName != null && training.TrainingName.Length > 20 ? training.TrainingName.Substring(0, 20) + "..." : training.TrainingName)</h2>
                             <div class="flex gap-2 text-gray-600">
+                                @{
+                                    var encodedId = JsonSerializer.Serialize(training.Id);
+                                    var encodedName = JsonSerializer.Serialize(training.TrainingName);
+                                    var encodedCategoryId = JsonSerializer.Serialize(training.TrainingCategoryId);
+                                    var encodedSkillLevel = JsonSerializer.Serialize(training.SkillLevel);
+                                    var encodedDuration = JsonSerializer.Serialize(training.Duration);
+                                    var encodedCourseCode = JsonSerializer.Serialize(training.CourseCode);
+                                    var encodedDescription = JsonSerializer.Serialize(training.Description);
+                                    var encodedCover = JsonSerializer.Serialize(training.CoverPicture);
+                                }
                                 <span class="material-symbols-outlined cursor-pointer hover:text-black"
-                                      onclick="openEditTraining('@training.Id', '@training.TrainingName', '@training.TrainingCategoryId', '@training.SkillLevel', '@training.Duration', '@training.CourseCode', '@training.Description', '@training.CoverPicture')">edit</span>
-                                <span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700"
-                                      onclick="openDeleteTraining('@training.Id', '@training.TrainingName', '@training.TrainingCategoryId', '@training.SkillLevel', '@training.CourseCode', '@training.Description', '@training.CoverPicture', '@training.UpdatedTime', '@training.AccountFirstName', '@training.AccountLastName')">delete</span>
+                                    onclick="openEditTraining(@encodedId, @encodedName, @encodedCategoryId, @encodedSkillLevel, @encodedDuration, @encodedCourseCode, @encodedDescription, @encodedCover)">
+                                    edit
+                                </span><span class="material-symbols-outlined cursor-pointer text-red-500 hover:text-red-700"
+                                    onclick="openDeleteTraining(@encodedId, @encodedName, @encodedCategoryId, @encodedSkillLevel, @encodedCourseCode, @encodedDescription, @encodedCover, @JsonSerializer.Serialize(training.UpdatedTime), @JsonSerializer.Serialize(training.AccountFirstName), @JsonSerializer.Serialize(training.AccountLastName))">delete</span>
                             </div>
                         </div>
                         <div class="mb-2 flex gap-2">
