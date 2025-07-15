@@ -25,6 +25,8 @@ public partial class TopicMedium
 
     public string Name { get; set; }
 
+    public long? FileSize { get; set; } // File size in bytes
+
     public virtual Account Account { get; set; }
 
     public virtual Topic Topic { get; set; }

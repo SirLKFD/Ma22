@@ -74,6 +74,15 @@ namespace ASI.Basecode.WebApp.Controllers
                 var topic = _topicService.GetTopicWithAccountById(topicId);
                 var allTopics = _topicService.GetAllTopicsByTrainingId(topic.TrainingId);
                 ViewBag.AllTopics = allTopics;
+
+                // Aggregate file sizes
+                var videosSize = topic.Media?.Where(m => IsVideoFile(m.MediaType)).Sum(m => m.FileSize ?? 0) ?? 0;
+                var imagesSize = topic.Media?.Where(m => IsImageFile(m.MediaType)).Sum(m => m.FileSize ?? 0) ?? 0;
+                var docsSize = topic.Media?.Where(m => IsDocumentFile(m.MediaType, m.Name)).Sum(m => m.FileSize ?? 0) ?? 0;
+                ViewBag.VideosSize = videosSize;
+                ViewBag.ImagesSize = imagesSize;
+                ViewBag.DocumentsSize = docsSize;
+
                 var userEmail = HttpContext.Session.GetString("UserEmail");
                 if (!string.IsNullOrEmpty(userEmail))
                 {

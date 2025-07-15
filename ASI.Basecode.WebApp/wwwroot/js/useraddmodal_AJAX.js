@@ -33,6 +33,20 @@ document.addEventListener('DOMContentLoaded', function() {
         lastNameInput.addEventListener('input', updatePreviewName);
     }
     
+    // Set max date for birthdate input (must be at least 13 years ago)
+    const birthdateInput = document.querySelector('input[type="date"][name="Birthdate"], input[type="date"][id*="Birthdate"]');
+    if (birthdateInput) {
+        const today = new Date();
+        const maxDate = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate());
+        const yyyy = maxDate.getFullYear();
+        const mm = String(maxDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(maxDate.getDate()).padStart(2, '0');
+        const formattedMaxDate = `${yyyy}-${mm}-${dd}`;
+        birthdateInput.max = formattedMaxDate;
+        // Optionally set default value to max date
+        // birthdateInput.value = formattedMaxDate;
+    }
+
     if (createUserForm) {
         createUserForm.addEventListener('submit', function(e) {
             e.preventDefault();
