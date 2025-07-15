@@ -75,6 +75,54 @@ namespace ASI.Basecode.WebApp.Controllers
             return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", filtered);
         }
 
+        [HttpGet]
+        public IActionResult TrainingsBySkillLevel(string skillLevel)
+        {
+            int? accountId = HttpContext.Session.GetInt32("AccountId");
+            if (accountId == null) return RedirectToAction("Login", "Account");
+            
+            var allTrainings = _trainingService.GetAllTrainings();
+            IEnumerable<TrainingViewModel> filtered;
+            
+            if (string.IsNullOrWhiteSpace(skillLevel) || skillLevel == "All")
+            {
+                filtered = allTrainings;
+            }
+            else
+            {
+                filtered = allTrainings.Where(t => t.SkillLevelName == skillLevel).ToList();
+            }
+            
+            return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", filtered);
+        }
+
+        [HttpGet]
+        public IActionResult TrainingsByCategoryAndSkillLevel(int categoryId, string skillLevel)
+        {
+            int? accountId = HttpContext.Session.GetInt32("AccountId");
+            if (accountId == null) return RedirectToAction("Login", "Account");
+            
+            var allTrainings = _trainingService.GetAllTrainings();
+            IEnumerable<TrainingViewModel> filtered;
+            
+            // Start with all trainings
+            filtered = allTrainings;
+            
+            // Apply category filter
+            if (categoryId != 0)
+            {
+                filtered = filtered.Where(t => t.TrainingCategoryId == categoryId);
+            }
+            
+            // Apply skill level filter
+            if (!string.IsNullOrWhiteSpace(skillLevel) && skillLevel != "All")
+            {
+                filtered = filtered.Where(t => t.SkillLevelName == skillLevel);
+            }
+            
+            return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", filtered.ToList());
+        }
+
         //public IActionResult UserTrainingTopics(int trainingId)
         //{
 
