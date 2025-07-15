@@ -20,18 +20,18 @@
                 <!-- Left side with form fields -->
                 <div class="flex w-1/2 flex-col">
                     <div class="mx-5 mt-2">
-                        <label asp-for="TopicName" class="mb-2 block text-sm font-medium text-black">Topic Name</label>
-                        <input asp-for="TopicName" id="TopicNameEdit" class="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
+                        <label asp-for="TopicName" class="mb-2 block text-sm font-medium text-black">Topic Name <span class="text-xs text-gray-300">(max 30 characters)</span></label>
+                        <input asp-for="TopicName" id="TopicNameEdit" class="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]" required />
                         <span asp-validation-for="TopicName" class="text-danger"></span>
                     </div>
 
                     <div class="mx-5 mt-2">
-                        <label asp-for="Description" class="mb-2 block text-sm font-medium text-black">Description</label>
-                        <textarea asp-for="Description" id="DescriptionEdit" rows="12" class="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]"></textarea>
+                        <label asp-for="Description" class="mb-2 block text-sm font-medium text-black">Description <span class="text-xs text-gray-300">(max 250 characters)</span></label>
+                        <textarea asp-for="Description" id="DescriptionEdit" rows="12" class="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]" required></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
 
-                    <button type="submit" class="mx-5 mt-4 rounded-lg bg-[#FFE9C6] px-4 py-2 font-semibold">Save Changes</button>
+                    <button id="editTopicBtn" class="mx-5 mt-4 rounded-lg bg-[#FFE9C6] px-4 py-2 font-semibold flex items-center justify-center gap-2">Save Changes</button>
                 </div>
 
                 <!-- Right side content -->
@@ -507,4 +507,17 @@
             if (id === 'DocumentFilesEdit') updateTotalResourceSize('document');
         });
     });
+</script>
+<script>
+document.querySelector('#editTopic form').addEventListener('submit', function(e) {
+    if (!this.checkValidity()) {
+        // Form is invalid, let browser show errors, do not set loading state
+        return;
+    }
+    var btn = document.getElementById('editTopicBtn');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span><span>Saving...</span>';
+    }
+});
 </script>

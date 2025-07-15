@@ -45,3 +45,18 @@
 
 
 </div>
+
+<script>
+document.getElementById('confirmDeleteBtn').addEventListener('click', function(e) {
+    var form = this.closest('form');
+    if (form && !form.checkValidity()) {
+        // Form is invalid, let browser show errors, do not set loading state
+        return;
+    }
+    var btn = document.getElementById('confirmDeleteBtn');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="flex items-center justify-center w-full"><span class="spinner-border spinner-border-sm mr-2"></span><span>Deleting...</span></span>';
+    }
+});
+</script>

@@ -16,6 +16,7 @@
             <h1 class="font-weight-bold text-2xl uppercase">Add New Training</h1>
         </div>
         <form asp-action="AddTraining" asp-controller="AdminTraining" method="post" enctype="multipart/form-data" class="flex flex-col gap-4">
+            <input type="hidden" name="context" id="addTrainingContext" value="all" />
             <label for="CoverPictureAddTraining" class="flex h-[125px] w-full cursor-pointer flex-col items-center justify-center rounded-xl bg-white">
                 <input type="file"
                        name="CoverPictureAddTraining"
@@ -29,20 +30,20 @@
             <div class="flex flex-col gap-2">
                 <div class="flex gap-4">
                     <div class="w-1/2">
-                        <label asp-for="TrainingName" class="mb-2 block text-sm font-medium text-white">Training Name</label>
-                        <input asp-for="TrainingName" class="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
+                        <label asp-for="TrainingName" class="mb-2 block text-sm font-medium text-white">Training Name <span class="text-xs text-gray-300">(max 30 characters)</span></label>
+                        <input asp-for="TrainingName" class="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]" required />
                         <span asp-validation-for="TrainingName" class="text-sm text-red-500"></span>
                     </div>
                     <div class="w-1/2">
-                        <label asp-for="CourseCode" class="mb-2 block text-sm font-medium text-white">Course Code</label>
-                        <input asp-for="CourseCode" class="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]" />
+                        <label asp-for="CourseCode" class="mb-2 block text-sm font-medium text-white">Course Code <span class="text-xs text-gray-300">(max 6 characters)</span></label>
+                        <input asp-for="CourseCode" maxlength="6" pattern=".{1,6}" title="Maximum 6 characters" class="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]" required />
                         <span asp-validation-for="CourseCode" class="text-sm text-red-500"></span>
                     </div>
                 </div>
                 <div class="flex gap-4">
                     <div class="w-1/2">
                         <label asp-for="TrainingCategoryId" class="mb-2 block text-sm font-medium text-white">Training Category</label>
-                        <select asp-for="TrainingCategoryId" class="w-full rounded-md border border-gray-300 px-2 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]">
+                        <select asp-for="TrainingCategoryId" id="TrainingCategoryId" class="w-full rounded-md border border-gray-300 px-2 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]">
                             @foreach (var category in categories)
                             {
                                 <option value="@category.Id">@category.CategoryName</option>
@@ -61,8 +62,8 @@
                     </div>
                 </div>
                 <div>
-                    <label asp-for="Description" class="mb-2 block text-sm font-medium text-white">@Html.DisplayNameFor(m => m.Description)</label>
-                    <textarea asp-for="Description" rows="3" class="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]"></textarea>
+                    <label asp-for="Description" class="mb-2 block text-sm font-medium text-white">@Html.DisplayNameFor(m => m.Description) <span class="text-xs text-gray-300">(max 250 characters)</span></label>
+                    <textarea asp-for="Description" rows="3" class="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#EAC231]" required></textarea>
                     <span asp-validation-for="Description" class="text-sm text-red-500"></span>
                 </div>
                 <div class="w-full">
@@ -81,7 +82,7 @@
                         <option value="11">More than 1 year</option>
                     </select>
                 </div>
-                <button class="align-self-center font-weight-bold mt-2 w-2/3 rounded-xl bg-[#FFE9C6] py-2 text-black hover:bg-[#e6c89c]">
+                <button id="addTrainingBtn" type="submit" class="align-self-center font-weight-bold mt-2 w-2/3 rounded-xl bg-[#FFE9C6] py-2 text-black hover:bg-[#e6c89c]">
                     Add Training
                 </button>
             </div>
@@ -117,6 +118,19 @@
             placeholderElement.classList.remove('hidden');
             placeholderElement.classList.add('material-symbols-outlined');
             textElement.classList.remove('hidden');
+        }
+    });
+
+    // Add loading state to Add Training form
+    document.querySelector('#addTraining form').addEventListener('submit', function(e) {
+        if (!this.checkValidity()) {
+            // Form is invalid, let browser show errors, do not set loading state
+            return;
+        }
+        var btn = document.getElementById('addTrainingBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="flex items-center justify-center w-full"><span class="spinner-border spinner-border-sm mr-2"></span><span>Adding...</span></span>';
         }
     });
 </script>

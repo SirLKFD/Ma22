@@ -102,18 +102,8 @@ namespace ASI.Basecode.Services.Services
 
         public TrainingCategoryViewModel GetTrainingCategoryById(int id)
         {
-            
    
             var category = _repository.GetTrainingCategories().FirstOrDefault(c => c.Id == id);
-            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
-            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
-
-            if (category == null ||
-                (accountRole == 0 && category.AccountId != accountId) ||
-                (accountRole == 1))
-            {
-                throw new UnauthorizedAccessException("You are not allowed to view this category.");
-            }
 
             return new TrainingCategoryViewModel
             {
@@ -130,23 +120,12 @@ namespace ASI.Basecode.Services.Services
 
         public List<TrainingCategoryViewModel> GetAllTrainingCategoryViewModels()
         {
-            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
-            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
 
             IQueryable<TrainingCategory> query;
 
-            if (accountRole == 0) // Admin: only their own categories
-            {
-                query = _repository.GetTrainingCategories().Where(c => c.AccountId == accountId);
-            }
-            else if (accountRole == 2) // SuperAdmin: all categories
-            {
-                query = _repository.GetTrainingCategories();
-            }
-            else // fallback: no categories
-            {
-                query = _repository.GetTrainingCategories().Where(c => false);
-            }
+            
+            query = _repository.GetTrainingCategories();
+         
 
             var categories = query
                 .OrderByDescending(c => c.UpdatedTime)
@@ -166,20 +145,13 @@ namespace ASI.Basecode.Services.Services
 
         public List<TrainingCategoryViewModel> GetPaginatedTrainingCategories(string search, int page, int pageSize, out int totalCount)
         {
-            var accountId = _httpContextAccessor.HttpContext.Session.GetInt32("AccountId");
-            var accountRole = _httpContextAccessor.HttpContext.Session.GetInt32("AccountRole");
+
 
             IQueryable<TrainingCategory> query;
 
-            if (accountRole == 0) // Only show categories created by this account
-            {
-                query = _repository.GetTrainingCategories()
-                                .Where(c => c.AccountId == accountId);
-            }
-            else // Show all categories
-            {
-                query = _repository.GetTrainingCategories();
-            }
+            
+            query = _repository.GetTrainingCategories();
+            
 
             // Apply search filter if search term is provided
             if (!string.IsNullOrWhiteSpace(search))

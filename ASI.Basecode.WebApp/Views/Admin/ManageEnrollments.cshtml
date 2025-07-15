@@ -144,10 +144,10 @@
         </div>
         <p class="mb-6 text-gray-600">Are you sure you want to remove <span id="studentName" class="font-semibold"></span> from this training? This action cannot be undone.</p>
         <div class="flex gap-3">
-            <form id="deleteEnrollmentForm" method="post" action="@Url.Action("DeleteEnrollment", "Enrollment")" class="flex-1">
+            <form id="deleteEnrollmentForm" method="post" action="@Url.Action("DeleteEnrollment", "Enrollment")" class="flex-1" onsubmit="return handleDeleteEnrollmentSubmit(this)">
                 <input type="hidden" id="enrollmentIdToDelete" name="enrollmentId" />
                 <input type="hidden" name="trainingId" value="@training?.Id" />
-                <button type="submit" class="w-full rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 transition">
+                <button type="submit" class="w-full rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 transition" id="removeStudentBtn">
                     Remove Student
                 </button>
             </form>
@@ -175,4 +175,19 @@
             closeDeleteModal();
         }
     });
+</script> 
+
+<script>
+function handleDeleteEnrollmentSubmit(form) {
+    if (!form.checkValidity()) {
+        // Form is invalid, let browser show errors, do not set loading state
+        return false;
+    }
+    var btn = form.querySelector('button[type="submit"]');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="flex items-center justify-center w-full"><span class="spinner-border spinner-border-sm mr-2"></span><span>Removing...</span></span>';
+    }
+    return true;
+}
 </script> 
