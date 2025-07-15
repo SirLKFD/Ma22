@@ -215,6 +215,16 @@ namespace ASI.Basecode.WebApp.Controllers
                         _userService.UpdateUser(model);
                         var accountName = HttpContext.Session.GetString("UserName");
                         _auditLogService.LogAction("User", "Update", accountName,model.Id, $"{model.FirstName} {model.LastName}");
+                        
+                        // Update session values if the current user is editing their own profile
+                        int? accountId = HttpContext.Session.GetInt32("AccountId");
+                        if (accountId.HasValue && accountId.Value == model.Id)
+                        {
+                            HttpContext.Session.SetString("UserName", $"{model.FirstName} {model.LastName}");
+                            HttpContext.Session.SetString("UserEmail", model.EmailId);
+                            HttpContext.Session.SetString("ProfilePicture", model.ProfilePicture ?? "");
+                        }
+                        
                         Console.WriteLine("log complete");
                         TempData["Success"] = "User updated successfully!";
                         return RedirectToAction("UserProfile");
@@ -279,6 +289,64 @@ namespace ASI.Basecode.WebApp.Controllers
                 }
                 //var trainings = _trainingService.GetAllTrainingsByCategoryId(categoryId);
                 return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", trainings);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet]
+        public IActionResult UserTrainingsBySkillLevel(string skillLevel)
+        {
+            try
+            {
+                int? userId = HttpContext.Session.GetInt32("AccountId");
+                var enrolledTrainings = _enrollmentService.GetEnrolledTrainings(userId ?? 0);
+                IEnumerable<TrainingViewModel> filtered;
+                
+                if (string.IsNullOrWhiteSpace(skillLevel) || skillLevel == "All")
+                {
+                    filtered = enrolledTrainings;
+                }
+                else
+                {
+                    filtered = enrolledTrainings.Where(t => t.SkillLevelName == skillLevel).ToList();
+                }
+                
+                return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", filtered);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet]
+        public IActionResult UserTrainingsByCategoryAndSkillLevel(int categoryId, string skillLevel)
+        {
+            try
+            {
+                int? userId = HttpContext.Session.GetInt32("AccountId");
+                var enrolledTrainings = _enrollmentService.GetEnrolledTrainings(userId ?? 0);
+                IEnumerable<TrainingViewModel> filtered;
+                
+                // Start with enrolled trainings
+                filtered = enrolledTrainings;
+                
+                // Apply category filter
+                if (categoryId != 0)
+                {
+                    filtered = filtered.Where(t => t.TrainingCategoryId == categoryId);
+                }
+                
+                // Apply skill level filter
+                if (!string.IsNullOrWhiteSpace(skillLevel) && skillLevel != "All")
+                {
+                    filtered = filtered.Where(t => t.SkillLevelName == skillLevel);
+                }
+                
+                return PartialView("~/Views/User/_TrainingCardsPartial.cshtml", filtered.ToList());
             }
             catch (Exception)
             {

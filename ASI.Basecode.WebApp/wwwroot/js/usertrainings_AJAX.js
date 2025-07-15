@@ -1,5 +1,9 @@
 // UserTrainings AJAX Functionality
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize filter tracking variables
+    let currentCategoryId = "0";
+    let currentSkillLevel = "All";
+    
     // Category navigation logic
     let userCategoryStart = 0;
     const userMaxVisible = 6;
@@ -90,24 +94,107 @@ document.addEventListener('DOMContentLoaded', function() {
             const categoryId = this.getAttribute('data-category-id');
             const categoryName = this.querySelector('p')?.textContent || '';
             const categoryDescription = this.getAttribute('data-category-description') || '';
+            
+            // Update current category
+            currentCategoryId = categoryId;
+            
             const loadingElement = document.getElementById('usertrainings-loading');
             if (loadingElement) loadingElement.style.display = '';
             
-            fetch(`/User/UserTrainingsByCategory?categoryId=${categoryId}`)
-                .then(response => response.text())
-                .then(html => {
-                    const container = document.getElementById('usertrainings-container');
-                    if (container) container.innerHTML = html;
-                    
-                    const titleElement = document.getElementById('usertrainings-title');
-                    const subtitleElement = document.getElementById('usertrainings-subtitle');
-                    if (titleElement) titleElement.textContent = categoryName;
-                    if (subtitleElement) subtitleElement.innerHTML = categoryDescription;
-                    if (titleElement) titleElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                })
-                .finally(() => {
-                    if (loadingElement) loadingElement.style.display = 'none';
-                });
+            // Use combined filtering if skill level is also selected
+            if (currentSkillLevel !== "All") {
+                fetch(`/User/UserTrainingsByCategoryAndSkillLevel?categoryId=${categoryId}&skillLevel=${encodeURIComponent(currentSkillLevel)}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        const container = document.getElementById('usertrainings-container');
+                        if (container) container.innerHTML = html;
+                        
+                        const titleElement = document.getElementById('usertrainings-title');
+                        const subtitleElement = document.getElementById('usertrainings-subtitle');
+                        if (titleElement) titleElement.textContent = `${categoryName} - ${currentSkillLevel}`;
+                        if (subtitleElement) subtitleElement.innerHTML = `${categoryDescription} (${currentSkillLevel} level)`;
+                        if (titleElement) titleElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    })
+                    .finally(() => {
+                        if (loadingElement) loadingElement.style.display = 'none';
+                    });
+            } else {
+                fetch(`/User/UserTrainingsByCategory?categoryId=${categoryId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        const container = document.getElementById('usertrainings-container');
+                        if (container) container.innerHTML = html;
+                        
+                        const titleElement = document.getElementById('usertrainings-title');
+                        const subtitleElement = document.getElementById('usertrainings-subtitle');
+                        if (titleElement) titleElement.textContent = categoryName;
+                        if (subtitleElement) subtitleElement.innerHTML = categoryDescription;
+                        if (titleElement) titleElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    })
+                    .finally(() => {
+                        if (loadingElement) loadingElement.style.display = 'none';
+                    });
+            }
+        });
+    });
+
+    // SKILL LEVEL FILTERING logic
+    document.querySelectorAll('.skill-level-filter').forEach(filter => {
+        filter.addEventListener('click', function() {
+            const skillLevel = this.getAttribute('data-skill-level');
+            currentSkillLevel = skillLevel;
+            
+            const loadingElement = document.getElementById('usertrainings-loading');
+            if (loadingElement) loadingElement.style.display = '';
+            
+            // Use combined filtering if category is also selected
+            if (currentCategoryId !== "0") {
+                fetch(`/User/UserTrainingsByCategoryAndSkillLevel?categoryId=${currentCategoryId}&skillLevel=${encodeURIComponent(skillLevel)}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        const container = document.getElementById('usertrainings-container');
+                        if (container) container.innerHTML = html;
+                        
+                        // Update title and subtitle based on both filters
+                        const titleElement = document.getElementById('usertrainings-title');
+                        const subtitleElement = document.getElementById('usertrainings-subtitle');
+                        if (titleElement) {
+                            titleElement.textContent = skillLevel === 'All' ? 'Enrolled Trainings' : `Enrolled Trainings - ${skillLevel}`;
+                        }
+                        if (subtitleElement) {
+                            subtitleElement.innerHTML = skillLevel === 'All' 
+                                ? 'Continue where you left off.'
+                                : `Continue your ${skillLevel.toLowerCase()} level courses`;
+                        }
+                        if (titleElement) titleElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    })
+                    .finally(() => {
+                        if (loadingElement) loadingElement.style.display = 'none';
+                    });
+            } else {
+                fetch(`/User/UserTrainingsBySkillLevel?skillLevel=${encodeURIComponent(skillLevel)}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        const container = document.getElementById('usertrainings-container');
+                        if (container) container.innerHTML = html;
+                        
+                        // Update title and subtitle based on skill level
+                        const titleElement = document.getElementById('usertrainings-title');
+                        const subtitleElement = document.getElementById('usertrainings-subtitle');
+                        if (titleElement) {
+                            titleElement.textContent = skillLevel === 'All' ? 'Enrolled Trainings' : `${skillLevel} Trainings`;
+                        }
+                        if (subtitleElement) {
+                            subtitleElement.innerHTML = skillLevel === 'All' 
+                                ? 'Continue where you left off.'
+                                : `Continue your ${skillLevel.toLowerCase()} level courses`;
+                        }
+                        if (titleElement) titleElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    })
+                    .finally(() => {
+                        if (loadingElement) loadingElement.style.display = 'none';
+                    });
+            }
         });
     });
 
